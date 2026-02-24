@@ -15,7 +15,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
-      navigate("/admin", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     }
   }, [isAuthenticated, isAdmin, navigate]);
 
@@ -46,7 +46,7 @@ export default function AdminLogin() {
       console.log(user)
 
       login(user);
-      navigate("admin/dashboard", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
 
     } catch (err) {
       console.log(err)
