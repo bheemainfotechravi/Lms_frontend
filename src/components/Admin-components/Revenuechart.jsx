@@ -1,4 +1,4 @@
-import { REVENUE_DATA } from "../data/dashboardData";
+import { REVENUE_DATA } from "./dashboardData";
 
 export default function RevenueChart() {
   return (

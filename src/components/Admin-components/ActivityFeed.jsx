@@ -1,4 +1,4 @@
-import { ACTIVITY } from "../data/dashboardData";
+import { ACTIVITY } from "./dashboardData";
 
 export default function ActivityFeed() {
   return (
