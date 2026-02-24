@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
-import { NAV_ITEMS } from "../data/dashboardData";
+import { useAuth } from "../../context/AuthContext";
+import { NAV_ITEMS } from "./dashboardData";
 const Sidebar = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();

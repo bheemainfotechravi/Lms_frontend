@@ -1,4 +1,4 @@
-import { STATS } from "../data/dashboardData";
+import { STATS } from "./dashboardData";
 import StatCard from "./Statcard";
 
  function StatsGrid() {

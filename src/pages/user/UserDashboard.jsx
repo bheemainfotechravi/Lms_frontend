@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 // ── Components ──
-import DashboardNavbar from "./sub-components/DashboardNavbar";
-import StatsRow from "./sub-components/StatsRow";
-import ContinueLearning from "./sub-components/ContinueLearning";
-import MyCourses from "./sub-components/MyCourses";
-import LeaderboardProgress from "./sub-components/LeaderboardProgress";
-import RecommendedCourses from "./sub-components/RecommendedCourses";
-import Certificates from "./sub-components/Certificates";
-import ProfileSettings from "./sub-components/ProfileSettings";
+import DashboardNavbar from "../../components/User-components/DashboardNavbar";
+import StatsRow from "../../components/User-components/StatsRow";
+import ContinueLearning from "../../components/User-components/ContinueLearning";
+import MyCourses from "../../components/User-components/MyCourses";
+import LeaderboardProgress from "../../components/User-components/LeaderboardProgress";
+import RecommendedCourses from "../../components/User-components/RecommendedCourses";
+import Certificates from "../../components/User-components/Certificates";
+import ProfileSettings from "../../components/User-components/ProfileSettings";
 
 // ── Data ──
 import {
@@ -20,7 +20,7 @@ import {
   PROGRESS_STATS,
   RECOMMENDED_COURSES,
   MOCK_PROFILE,
-} from "./sub-components/dashboardData.js";
+} from "../../components/User-components/dashboardData.js";
 
 export default function UserDashboard() {
   const { user } = useAuth();
