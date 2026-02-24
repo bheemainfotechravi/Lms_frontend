@@ -1,9 +1,71 @@
-import React from 'react'
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import TopNavbar from "../../components/Admin-components/TopNavbar";
+ import WelcomeBanner from "../../components/Admin-components/WelcomeBenner"; 
+ import RevenueChart from "../../components/Admin-components/Revenuechart"; 
+ import ActivityFeed from "../../components/Admin-components/ActivityFeed"; 
+ import RecentUsers from "../../components/Admin-components/RecentUsers"; 
+ import PendingCourses from "../../components/Admin-components/PendingCourses"; 
+ import Sidebar from "../../components/Admin-components/Sidebar";
+  import StatsGrid from "../../components/Admin-components/StateGrids";
+export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false); // controls mounting
+  const [isLoading, setIsLoading] = useState(true);
+  const [notifOpen, setNotifOpen] = useState(false);
 
-export default function Admindashboard() {
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 800);
+  }, []);
+
+  const today = new Date().toLocaleDateString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <div>
-      aa
+    <div className="min-h-screen bg-[#F8FAFC] flex font-sans text-slate-900">
+      {/* Sidebar mounts only when sidebarOpen is true */}
+      {sidebarOpen && <Sidebar />}
+
+      {/* Main content */}
+      <main
+        className={`flex-1 transition-all duration-300 ${
+          sidebarOpen ? "ml-64" : "ml-0"
+        } p-8`}
+      >
+        <TopNavbar
+          user={user}
+          today={today}
+          notifOpen={notifOpen}
+          setNotifOpen={setNotifOpen}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen} // pass toggle function
+        />
+
+        {isLoading ? (
+          <div className="grid grid-cols-4 gap-6 animate-pulse">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-32 bg-slate-200 rounded-2xl" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <WelcomeBanner user={user} />
+            <StatsGrid />
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <RevenueChart />
+              <ActivityFeed />
+            </section>
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <RecentUsers />
+              <PendingCourses />
+            </section>
+          </div>
+        )}
+      </main>
     </div>
-  )
+  );
 }

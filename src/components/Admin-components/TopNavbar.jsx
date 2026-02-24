@@ -1,4 +1,4 @@
-import { ACTIVITY } from "../data/dashboardData";
+import { ACTIVITY } from "./dashboardData";
 import { FiMenu } from "react-icons/fi";
 export default function TopNavbar({ user, today, notifOpen, setNotifOpen, sidebarOpen, setSidebarOpen, }) {
   return (
