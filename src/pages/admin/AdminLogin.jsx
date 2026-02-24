@@ -46,7 +46,7 @@ export default function AdminLogin() {
       console.log(user)
 
       login(user);
-      navigate("/dashboard", { replace: true });
+      navigate("admin/dashboard", { replace: true });
 
     } catch (err) {
       console.log(err)
