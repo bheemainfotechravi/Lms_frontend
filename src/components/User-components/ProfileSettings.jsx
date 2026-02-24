@@ -3,6 +3,7 @@
 //   profile — object from MOCK_PROFILE in dashboardData.js
 
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const TABS = [
   { key: "profile",   label: "Profile Info",  icon: "👤" },
@@ -11,7 +12,8 @@ const TABS = [
   { key: "billing",   label: "Billing",       icon: "💳" },
 ];
 
-export default function ProfileSettings({ profile = {} }) {
+export default function ProfileSettings({ profile = {user} }) {
+   const { user, logout } = useAuth();
   const [activeTab, setActiveTab]   = useState("profile");
   const [formData, setFormData]     = useState({ ...profile });
   const [saved, setSaved]           = useState(false);
