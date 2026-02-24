@@ -7,10 +7,14 @@ import TeacherRoutes from "./routes/TeacherRoutes";
 import CompanyRoutes from "./routes/CompanyRoutes";
 
 import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Unauthorized from "./pages/admin/Unauthorized";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
+import UserDashboard from "./pages/user/UserDashboard";
+import ProtectedRoute from "./routes/guards/ProtectedRoute";
+import Admindashboard from "./pages/admin/AdminDashboard";
 
 export default function App() {
   return (
@@ -20,9 +24,14 @@ export default function App() {
          <Routes>
             {/* Home */}
           <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* user */}
+          <Route path="/user/dashboard" element={<UserDashboard />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute><Admindashboard /></ProtectedRoute>} />
 
           {/* Public */}
-          <Route path="/login" element={<Login />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
