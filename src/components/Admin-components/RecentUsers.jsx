@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { RECENT_USERS } from "../data/dashboardData.js";
+import { RECENT_USERS } from "./dashboardData.js";
 
 export default function RecentUsers() {
   const navigate = useNavigate();

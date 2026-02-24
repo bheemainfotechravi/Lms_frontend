@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
-import axiosInstance from "../../../utils/axiosinstance.js";
+import { useAuth } from "../../context/AuthContext";
+import axiosInstance from "../../utils/axiosinstance.js";
 
 
 const NAV_TABS = [

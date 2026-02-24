@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PENDING_COURSES } from "../data/dashboardData";
+import { PENDING_COURSES } from "./dashboardData";
 
  function PendingCourses() {
   const navigate = useNavigate();
