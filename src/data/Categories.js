@@ -7,7 +7,6 @@ import {
   Smartphone,
   TrendingUp,
   Zap,
-  ArrowRight,
 } from "lucide-react";
 
 const CATEGORIES = [

@@ -1,32 +1,99 @@
-import { useState, useEffect } from "react";
+import React, {  useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
   Clock,
   ScrollText,
-  Check,
+  BadgeCheck,
+  Users,
 } from "lucide-react";
+
 import Footer from "./Footer";
-import CTA from "./CTA";
-import Testimonials from "./Testimonials";
-import Whyus from "./Whyus";
-import Trustedby from "./Trustedby";
 import Courses from "./Courses";
+import Categories from "./Categories";
+import CareerReadyPlan from "./CareerReadyPlan";
+import SkillPills from "./SkillPills";
+import CareerCTASection from "./CareerCTASection";
+import IBM from '../assets/home/IBM.jpg'
+import Google from '../assets/home/Google.webp'
+import MIT from "../assets/home/MIT.png"
+import MS from "../assets/home/Ms.avif"
+
+
+const NAV_LINKS = [
+  { name: "Browse", id: "categories" },
+  { name: "Courses", id: "courses" },
+  { name: "Career Ready", id: "career" },
+  { name: "Skills", id: "skills" },
+  { name: "For Business", id: "business" },
+];
+
+/* ── Segmented Toggle (like screenshot) ── */
+const HeroToggle = ({ active, setActive }) => {
+  const tabs = [
+    { key: "cert", label: "Learn & Get Certificates" },
+    { key: "career", label: "Build Your Career" },
+    { key: "earn", label: "Earn on LearnX" },
+  ];
+
+  return (
+    <div className="w-full flex justify-center">
+      <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full p-1 shadow-sm inline-flex gap-1">
+        {tabs.map((t) => {
+          const isActive = active === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setActive(t.key)}
+              className={[
+                "px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200",
+                isActive
+                  ? "bg-[#d68d06] text-white shadow"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-[#f2e9d8]",
+              ].join(" ")}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 /* ── Main Home ── */
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [scrolled, setScrolled] = useState(false);
+  const [activeTab, setActiveTab] = useState("cert");
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+
+  const heroCopy = {
+    cert: {
+      title: "Free Online Courses With Certificates & Diplomas",
+      subtitle: "Learn from industry experts. Get certified. Study at your own pace.",
+      placeholder: "What do you want to learn today?",
+      cta: "Search",
+    },
+    career: {
+      title: "Build Your Career With Job-Ready Skills",
+      subtitle: "Guided learning paths, projects, and career support for faster outcomes.",
+      placeholder: "Search a career path, role, or skill…",
+      cta: "Explore",
+    },
+    earn: {
+      title: "Earn on LearnX As An Instructor",
+      subtitle: "Publish courses, grow your audience, and monetize your expertise.",
+      placeholder: "Search how to become an instructor…",
+      cta: "Learn More",
+    },
+  };
+
+  const current = heroCopy[activeTab];
 
   return (
-    <div className="bg-gray-50 min-h-screen overflow-x-hidden">
-
+    <div
+      className=" min-h-screen overflow-x-hidden"
+    >
       {/* ── KEYFRAMES (minimal — only what Tailwind can't do) ── */}
       <style>{`
         @keyframes float  { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-12px)} }
@@ -38,32 +105,45 @@ export default function Home() {
       `}</style>
 
       {/* ════════════ NAVBAR ════════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 px-[5%] transition-all duration-300
-        ${scrolled ? "bg-white/20 backdrop-blur-xl border-b border-gray-200 shadow-sm" : "bg-gray-50/80 backdrop-blur-xl border-b border-transparent"}`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 px-[5%] transition-all duration-300 bg-white/10  backdrop-blur-xl`}
+      >
         <div className="max-w-7xl mx-auto h-[70px] flex items-center relative">
-
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-black text-lg">L</div>
-            <span className="text-xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text ">LearnX</span>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-slate-900 font-black text-lg">
+              L
+            </div>
+            <span className="text-xl font-black ">
+              LearnX
+            </span>
           </div>
 
-          {/* Center links */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8">
-            {["Explore", "Courses", "Instructors", "For Business", "Pricing"].map(l => (
-              <a key={l} className="text-gray-500 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer">{l}</a>
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.name}
+                type="button"
+                onClick={() => handleScroll(link.id)}
+                className="relative text-slate-900 text-md font-semibold transition-colors hover:text-[#d68d06]
+        after:absolute after:left-0 after:-bottom-1 after:h-[2px]
+        after:w-0 after:bg-[#d68d06] after:transition-all
+        hover:after:w-full"
+              >
+                {link.name}
+              </button>
             ))}
           </div>
 
           {/* Auth buttons */}
           <div className="ml-auto flex items-center gap-3">
             <Link to="/login">
-              <button className="border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
+              <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
                 Log In
               </button>
             </Link>
             <Link to="/register">
-              <button className="bg-gradient-to-r from-primary to-secondary text-gray-700 border-gray-200 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
+              <button className="border border-[#d68d06] text-gray-700 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
                 Register
               </button>
             </Link>
@@ -71,147 +151,126 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ════════════ HERO ════════════ */}
-      <section className="min-h-screen pt-32 pb-20 px-[5%] bg-gradient-to-t from-red-200 to-slate-100 flex items-center relative overflow-hidden">
+      {/* ════════════ HERO (LMS style like screenshot) ════════════ */}
+      <section className="pt-28 pb-0 px-[5%] bg-[#F0D5A1]  border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          {/* Toggle */}
+          <HeroToggle active={activeTab} setActive={setActiveTab} />
 
-        {/* Blobs */}
-        <div className="absolute top-[8%] right-[6%] w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)" }} />
-        <div className="absolute bottom-[8%] left-[2%] w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(6,182,212,0.09) 0%, transparent 70%)" }} />
-        <div className="absolute inset-0 pointer-events-none opacity-50"
-          style={{ backgroundImage: "radial-gradient(circle, #CBD5E1 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
-
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-
-          {/* Left text */}
-          <div>
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2
-                bg-white/10 backdrop-blur-xl
-                border border-white/20
-                rounded-full px-4 py-1.5 mb-7
-                shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-primary text-xs font-bold">
-                India's #1 EdTech Platform
-              </span>
-            </div>
-
-            <h1 className="text-5xl lg:text-6xl font-black leading-[1.07] tracking-tight mb-6 text-gray-900">
-              Learn Skills<br />
-              <span className=" bg-clip-text  text-gray-900">That Matter.</span><br />
-              Land Jobs<br />
-              <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">That Pay.</span>
+          {/* Title */}
+          <div className="text-center mt-10">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-gray-900">
+              {current.title}
             </h1>
-
-            <p className="text-slate-900 text-lg leading-relaxed mb-9 max-w-md">
-              Master in-demand skills with world-class courses from industry experts. Get certified, get hired — at your pace.
+            <p className="mt-4 text-slate-600 text-base md:text-lg max-w-2xl mx-auto">
+              {current.subtitle}
             </p>
+          </div>
 
-            {/* Search */}
-            <div className="flex bg-white border border-gray-200 rounded-2xl overflow-hidden mb-6 shadow-md">
-              <span className="px-4 py-4 shrink-0 text-gray-500">
+          {/* Search */}
+          <div className="mt-8 max-w-3xl mx-auto">
+            <div className="flex items-center bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+              <span className="px-4 py-4 text-gray-500">
                 <Search className="w-5 h-5" />
               </span>
               <input
                 type="text"
-                placeholder="Search for a course, skill, or topic..."
+                placeholder={current.placeholder}
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 border-none outline-none text-gray-900 text-sm bg-transparent py-4 min-w-0"
               />
-              <button className="bg-gradient-to-r from-primary to-secondary text-white px-7 text-sm font-bold shrink-0">
-                Search
+              <button className="bg-[#d68d06] hover:bg-[#b77a08] text-white px-7 py-4 text-sm font-bold shrink-0">
+                {current.cta}
               </button>
             </div>
-
-
           </div>
 
-          {/* Right — floating card */}
-          <div className="flex justify-center">
-            <div className="relative w-full max-w-sm">
+          {/* Logos */}
+          <div className="mt-10 text-center">
+            <p className="text-xs font-bold tracking-widest uppercase text-gray-500 mb-5">
+              Learn From World Leading Experts
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-700 font-semibold">
+              <img src={Google} alt="google" className="w-18 h-16 rounded-2xl" />
+              <img src={MS} alt="microsoft" className="w-18 h-16 rounded-2xl"/>
+              <img src={IBM} alt="ibm" className="w-18 h-16 rounded-2xl"/>
+              <img src={MIT} alt="mit" className="w-18 h-16 rounded-2xl"/>
 
-              {/* Main card */}
-              <div className="bg-white rounded-3xl p-7 border border-violet-100 anim-float"
-                style={{ boxShadow: "0 24px 80px rgba(124,58,237,0.14), 0 4px 20px rgba(0,0,0,0.07)" }}>
+            </div>
+          </div>
+        </div>
 
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl shrink-0">⚡</div>
-                  <div>
-                    <p className="text-gray-900 font-black text-sm">React Bootcamp 2025</p>
-                    <p className="text-gray-400 text-xs mt-0.5">48h · 124 lectures · Certificate</p>
-                  </div>
+        {/* Stats strip */}
+        <div className="mt-12 bg-[#e9b75c] rounded-2xl my-2 ">
+          <div className="max-w-7xl mx-auto px-[5%] py-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <ScrollText className="w-5 h-5" />
                 </div>
-
-                <div className="bg-gray-50 rounded-xl p-3.5 mb-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-700 text-xs font-semibold">Your Progress</span>
-                    <span className="text-primary text-xs font-black">68%</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-2">
-                    <div className="w-[68%] h-2 rounded-full bg-gradient-to-r from-primary to-secondary" />
-                  </div>
-                </div>
-
-                {[
-                  { name: "Hooks & State Management", done: true },
-                  { name: "React Router v6", done: true },
-                  { name: "REST API Integration", done: false },
-                ].map((lesson, i) => (
-                  <div key={i} className="flex items-center gap-2.5 py-2.5 border-t border-gray-50">
-                    <div className={`w-5 h-5 rounded-full shrink-0 flex items-center justify-center text-xs font-bold border ${lesson.done ? "bg-emerald-50 border-emerald-400 text-emerald-600" : "bg-gray-50 border-gray-200"}`}>
-                      {lesson.done ? <Check className="w-3.5 h-3.5" /> : null}
-                    </div>
-                    <span className={`text-xs ${lesson.done ? "text-gray-400 line-through" : "text-gray-700 font-semibold"}`}>
-                      {lesson.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Badge: Certificate */}
-              <div className="absolute -top-5 -right-5 bg-white rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-violet-100 anim-float2"
-                style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.11)" }}>
-                <span className="text-xl">🏆</span>
                 <div>
-                  <p className="text-gray-900 text-xs font-black">Certificate Earned!</p>
-                  <p className="text-red-400 text-xs font-semibold">React Developer</p>
+                  <p className="text-sm font-black">Rated Excellent</p>
+                  <p className="text-xs text-slate-600">Trusted by learners</p>
                 </div>
               </div>
 
-              {/* Badge: Students */}
-              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl px-4 py-3 flex items-center gap-2.5 border border-violet-100 anim-float"
-                style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.11)" }}>
-                <span className="text-xl">👩‍💻</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Users className="w-5 h-5" />
+                </div>
                 <div>
-                  <p className="text-gray-900 text-xs font-black">50,000+ Students</p>
-                  <p className="text-primary text-xs font-semibold">Actively Learning</p>
+                  <p className="text-sm font-black">50M+ Learners</p>
+                  <p className="text-xs text-slate-600">Worldwide community</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <BadgeCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-black">15M+ Graduates</p>
+                  <p className="text-xs text-slate-600">Certified success</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-black">190+ Countries</p>
+                  <p className="text-xs text-slate-600">Global reach</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <section id="categories">
+          <Categories />
+        </section>
+
+        <section id="courses">
+          <Courses />
+        </section>
+
+        <section id="career">
+          <CareerReadyPlan />
+        </section>
+
+        <section id="skills">
+          <SkillPills />
+        </section>
+
+        <section id="business">
+          <CareerCTASection />
+        </section>
       </section>
 
-      {/* ════════════ TRUSTED BY ════════════ */}
-      <Trustedby/>
-
-      {/* ════════════ COURSES ════════════ */}
-   <Courses/>
-
-      {/* ════════════ WHY US ════════════ */}
- <Whyus/>
-
-      {/* ════════════ TESTIMONIALS ════════════ */}
-     <Testimonials/>
-
-      {/* ════════════ CTA ════════════ */}
-     <CTA/>
-
       {/* ════════════ FOOTER ════════════ */}
-     <Footer/>
+      <Footer />
     </div>
   );
 }
