@@ -59,9 +59,8 @@ const Navbar = () => {
 
         {/* Avatar */}
         <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-extrabold text-sm cursor-pointer">
-          A
+          Admin
         </div>
-
       </div>
     </div>
   );

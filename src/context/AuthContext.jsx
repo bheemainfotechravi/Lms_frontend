@@ -12,28 +12,26 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
   // 🔄 Check auth on refresh
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     try {
-  //       const res = await axiosInstance.get("/");
-  //       setUser(res.data.user);
-  //     } catch (err) {
-  //       setUser(null);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axiosInstance.get("/");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  //   checkAuth();
-  // }, []);
+    checkAuth();
+  }, []);
 
   const login = (userData) => {
+    if(userData){
+      setIsLoading(false)
+    }
     setUser(userData);
-  };
-
-  const logout = async () => {
-    await axiosInstance.post("/auth/logout");
-    setUser(null);
   };
 
   return (
