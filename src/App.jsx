@@ -8,13 +8,13 @@ import CompanyRoutes from "./routes/CompanyRoutes";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import AdminLogin from "./pages/admin/AdminLogin";
 import Unauthorized from "./pages/admin/Unauthorized";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import UserDashboard from "./pages/user/UserDashboard";
 import ProtectedRoute from "./routes/guards/ProtectedRoute";
 import Admindashboard from "./pages/admin/AdminDashboard";
+import AdminLogin from "./pages/admin/Adminlogin";
 
 export default function App() {
   return (
@@ -28,8 +28,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
 
           {/* user */}
-          <Route path="/user/dashboard" element={<UserDashboard />} />
-          <Route path="/admin/dashboard" element={<ProtectedRoute><Admindashboard /></ProtectedRoute>} />
+          <Route path="/user/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/admin/dashboard" element={<Admindashboard />} />
 
           {/* Public */}
           <Route path="/admin/login" element={<AdminLogin />} />
