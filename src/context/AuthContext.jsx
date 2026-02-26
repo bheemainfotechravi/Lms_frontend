@@ -5,17 +5,15 @@ import axiosInstance from "../utils/axiosinstance";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [adminToken, setAdminToken] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  const isAdmin =
+    user?.role === "admin" || user?.role === "superadmin";
 
-<<<<<<< HEAD
   // 🔄 Check auth on refresh
-=======
- 
->>>>>>> fbb914d66952ba6ba0b45e5b1aac0e54aa4c686f
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -31,11 +29,16 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = (userData) => {
-    if(userData){
-      setIsLoading(false)
-    }
+  // 🔥 UPDATED LOGIN
+  const login = (userData, token) => {
     setUser(userData);
+    setAdminToken(token); // store token
+    setIsLoading(false);
+  };
+
+  const logout = () => {
+    setUser(null);
+    setAdminToken(null);
   };
 
   return (
@@ -46,7 +49,8 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         isLoading,
         login,
-        
+        logout,
+        adminToken,
       }}
     >
       {children}

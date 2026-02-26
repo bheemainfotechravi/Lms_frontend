@@ -30,7 +30,7 @@ export default function App() {
 
           {/* Roles */}
           <Route path="/user/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
-          <Route path="/admin/dashboard" element={<Admindashboard />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute><Admindashboard /></ProtectedRoute>} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
