@@ -24,43 +24,47 @@ export default function AdminLogin() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!formData.email || !formData.password)
-      return setError("Please fill in all fields.");
+  if (!formData.email || !formData.password)
+    return setError("Please fill in all fields.");
 
-    if (loginAttempts >= 5)
-      return setError("Too many failed attempts. Try later.");
+  if (loginAttempts >= 5)
+    return setError("Too many failed attempts. Try later.");
 
-    try {
-      setIsLoading(true);
+  try {
+    setIsLoading(true);
 
-      const res = await axiosInstance.post("/admin/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+    const res = await axiosInstance.post("/admin/login", {
+      email: formData.email,
+      password: formData.password,
+    });
 
-      const user = res.data.user;
-      console.log(user)
+    const user = res.data.admin;
+    const token = res.data.token; // 🔥 get token
 
-      login(user);
-      navigate("/admin/dashboard", { replace: true });
+    console.log("User:", user);
+    console.log("Token:", token);
 
-    } catch (err) {
-      console.log(err)
-      setLoginAttempts((prev) => prev + 1);
+    login(user, token); // 🔥 pass token to context
 
-      if (err.response?.status === 401) setError("Invalid email or password.");
-      else if (err.response?.status === 403) setError("Admin privileges required.");
-      else if (err.response?.status === 429) setError("Too many requests. Please wait.");
-      else setError(err.message || "Login failed.");
+    navigate("/admin/dashboard", { replace: true });
 
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } catch (err) {
+    setLoginAttempts((prev) => prev + 1);
+
+    if (err.response?.status === 401)
+      setError("Invalid email or password.");
+    else if (err.response?.status === 403)
+      setError("Admin privileges required.");
+    else
+      setError(err.message || "Login failed.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className=" min-h-screen bg-gray-50 flex items-center justify-center p-4">

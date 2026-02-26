@@ -4,11 +4,7 @@ import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
 
 export default function CategoryPage() {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Ai/Ml" },
-    { id: 2, name: "Data Analysis" },
-    { id: 3, name: "Data Science" },
-  ]);
+  const [categories, setCategories] = useState();
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -21,12 +17,41 @@ export default function CategoryPage() {
 
   const showCategories = async () => {
     try {
-      const res = await axiosInstance.get("/admin/category/add");
+      const res = await axiosInstance.get("/category/get");
       if (Array.isArray(res.data?.categories)) {
         setCategories(res.data.categories);
       }
     } catch (error) {
       console.error("Failed to load categories", error);
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this category?"
+      );
+
+      if (!confirmDelete) return;
+
+      const res = await axiosInstance.delete(`/category/${id}`, {
+        withCredentials: true, // ensures cookie is sent
+      });
+      console.log(res)
+
+      // Remove from UI only after backend success
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+
+    } catch (error) {
+      console.error("Failed to delete category", error);
+
+      if (error.response?.status === 401) {
+        alert("Session expired. Please login again.");
+      } else if (error.response?.status === 403) {
+        alert("Admin privileges required.");
+      } else {
+        alert("Failed to delete category.");
+      }
     }
   };
 
@@ -61,7 +86,7 @@ export default function CategoryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {categories.map((cat) => (
+              {categories?.map((cat) => (
                 <tr key={cat.id} className="hover:bg-slate-50">
                   <td className="p-3 text-sm text-slate-600">{cat.id}</td>
                   <td className="p-3 text-sm text-slate-600">{cat.name}</td>
@@ -70,9 +95,7 @@ export default function CategoryPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() =>
-                        setCategories(categories.filter((c) => c.id !== cat.id))
-                      }
+                      onClick={() => deleteCategory(cat.id)}
                       className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
                     >
                       Delete
