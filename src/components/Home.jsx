@@ -192,7 +192,7 @@ export default function Home() {
               Learn From World Leading Experts
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-700 font-semibold">
-              <img src={Google} alt="google" className="w-18 h-16 rounded-2xl" />
+              <img src={Google} alt="google" className="w-24 h-16 rounded-2xl" />
               <img src={MS} alt="microsoft" className="w-18 h-16 rounded-2xl"/>
               <img src={IBM} alt="ibm" className="w-18 h-16 rounded-2xl"/>
               <img src={MIT} alt="mit" className="w-18 h-16 rounded-2xl"/>

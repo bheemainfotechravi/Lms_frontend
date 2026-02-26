@@ -11,7 +11,11 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
+<<<<<<< HEAD
+  // 🔄 Check auth on refresh
+=======
  
+>>>>>>> fbb914d66952ba6ba0b45e5b1aac0e54aa4c686f
   useEffect(() => {
     const checkAuth = async () => {
       try {
