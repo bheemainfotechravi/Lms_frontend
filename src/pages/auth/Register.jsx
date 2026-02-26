@@ -2,7 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axiosInstance from "../../utils/axiosinstance";
-
+import {
+  Rocket,
+  AlertTriangle,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+} from "lucide-react";
+import signupImg from '../../assets/login-images/singup.svg'
 export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -41,6 +49,8 @@ export default function Register() {
     if (!formData.password) return "Password is required.";
     if (!passwordRegex.test(formData.password))
       return "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+    if (formData.password !== formData.confirmPassword)
+      return "Passwords do not match.";
 
     return null;
   };
@@ -55,7 +65,7 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      const res = await axiosInstance.post("/user/signup", {
+      await axiosInstance.post("/user/signup", {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
@@ -63,53 +73,88 @@ export default function Register() {
         password: formData.password,
       });
 
-      console.log(res.data);
-
-      navigate("/user");
+      navigate("/login");
     } catch (err) {
-      console.log(err);
       setError("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const passwordStrength = () => {
-    const p = formData.password;
-    if (!p) return null;
-    if (p.length < 6)
-      return { label: "Weak", color: "bg-red-500", text: "text-red-500", width: "w-1/4" };
-    if (p.length < 10)
-      return { label: "Fair", color: "bg-amber-400", text: "text-amber-500", width: "w-1/2" };
-    if (/[A-Z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p))
-      return { label: "Strong", color: "bg-emerald-500", text: "text-emerald-500", width: "w-full" };
-    return { label: "Good", color: "bg-cyan-500", text: "text-cyan-500", width: "w-3/4" };
-  };
-
-  const strength = passwordStrength();
-
   const inputClass =
     "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
 
-  return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-violet-50 to-cyan-50 px-6"
-    >
+ return (
+  <div className="min-h-screen flex bg-[#F0D5A1]">
+
+    {/* ================= LEFT IMAGE SECTION ================= */}
+    <div className="hidden lg:flex flex-1 relative items-center justify-center p-10 overflow-hidden">
+
+      <style>{`
+        @keyframes floatY {
+          0%,100% { transform: translateY(0); }
+          50% { transform: translateY(-14px); }
+        }
+        .float-y {
+          animation: floatY 4.5s ease-in-out infinite;
+        }
+      `}</style>
+
+      {/* Glow Background */}
+      <div
+        className="absolute -top-16 -left-16 w-80 h-80 rounded-full opacity-40 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(124,58,237,0.35) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute bottom-[-80px] right-10 w-72 h-72 rounded-full opacity-35 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(6,182,212,0.35) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Floating Image */}
+      <div className="relative float-y">
+        <div
+          className="absolute -inset-6 rounded-[2rem] blur-2xl opacity-40"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(124,58,237,0.35), rgba(6,182,212,0.35))",
+          }}
+        />
+        <img
+          src={signupImg}
+          alt="Signup Illustration"
+          className="relative rounded-3xl shadow-2xl w-[420px] h-[520px] object-contain"
+        />
+      </div>
+    </div>
+
+    {/* ================= RIGHT FORM SECTION ================= */}
+    <div className="flex-1 flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
-        <h1 className="text-2xl font-black text-gray-900 mb-2">
-          Create your account 🚀
+
+        <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
+          Create your account
+          <Rocket className="w-5 h-5 text-violet-600" />
         </h1>
+
         <p className="text-slate-500 text-sm mb-6">
           Join LearnX and start learning today.
         </p>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">
-            ⚠️ {error}
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">
+            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
           <input
             type="text"
             name="first_name"
@@ -146,46 +191,55 @@ export default function Register() {
             className={inputClass}
           />
 
-          <div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`${inputClass} pr-12`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
-
-            {strength && (
-              <div className="mt-2">
-                <div className="bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all ${strength.color} ${strength.width}`}
-                  />
-                </div>
-                <p className={`text-xs font-semibold mt-1 ${strength.text}`}>
-                  {strength.label} password
-                </p>
-              </div>
-            )}
+          {/* Password */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`${inputClass} pr-12`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
           </div>
+
+          <input
+            type={showPassword ? "text" : "password"}
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className={inputClass}
+          />
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-70"
+            className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-70 flex items-center justify-center gap-2"
           >
-            {isLoading ? "Creating account..." : "Create Account →"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              <>
+                Create Account <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
+
         </form>
 
         <p className="text-center text-gray-500 text-sm mt-5">
@@ -194,7 +248,10 @@ export default function Register() {
             Sign in →
           </Link>
         </p>
+
       </div>
     </div>
-  );
+
+  </div>
+);
 }
