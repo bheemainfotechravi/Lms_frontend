@@ -1,18 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
- import WelcomeBanner from "../../components/Admin-components/WelcomeBenner"; 
- import RevenueChart from "../../components/Admin-components/Revenuechart"; 
- import ActivityFeed from "../../components/Admin-components/ActivityFeed"; 
- import RecentUsers from "../../components/Admin-components/RecentUsers"; 
- import PendingCourses from "../../components/Admin-components/PendingCourses"; 
- import Sidebar from "../../components/Admin-components/Sidebar";
-  import StatsGrid from "../../components/Admin-components/StateGrids";
+import WelcomeBanner from "../../components/Admin-components/WelcomeBenner";
+import RevenueChart from "../../components/Admin-components/Revenuechart";
+import ActivityFeed from "../../components/Admin-components/ActivityFeed";
+import RecentUsers from "../../components/Admin-components/RecentUsers";
+import PendingCourses from "../../components/Admin-components/PendingCourses";
+import StatsGrid from "../../components/Admin-components/StateGrids";
+
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false); // controls mounting
   const [isLoading, setIsLoading] = useState(true);
-  const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 800);
@@ -26,25 +24,10 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex font-sans text-slate-900">
-      {/* Sidebar mounts only when sidebarOpen is true */}
-      {sidebarOpen && <Sidebar />}
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
+      <TopNavbar user={user} today={today} />
 
-      {/* Main content */}
-      <main
-        className={`flex-1 transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-0"
-        } p-8`}
-      >
-        <TopNavbar
-          user={user}
-          today={today}
-          notifOpen={notifOpen}
-          setNotifOpen={setNotifOpen}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen} // pass toggle function
-        />
-
+      <main className="p-8">
         {isLoading ? (
           <div className="grid grid-cols-4 gap-6 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
