@@ -3,7 +3,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://192.168.1.13:5000/api",
-  withCredentials: true, // ✅ Required for httpOnly cookies
+  withCredentials: true, // Required for httpOnly cookies
+  timeout: 10000, // 10s timeout protection
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,8 +15,10 @@ const axiosInstance = axios.create({
 ================================= */
 axiosInstance.interceptors.request.use(
   (config) => {
+    // If later you move to Bearer tokens, this is ready:
+    // const token = localStorage.getItem("token");
+    // if (token) config.headers.Authorization = `Bearer ${token}`;
 
-    // Cookies are automatically sent because of withCredentials: true
     return config;
   },
   (error) => Promise.reject(error)
@@ -29,16 +32,13 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    // 🔐 If session expired or unauthorized
+    // 🔐 Auto logout if unauthorized
     if (status === 401) {
-      console.log("Session expired. Redirecting to admin login...");
-
-      // Optional auto redirect
-      if (window.location.pathname.startsWith("/admin")) {
-        // window.location.href = "/admin/login";
-      }
+      console.warn("Session expired. Redirecting to login...");
+      window.location.href = "/login";
     }
 
+    // 🧾 Cleaner logging
     console.error("API Error:", {
       url: error.config?.url,
       method: error.config?.method,
