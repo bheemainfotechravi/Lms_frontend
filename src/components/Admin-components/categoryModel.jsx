@@ -1,14 +1,20 @@
 // src/pages/admin/components/CategoryModal.jsx
 import { useState } from "react";
+import axiosInstance from "../../utils/axiosinstance";
 
 export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
-  const [name, setName] = useState("");
+  const [data, setData] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    if (name.trim() === "") return;
-    onAddCategory({ name, id: Date.now() }); // simple id, can replace with DB id
-    setName("");
+    if (data.trim() === "") return;
+
+    // const res = await axiosInstance.post("/admin/category/add", {
+    //     name: data.name,
+    //   });
+
+    onAddCategory({ data, id: Date.now() });
+    setData("");
     onClose();
   };
 
@@ -21,8 +27,8 @@ export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={data}
+            onChange={(e) => setData(e.target.value)}
             placeholder="Category Name"
             className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
           />

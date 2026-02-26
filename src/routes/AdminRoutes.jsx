@@ -4,10 +4,10 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 
 export default function AdminRoutes() {
   return (
-    <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+    // <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
       <Routes>
-        <Route path="/" element={<AdminDashboard />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
       </Routes>
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }
