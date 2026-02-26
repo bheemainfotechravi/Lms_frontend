@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { FiArrowRight } from "react-icons/fi";
 import { RECENT_USERS } from "./dashboardData.js";
 
 export default function RecentUsers() {
@@ -10,36 +11,33 @@ export default function RecentUsers() {
         <h3 className="text-lg font-bold">Recent Users</h3>
         <button
           onClick={() => navigate("/admin/users")}
-          className="text-xs font-bold text-violet-600 hover:underline"
+          className="text-xs font-bold text-violet-600 hover:underline inline-flex items-center gap-1"
         >
-          View All →
+          View All
+          <FiArrowRight />
         </button>
       </div>
 
       <div className="space-y-4">
-        {RECENT_USERS.map((u, i) => (
+        {RECENT_USERS.map((user, i) => (
           <div
             key={i}
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-center gap-3">
               <div
-                className={`w-10 h-10 rounded-full ${u.color} text-white flex items-center justify-center font-bold text-xs`}
+                className={`w-10 h-10 rounded-full ${user.color} text-white flex items-center justify-center font-bold text-xs`}
               >
-                {u.avatar}
+                {user.avatar}
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-700">
-                  {u.name}
-                </p>
-                <p className="text-[11px] text-slate-400">
-                  {u.email}
-                </p>
+                <p className="text-sm font-bold text-slate-700">{user.name}</p>
+                <p className="text-[11px] text-slate-400">{user.email}</p>
               </div>
             </div>
 
             <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
-              {u.joined}
+              {user.joined}
             </span>
           </div>
         ))}
