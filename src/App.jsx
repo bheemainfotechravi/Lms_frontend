@@ -15,6 +15,7 @@ import UserDashboard from "./pages/user/UserDashboard";
 import ProtectedRoute from "./routes/guards/ProtectedRoute";
 import Admindashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/Adminlogin";
+import CategoryPage from "./pages/admin/Categorypage";
 
 export default function App() {
   return (
@@ -27,19 +28,20 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
 
-          {/* user */}
+          {/* Roles */}
           <Route path="/user/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
           <Route path="/admin/dashboard" element={<Admindashboard />} />
 
-          {/* Public */}
+          {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/category" element={<CategoryPage />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/* Role Based Route Groups */}
-          <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/user/*" element={<UserRoutes />} />
-          <Route path="/teacher/*" element={<TeacherRoutes />} />
-          <Route path="/company/*" element={<CompanyRoutes />} />
+          <Route path="/admin" element={<AdminRoutes />} />
+          <Route path="/user" element={<UserRoutes />} />
+          <Route path="/teacher" element={<TeacherRoutes />} />
+          <Route path="/company" element={<CompanyRoutes />} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
