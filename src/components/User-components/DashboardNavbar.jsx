@@ -33,19 +33,22 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
   }, []);
 
   const handleLogout = async () => {
-  try {
-    await axiosInstance.post("/user/logout");
+    try {
+      await axiosInstance.post("/user/logout");
 
-    navigate("/login", { replace: true });
+      navigate("/login", { replace: true });
 
-  } catch (error) {
-    console.error("Logout failed", error);
-  }
-};
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   return (
-    <header className="bg-white border-b border-gray-100 sticky top-0 z-50"
-      style={{ boxShadow: "0 1px 12px rgba(0,0,0,0.05)" }}>
+    <header className="sticky top-0 z-50
+                   bg-gradient-to-r from-white/5 to-white/0
+                   backdrop-blur-2xl
+                   border-b border-white/20
+                   shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
 
       {/* ── Top bar ── */}
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
@@ -97,7 +100,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                 {user?.name?.charAt(0) || "U"}
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-gray-900 text-xs font-bold leading-none">{user?.name?.split(" ")[0] || "Student"}</p>
+                <p className="text-gray-900 text-xs font-bold leading-none">{user?.first_name?.split(" ")[0] || "Student"}</p>
                 <p className="text-gray-400 text-xs mt-0.5">Student</p>
               </div>
               <span className="text-gray-400 text-xs ml-1">{dropdownOpen ? "▲" : "▼"}</span>
@@ -108,7 +111,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
               <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-gray-100 shadow-xl z-50 overflow-hidden">
                 {/* User info header */}
                 <div className="px-4 py-3 border-b border-gray-50">
-                  <p className="text-gray-900 text-sm font-bold">{user?.name || "Student"}</p>
+                  <p className="text-gray-900 text-sm font-bold">{user?.first_name || "Student"}</p>
                   <p className="text-gray-400 text-xs truncate">{user?.email || ""}</p>
                 </div>
 

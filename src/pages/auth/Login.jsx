@@ -38,6 +38,10 @@ export default function Login() {
         email: formData.email,
         password: formData.password,
       });
+
+      if(res.data.success){
+        login(res.data.user)
+      }
       
       console.log(res.data, res.token)
       navigate("/user/dashboard", { replace: true });
