@@ -42,7 +42,7 @@ export default function AdminLogin() {
         password: formData.password,
       });
 
-      const user = res.data;
+      const user = res.data.user;
       console.log(user)
 
       login(user);

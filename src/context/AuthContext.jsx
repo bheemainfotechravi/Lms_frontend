@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
- 
+  // 🔄 Check auth on refresh
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -32,11 +32,6 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false)
     }
     setUser(userData);
-  };
-
-  const logout = async () => {
-    await axiosInstance.post("/auth/logout");
-    setUser(null);
   };
 
   return (
