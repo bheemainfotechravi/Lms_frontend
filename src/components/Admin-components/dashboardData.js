@@ -9,9 +9,8 @@ import {
   FiUserX,
 } from "react-icons/fi";
 export const NAV_ITEMS = [
-  { icon: FiFolder, label: "Category", path: "/admin/category" },
-  { icon: FiFolder, label: "Add", path: "/" },
-  { icon: FiFolder, label: "Remove", path: "/admin" },
+  { icon: FiFolder, label: "Add Category", path: "/admin/category" },
+  { icon: FiFolder, label: "Add Courses", path: "/admin/courses" },
 ];
 
 export const STATS = [
