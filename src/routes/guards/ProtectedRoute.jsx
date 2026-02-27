@@ -5,24 +5,20 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // 1️⃣ Still checking auth
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  const role = user?.role
 
-  // 2️⃣ Not logged in
   if (!isAuthenticated) {
     return (
       <Navigate
-        to={`/${role}/login`}
+        to="/admin/login"
         state={{ from: location }}
         replace
       />
     );
   }
 
-  // 3️⃣ Role restriction (if provided)
   if (
     allowedRoles &&
     allowedRoles.length > 0 &&
@@ -31,6 +27,5 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // 4️⃣ Allowed
   return children;
 }
