@@ -15,7 +15,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
-      navigate("/admin/dashboard", { replace: true });
+      // navigate("/admin/dashboard", { replace: true });
     }
   }, [isAuthenticated, isAdmin, navigate]);
 
@@ -43,12 +43,18 @@ export default function AdminLogin() {
     });
 
     const user = res.data.admin;
-    const token = res.data.token; // 🔥 get token
+    const token = res.data.token;
+
+    // ✅ Store token in localStorage
+    localStorage.setItem("adminToken", token);
+
+    // (Optional but recommended) store user too
+    localStorage.setItem("adminUser", JSON.stringify(user));
 
     console.log("User:", user);
     console.log("Token:", token);
 
-    login(user, token); // 🔥 pass token to context
+    login(user, token);
 
     navigate("/admin/dashboard", { replace: true });
 

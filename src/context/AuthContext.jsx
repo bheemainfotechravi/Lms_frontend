@@ -5,40 +5,47 @@ import axiosInstance from "../utils/axiosinstance";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [adminToken, setAdminToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [adminToken, setAdminToken] = useState(
+    localStorage.getItem("adminToken") || null
+  );
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("adminUser")) || null
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user;
   const isAdmin =
     user?.role === "admin" || user?.role === "superadmin";
 
-  // 🔄 Check auth on refresh
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axiosInstance.get("/");
-        setUser(res.data.user);
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  // 🔥 UPDATED LOGIN
+  /* ===============================0
+     🔐 LOGIN
+  ================================= */
   const login = (userData, token) => {
+    // Save to state
     setUser(userData);
-    setAdminToken(token); // store token
-    setIsLoading(false);
+    setAdminToken(token);
+
+    // Save to localStorage
+    localStorage.setItem("adminToken", token);
+    localStorage.setItem("admin", JSON.stringify(userData));
+
+    // Attach token globally
+    axiosInstance.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${token}`;
   };
 
+  /* ===============================
+     🚪 LOGOUT
+  ================================= */
   const logout = () => {
     setUser(null);
     setAdminToken(null);
+
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("admin");
+
+    delete axiosInstance.defaults.headers.common["Authorization"];
   };
 
   return (

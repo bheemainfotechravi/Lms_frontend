@@ -3,7 +3,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://192.168.1.13:5000/api",
-  withCredentials: true, // ✅ Required for httpOnly cookies
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -15,7 +15,14 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
 
-    // Cookies are automatically sent because of withCredentials: true
+    // ✅ Get token from localStorage
+    const token = localStorage.getItem("adminToken");
+
+    // ✅ Attach Authorization header if token exists
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -29,13 +36,16 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    // 🔐 If session expired or unauthorized
     if (status === 401) {
-      console.log("Session expired. Redirecting to admin login...");
+      console.log("Session expired. Logging out...");
 
-      // Optional auto redirect
+      // ✅ Remove stored auth data
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+
+      // ✅ Redirect to login (only if in admin route)
       if (window.location.pathname.startsWith("/admin")) {
-        // window.location.href = "/admin/login";
+        window.location.href = "/admin/login";
       }
     }
 

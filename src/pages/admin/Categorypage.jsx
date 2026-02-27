@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import CategoryModal from "../../components/Admin-components/CategoryModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
+import UpdateCategoryModal from "../../components/Admin-components/UpdateCategoryModal";
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState();
   const [modalOpen, setModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     showCategories();
-  }, []);
+
+  }, [modalOpen,updateModalOpen]);
 
   const handleAddCategory = (newCategory) => {
     setCategories((prev) => [...prev, newCategory]);
@@ -34,7 +38,7 @@ export default function CategoryPage() {
 
       if (!confirmDelete) return;
 
-      const res = await axiosInstance.delete(`/category/${id}`, {
+      const res = await axiosInstance.delete(`/category/delete/${id}`, {
         withCredentials: true, // ensures cookie is sent
       });
       console.log(res)
@@ -52,6 +56,29 @@ export default function CategoryPage() {
       } else {
         alert("Failed to delete category.");
       }
+    }
+  };
+
+  const updateCategory = async (id, name) => {
+    try {
+      const res = await axiosInstance.patch(
+        `/category/update/${id}`,
+        { name }
+      );
+
+      // Update UI after success
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.id === id ? res.data.category : cat
+        )
+      );
+      alert("Update successfully");
+      setUpdateModalOpen(false);
+      setSelectedCategory(null);
+
+    } catch (error) {
+      console.error("Failed to update category", error);
+      alert("Update failed");
     }
   };
 
@@ -91,7 +118,13 @@ export default function CategoryPage() {
                   <td className="p-3 text-sm text-slate-600">{cat.id}</td>
                   <td className="p-3 text-sm text-slate-600">{cat.name}</td>
                   <td className="p-3 text-sm text-slate-600 flex gap-2">
-                    <button className="px-3 py-1 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-600 transition">
+                    <button
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        setUpdateModalOpen(true);
+                      }}
+                      className="px-3 py-1 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-600 transition"
+                    >
                       Edit
                     </button>
                     <button
@@ -111,6 +144,15 @@ export default function CategoryPage() {
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
           onAddCategory={handleAddCategory}
+        />
+        <UpdateCategoryModal
+          isOpen={updateModalOpen}
+          onClose={() => {
+            setUpdateModalOpen(false);
+            setSelectedCategory(null);
+          }}
+          category={selectedCategory}
+          onUpdate={updateCategory}
         />
       </main>
     </div>
