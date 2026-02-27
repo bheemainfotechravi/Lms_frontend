@@ -1,7 +1,6 @@
 // src/pages/admin/components/CategoryModal.jsx
 import { useState } from "react";
 import axiosInstance from "../../utils/axiosinstance";
-import Cookies from "js-cookie";
 
 export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
   const [name, setName] = useState("");
@@ -20,8 +19,6 @@ export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
     setIsLoading(true);
     setError("");
 
-    console.log(document.cookie);
-
     try {
       const { data } = await axiosInstance.post("/category/add", {
         name: name,
@@ -30,6 +27,7 @@ export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
       onAddCategory?.(data); // call only if exists
       setName("");
       onClose();
+      
     } catch (err) {
       console.log(err)
       const status = err.response?.status;
