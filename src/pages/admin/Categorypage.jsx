@@ -23,7 +23,7 @@ export default function CategoryPage() {
     try {
       const res = await axiosInstance.get("/admin/category/add");
       if (Array.isArray(res.data?.categories)) {
-        setCategories(res.data.categories);
+       setCategories(res.data.categories);
       }
     } catch (error) {
       console.error("Failed to load categories", error);

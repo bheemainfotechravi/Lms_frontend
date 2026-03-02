@@ -27,7 +27,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // const from = location.state?.from?.pathname || null;
 
   const handleChange = (e) => {
     setError("");

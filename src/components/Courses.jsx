@@ -1,7 +1,6 @@
-import React from "react";
-import COURSES from "../data/Courses";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../utils/axiosinstance";
 import { Clock, ScrollText, Users, ArrowRight } from "lucide-react";
-
 
 export function StarRating({ rating }) {
   return (
@@ -59,19 +58,20 @@ function CourseCard({ course }) {
         course.borderHover || "",
       ].join(" ")}
     >
-      {/* Thumbnail */}
       <div
         className={[
           "h-40 bg-gradient-to-br flex items-center justify-center relative",
           course.thumbClass || "from-slate-50 to-slate-100",
         ].join(" ")}
       >
-        <div className=" rounded-full bg-white shadow-lg flex items-center justify-center">
-          
-          <img src={course.image} alt={course.title} />
+        <div className="w-20 h-20 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden">
+          <img 
+            src={course.image} 
+            alt={course.title} 
+            className="w-full h-full object-cover"
+          />
         </div>
 
-        {/* Tag */}
         {course.tag && (
           <span
             className={[
@@ -83,18 +83,15 @@ function CourseCard({ course }) {
           </span>
         )}
 
-        {/* Level */}
         {course.level && (
           <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/90 text-gray-500 border border-gray-200">
             {course.level}
           </span>
         )}
 
-        {/* subtle dark overlay on hover */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
       </div>
 
-      {/* Default Body */}
       <div className="p-5">
         <p className={`text-xs font-bold tracking-widest uppercase mb-2 ${course.accentClass || "text-gray-700"}`}>
           {course.category}
@@ -124,7 +121,6 @@ function CourseCard({ course }) {
         </div>
       </div>
 
-      {/* Hover Details Panel (Alison style) */}
       <div
         className={[
           "absolute inset-x-0 bottom-0",
@@ -178,14 +174,48 @@ function CourseCard({ course }) {
           </div>
         </div>
       </div>
-
-      {/* Helps click area feel premium */}
       <div className="absolute inset-0 pointer-events-none ring-0 group-hover:ring-2 group-hover:ring-primary/15 transition" />
     </div>
   );
 }
 
 const Courses = () => {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axiosInstance.get("/course/get");
+        
+        
+        const formatted = res.data.courses.map((c) => ({
+          id: c.id,
+          title: c.title,
+          category: c.category_name,
+          instructor: "Expert Instructor", 
+          rating: 4.8, 
+          students: 120, 
+          hours: c.duration,
+          price: parseInt(c.price),
+          originalPrice: parseInt(c.price) + 500, 
+          image: `uploads/thumbnail/${c.thumbnail}`, 
+          level: c.level,
+          points: [c.short_description],
+          tag: c.is_published ? "New" : "",
+          
+          thumbClass: "from-slate-50 to-slate-100",
+          accentClass: "text-gray-700",
+        }));
+
+        setCourses(formatted);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
   return (
     <section className="py-20 px-[5%]  bg-gradient-to-b from-[#f3c97c] to-white/30 ">
       <div className="max-w-7xl mx-auto">
@@ -202,7 +232,7 @@ const Courses = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {COURSES.map((course) => (
+          {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>
