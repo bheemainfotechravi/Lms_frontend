@@ -55,6 +55,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("adminUser");
 
     delete axiosInstance.defaults.headers.common["Authorization"];
+  // 🔄 Check auth on refresh
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axiosInstance.get("/");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = (userData) => {
+    if(userData){
+      setIsLoading(false)
+    }
+    setUser(userData);
+>>>>>>> master
   };
 
   /* ===============================
