@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import CATEGORIES from "../data/Categories";
+// Import all icons from lucide-react to allow dynamic rendering
+import * as LucideIcons from "lucide-react";
+import axiosInstance from "../utils/axiosinstance";
 
+/* ---- Section Header ---- */
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -21,7 +24,9 @@ function SectionHeader({ tag, title, highlight, desc }) {
 
 /* ---- Single Card ---- */
 function CategoryCard({ cat }) {
-  const Icon = cat.icon;
+  // Dynamically get the Icon component based on the string from backend
+  // Fallback to 'Layers' if the icon name is missing or invalid
+  const IconComponent = LucideIcons[cat.icon] || LucideIcons.Layers;
 
   return (
     <button
@@ -33,7 +38,6 @@ function CategoryCard({ cat }) {
         "focus:outline-none focus:ring-2 focus:ring-primary/30",
       ].join(" ")}
     >
-      {/* hover glow (soft) */}
       <div
         className={[
           "pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
@@ -43,24 +47,22 @@ function CategoryCard({ cat }) {
       />
 
       <div className="relative flex items-start gap-4">
-        {/* Icon box */}
-        <div
-          className={[
-            "shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center",
-            "border border-gray-200 bg-gray-50",
-            "group-hover:scale-105 transition-all duration-200",
-            cat.iconBg || "",
-          ].join(" ")}
-        >
-          <Icon className={["w-6 h-6", cat.iconText || "text-gray-800"].join(" ")} />
+        {/* ICON CONTAINER - Replaces Image Container */}
+        <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center text-primary">
+          <IconComponent 
+             size={24} 
+             className="transition-transform duration-300 scale-150 group-hover:scale-[1.8]" 
+          />
         </div>
 
-        {/* Text */}
         <div className="flex-1">
           <p className="text-slate-900 font-extrabold text-base leading-tight">
             {cat.label}
           </p>
-          <p className="text-slate-600 text-sm mt-1">{cat.count} Courses</p>
+
+          <p className="text-slate-600 text-sm mt-1">
+            {cat.count} Courses
+          </p>
 
           <div className="mt-4 inline-flex items-center gap-1.5 text-primary text-sm font-bold">
             Explore
@@ -69,17 +71,40 @@ function CategoryCard({ cat }) {
         </div>
       </div>
 
-      {/* bottom hairline */}
       <div className="relative mt-5 h-px w-full bg-gray-100" />
     </button>
   );
 }
 
 const Categories = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axiosInstance.get("/category/get");
+
+        // Transform backend data → UI-friendly format
+        const formatted = res.data.categories.map((cat) => ({
+          id: cat.id,
+          label: cat.name,
+          count: cat.courseCount || 0, 
+          icon: cat.icon,
+          accent: "from-primary/5 to-secondary/5",
+        }));
+
+        setCategories(formatted);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <section className="py-20 px-[5%] bg-gradient-to-b from-white to-[#f3c97c]">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
           <SectionHeader
             tag="Browse by Category"
@@ -93,10 +118,9 @@ const Categories = () => {
           </button>
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {CATEGORIES.map((cat) => (
-            <CategoryCard key={cat.label} cat={cat} />
+          {categories.map((cat) => (
+            <CategoryCard key={cat.id} cat={cat} />
           ))}
         </div>
       </div>

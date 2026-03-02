@@ -16,6 +16,7 @@ import ProtectedRoute from "./routes/guards/ProtectedRoute";
 import Admindashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/Adminlogin";
 import CategoryPage from "./pages/admin/Categorypage";
+import CategoryModal from "./components/Admin-components/categoryModel";
 
 export default function App() {
   return (
@@ -52,3 +53,5 @@ export default function App() {
     </>
   );
 }
+
+
