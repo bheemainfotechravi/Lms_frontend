@@ -20,7 +20,7 @@ export default function CategoryPage() {
 
   const showCategories = async () => {
     try {
-      const res = await axiosInstance.get("/category/get");
+      const res = await axiosInstance.get("/admin/category/add");
       if (Array.isArray(res.data?.categories)) {
         setCategories(res.data.categories);
       }
@@ -112,7 +112,7 @@ export default function CategoryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {categories?.map((cat) => (
+              {categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-slate-50">
                   <td className="p-3 text-sm text-slate-600">{cat.id}</td>
                   <td className="p-3 text-sm text-slate-600">{cat.name}</td>
@@ -127,7 +127,9 @@ export default function CategoryPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => deleteCategory(cat.id)}
+                      onClick={() =>
+                        setCategories(categories.filter((c) => c.id !== cat.id))
+                      }
                       className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
                     >
                       Delete

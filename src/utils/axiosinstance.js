@@ -14,6 +14,9 @@ const axiosInstance = axios.create({
 ================================= */
 axiosInstance.interceptors.request.use(
   (config) => {
+    // If later you move to Bearer tokens, this is ready:
+    // const token = localStorage.getItem("token");
+    // if (token) config.headers.Authorization = `Bearer ${token}`;
 
     // ✅ Get token from localStorage
     const token = localStorage.getItem("adminToken");
@@ -49,6 +52,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // 🧾 Cleaner logging
     console.error("API Error:", {
       url: error.config?.url,
       method: error.config?.method,
