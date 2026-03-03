@@ -37,20 +37,19 @@ export default function AdminLogin() {
     try {
       setIsLoading(true);
 
-      const res = await axiosInstance.post("/admin/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+    const user = res.data.admin;
+    const token = res.data.token;
+
+    // ✅ Store token in localStorage
+    // localStorage.setItem("adminToken", token);
+
+    // (Optional but recommended) store user too
+    // localStorage.setItem("adminUser", JSON.stringify(user));
 
       const user = res.data.user;
       console.log(user)
 
-      login(user);
-      navigate("/admin/dashboard", { replace: true });
-
-    } catch (err) {
-      console.log(err)
-      setLoginAttempts((prev) => prev + 1);
+    login(user, token);
 
       if (err.response?.status === 401) setError("Invalid email or password.");
       else if (err.response?.status === 403) setError("Admin privileges required.");
@@ -140,14 +139,6 @@ export default function AdminLogin() {
                   {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
-            </div>
-
-            {/* Remember */}
-            <div className="flex items-center gap-2">
-              <input type="checkbox" id="remember" className="w-4 h-4 accent-primary" />
-              <label htmlFor="remember" className="text-sm text-textMuted cursor-pointer">
-                Stay signed in
-              </label>
             </div>
 
             {/* Submit */}

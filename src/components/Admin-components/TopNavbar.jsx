@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   FiBell,
   FiChevronDown,
@@ -12,14 +13,9 @@ import axiosInstance from "../../utils/axiosinstance";
 
 export default function TopNavbar({
   user = null,
-  today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }),
 }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const location = useLocation();
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -37,15 +33,16 @@ export default function TopNavbar({
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/admin/logout");
-      navigate("/admin/login", { replace: true });
-    } catch (error) {
-      console.error("Admin logout failed", error);
-    } finally {
-      setProfileOpen(false);
-    }
-  };
+  try {
+    await axiosInstance.post("/admin/logout");
+    logout();
+    navigate("/admin/login", { replace: true });
+  } catch (error) {
+    console.error("Admin logout failed", error);
+  } finally {
+    setProfileOpen(false);
+  }
+};
 
   return (
     <header className="w-full bg-[#0F172A] text-[#94A3B8] border-b border-[#1E293B]">

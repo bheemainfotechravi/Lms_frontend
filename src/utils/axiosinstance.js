@@ -1,6 +1,6 @@
 // utils/axiosInstance.js
 import axios from "axios";
-
+export const image_URl = "http://10.15.181.145:5000"
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://10.15.181.145:5000/api",
   withCredentials: true,
@@ -15,6 +15,14 @@ axiosInstance.interceptors.request.use(
   (config) => {
 
 
+    // ✅ Get token from localStorage
+    const token = localStorage.getItem("adminToken");
+
+    // ✅ Attach Authorization header if token exists
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -27,8 +35,16 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401) {
-      console.warn("Session expired. Redirecting to login...");
-      window.location.href = "/login";
+      console.log("Session expired. Logging out...");
+
+      // ✅ Remove stored auth data
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+
+      // ✅ Redirect to login (only if in admin route)
+      if (window.location.pathname.startsWith("/admin")) {
+        window.location.href = "/admin/login";
+      }
     }
 
     
