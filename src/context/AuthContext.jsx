@@ -5,11 +5,25 @@ import axiosInstance from "../utils/axiosinstance";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  /* ===============================
+     🔹 INITIAL STATE
+  ================================= */
+  const [adminToken, setAdminToken] = useState(
+    localStorage.getItem("adminToken") || null
+  );
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("adminUser")) || null
+  );
+
   const [isLoading, setIsLoading] = useState(true);
 
-  const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  /* ===============================
+     🔹 AUTH STATES
+  ================================= */
+  const isAuthenticated = !!adminToken;
+  const isAdmin =
+    user?.role === "admin" || user?.role === "superadmin";
 
 
 
@@ -24,15 +38,29 @@ useEffect(() => {
     setUser(userData);
   };
 
+  /* ===============================
+     🔄 APP LOAD HANDLING
+  ================================= */
+  useEffect(() => {
+    if (adminToken) {
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${adminToken}`;
+    }
+
+    setIsLoading(false);
+  }, [adminToken]);
+
   return (
     <AuthContext.Provider
       value={{
         user,
+        adminToken,
         isAuthenticated,
         isAdmin,
         isLoading,
         login,
-        
+        logout,
       }}
     >
       {children}

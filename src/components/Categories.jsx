@@ -5,6 +5,7 @@ import * as LucideIcons from "lucide-react";
 import axiosInstance from "../utils/axiosinstance";
 
 
+/* ---------------- Section Header ---------------- */
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -21,7 +22,6 @@ function SectionHeader({ tag, title, highlight, desc }) {
     </div>
   );
 }
-
 
 function CategoryCard({ cat }) {
   
@@ -57,7 +57,11 @@ function CategoryCard({ cat }) {
 
         <div className="flex-1">
           <p className="text-slate-900 font-extrabold text-base leading-tight">
-            {cat.label}
+            {cat.name}
+          </p>
+
+          <p className="text-slate-600 text-sm mt-1">
+            {cat.count || 0} Courses
           </p>
 
           <p className="text-slate-600 text-sm mt-1">
@@ -76,6 +80,7 @@ function CategoryCard({ cat }) {
   );
 }
 
+/* ---------------- Main Categories Section ---------------- */
 const Categories = () => {
   const [categories, setCategories] = useState([]);
 
