@@ -31,12 +31,26 @@ useEffect(() => {
   setIsLoading(false);
 }, []);
 
-  const login = (userData) => {
-    if(userData){
-      setIsLoading(false)
-    }
-    setUser(userData);
-  };
+ const login = (userData, token) => {
+  setUser(userData);
+  setAdminToken(token);
+
+  localStorage.setItem("adminUser", JSON.stringify(userData));
+  localStorage.setItem("adminToken", token);
+
+  axiosInstance.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${token}`;
+};
+     const logout = () => {
+  setUser(null);
+  setAdminToken(null);
+  localStorage.removeItem("adminUser");
+  localStorage.removeItem("adminToken");
+  delete axiosInstance.defaults.headers.common["Authorization"];
+};
+
+
 
   /* ===============================
      🔄 APP LOAD HANDLING

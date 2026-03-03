@@ -16,7 +16,7 @@ import ProtectedRoute from "./routes/guards/ProtectedRoute";
 import Admindashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/Adminlogin";
 import CategoryPage from "./pages/admin/Categorypage";
-import CategoryModal from "./components/Admin-components/categoryModel";
+import Coursepage from "./pages/admin/Coursepage";
 
 export default function App() {
   return (
