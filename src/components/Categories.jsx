@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-// Import all icons from lucide-react to allow dynamic rendering
+
 import * as LucideIcons from "lucide-react";
 import axiosInstance from "../utils/axiosinstance";
 
-/* ---- Section Header ---- */
+
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -22,10 +22,10 @@ function SectionHeader({ tag, title, highlight, desc }) {
   );
 }
 
-/* ---- Single Card ---- */
+
 function CategoryCard({ cat }) {
-  // Dynamically get the Icon component based on the string from backend
-  // Fallback to 'Layers' if the icon name is missing or invalid
+  
+  
   const IconComponent = LucideIcons[cat.icon] || LucideIcons.Layers;
 
   return (
@@ -47,7 +47,7 @@ function CategoryCard({ cat }) {
       />
 
       <div className="relative flex items-start gap-4">
-        {/* ICON CONTAINER - Replaces Image Container */}
+      
         <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center text-primary">
           <IconComponent 
              size={24} 
@@ -84,7 +84,7 @@ const Categories = () => {
       try {
         const res = await axiosInstance.get("/category/get");
 
-        // Transform backend data → UI-friendly format
+        
         const formatted = res.data.categories.map((cat) => ({
           id: cat.id,
           label: cat.name,
