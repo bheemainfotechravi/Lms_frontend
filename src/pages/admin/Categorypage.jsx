@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CategoryModal from "../../components/Admin-components/CategoryModel";
+import CategoryModal from "../../components/Admin-components/categoryModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
 import UpdateCategoryModal from "../../components/Admin-components/UpdateCategoryModal";
@@ -14,13 +14,29 @@ export default function CategoryPage() {
     showCategories();
   }, []);
 
-  const handleAddCategory = (newCategory) => {
-    setCategories((prev) => [...prev, newCategory]);
-  };
+
+const handleAddCategory = async (category) => {
+  try {
+    const formData = new FormData();
+    formData.append("name", category.name);
+    formData.append("icon", category.image); // MUST match multer field name
+
+    await axiosInstance.post("/category/add", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
 
   const showCategories = async () => {
     try {
-      const res = await axiosInstance.get("/admin/category/add");
+      const res = await axiosInstance.get("/category/get");
       if (Array.isArray(res.data?.categories)) {
        setCategories(res.data.categories);
       }
@@ -29,6 +45,7 @@ export default function CategoryPage() {
     }
   };
 
+  
   const deleteCategory = async (id) => {
     try {
       const confirmDelete = window.confirm(
@@ -38,11 +55,11 @@ export default function CategoryPage() {
       if (!confirmDelete) return;
 
       const res = await axiosInstance.delete(`/category/delete/${id}`, {
-        withCredentials: true, // ensures cookie is sent
+        withCredentials: true, 
       });
       console.log(res)
 
-      // Remove from UI only after backend success
+   
       setCategories((prev) => prev.filter((c) => c.id !== id));
 
     } catch (error) {
@@ -65,7 +82,7 @@ export default function CategoryPage() {
       { name }
     );
 
-    // Update locally using name
+   
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id === id ? { ...cat, name } : cat
@@ -127,9 +144,7 @@ export default function CategoryPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() =>
-                        setCategories(categories.filter((c) => c.id !== cat.id))
-                      }
+                     onClick={() => deleteCategory(cat._id)}
                       className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
                     >
                       Delete

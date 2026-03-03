@@ -24,42 +24,39 @@ export default function AdminLogin() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!formData.email || !formData.password)
-      return setError("Please fill in all fields.");
+  if (!formData.email || !formData.password)
+    return setError("Please fill in all fields.");
 
-    if (loginAttempts >= 5)
-      return setError("Too many failed attempts. Try later.");
+  if (loginAttempts >= 5)
+    return setError("Too many failed attempts. Try later.");
 
-    try {
-      setIsLoading(true);
+  try {
+    setIsLoading(true);
 
-    const user = res.data.admin;
+    const res = await axiosInstance.post("/admin/login", formData);
+
+    const admin = res.data.admin;
     const token = res.data.token;
 
-    // ✅ Store token in localStorage
-    // localStorage.setItem("adminToken", token);
+    login(admin, token);
 
-    // (Optional but recommended) store user too
-    // localStorage.setItem("adminUser", JSON.stringify(user));
-
-      const user = res.data.user;
-      console.log(user)
-
-    login(user, token);
-
-      if (err.response?.status === 401) setError("Invalid email or password.");
-      else if (err.response?.status === 403) setError("Admin privileges required.");
-      else if (err.response?.status === 429) setError("Too many requests. Please wait.");
-      else setError(err.message || "Login failed.");
-
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } catch (err) {
+    if (err.response?.status === 401)
+      setError("Invalid email or password.");
+    else if (err.response?.status === 403)
+      setError("Admin privileges required.");
+    else if (err.response?.status === 429)
+      setError("Too many requests. Please wait.");
+    else
+      setError(err.message || "Login failed.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className=" min-h-screen bg-gray-50 flex items-center justify-center p-4">

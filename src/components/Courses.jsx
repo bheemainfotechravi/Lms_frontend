@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosinstance";
+import axiosInstance, { image_URl } from "../utils/axiosinstance";
 import { Clock, ScrollText, Users, ArrowRight } from "lucide-react";
 
 export function StarRating({ rating }) {
@@ -64,9 +64,9 @@ function CourseCard({ course }) {
           course.thumbClass || "from-slate-50 to-slate-100",
         ].join(" ")}
       >
-        <div className="w-20 h-20 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden">
+       <div className="w-100 h-100 bg-white shadow-lg overflow-hidden">
           <img 
-            src={course.image} 
+            src={`${image_URl}/uploads/${course.thumbnail}`}
             alt={course.title} 
             className="w-full h-full object-cover"
           />
@@ -198,7 +198,7 @@ const Courses = () => {
           hours: c.duration,
           price: parseInt(c.price),
           originalPrice: parseInt(c.price) + 500, 
-          image: `uploads/thumbnail/${c.thumbnail}`, 
+          thumbnail: c.thumbnail,
           level: c.level,
           points: [c.short_description],
           tag: c.is_published ? "New" : "",

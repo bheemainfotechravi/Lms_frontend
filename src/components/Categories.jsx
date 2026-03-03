@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-
-import * as LucideIcons from "lucide-react";
-import axiosInstance from "../utils/axiosinstance";
-
+import axiosInstance, { image_URl } from "../utils/axiosinstance";
 
 /* ---------------- Section Header ---------------- */
 function SectionHeader({ tag, title, highlight, desc }) {
@@ -23,11 +20,8 @@ function SectionHeader({ tag, title, highlight, desc }) {
   );
 }
 
+/* ---------------- Category Card ---------------- */
 function CategoryCard({ cat }) {
-  
-  
-  const IconComponent = LucideIcons[cat.icon] || LucideIcons.Layers;
-
   return (
     <button
       className={[
@@ -41,17 +35,18 @@ function CategoryCard({ cat }) {
       <div
         className={[
           "pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-          "bg-gradient-to-br",
-          cat.accent || "from-primary/5 to-secondary/5",
+          "bg-gradient-to-br from-primary/5 to-secondary/5",
         ].join(" ")}
       />
 
       <div className="relative flex items-start gap-4">
-      
-        <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center text-primary">
-          <IconComponent 
-             size={24} 
-             className="transition-transform duration-300 scale-150 group-hover:scale-[1.8]" 
+
+        {/* Uploaded Icon */}
+        <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+          <img
+            src={`${image_URl}/uploads/${cat.icon}`}
+            alt={cat.name}
+            className="w-6 h-6 object-contain transition-transform duration-300 scale-150 group-hover:scale-[1.8]"
           />
         </div>
 
@@ -61,11 +56,7 @@ function CategoryCard({ cat }) {
           </p>
 
           <p className="text-slate-600 text-sm mt-1">
-            {cat.count || 0} Courses
-          </p>
-
-          <p className="text-slate-600 text-sm mt-1">
-            {cat.count} Courses
+            {cat.count || 2} Courses
           </p>
 
           <div className="mt-4 inline-flex items-center gap-1.5 text-primary text-sm font-bold">
@@ -89,13 +80,11 @@ const Categories = () => {
       try {
         const res = await axiosInstance.get("/category/get");
 
-        
         const formatted = res.data.categories.map((cat) => ({
           id: cat.id,
-          label: cat.name,
-          count: cat.courseCount || 0, 
+          name: cat.name,
+          count: cat.courseCount || 0,
           icon: cat.icon,
-          accent: "from-primary/5 to-secondary/5",
         }));
 
         setCategories(formatted);
