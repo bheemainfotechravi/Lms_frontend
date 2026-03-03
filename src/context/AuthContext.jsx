@@ -1,21 +1,61 @@
 // context/AuthContext.jsx
+
 import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosinstance";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  /* ===============================
+     🔹 INITIAL STATE
+  ================================= */
+  const [adminToken, setAdminToken] = useState(
+    localStorage.getItem("adminToken") || null
+  );
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("adminUser")) || null
+  );
+
   const [isLoading, setIsLoading] = useState(true);
 
-  const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  /* ===============================
+     🔹 AUTH STATES
+  ================================= */
+  const isAuthenticated = !!adminToken;
+  const isAdmin =
+    user?.role === "admin" || user?.role === "superadmin";
 
-<<<<<<< HEAD
+  /* ===============================
+     🔐 LOGIN
+  ================================= */
+  const login = (userData, token) => {
+    // Save to state
+    setUser(userData);
+    setAdminToken(token);
+
+    // Save to localStorage
+    localStorage.setItem("adminToken", token);
+    localStorage.setItem("adminUser", JSON.stringify(userData));
+
+    // Attach token globally
+    axiosInstance.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${token}`;
+  };
+
+  /* ===============================
+     🚪 LOGOUT
+  ================================= */
+  const logout = () => {
+    setUser(null);
+    setAdminToken(null);
+
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+
+    delete axiosInstance.defaults.headers.common["Authorization"];
   // 🔄 Check auth on refresh
-=======
- 
->>>>>>> fbb914d66952ba6ba0b45e5b1aac0e54aa4c686f
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -36,17 +76,32 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false)
     }
     setUser(userData);
+>>>>>>> master
   };
+
+  /* ===============================
+     🔄 APP LOAD HANDLING
+  ================================= */
+  useEffect(() => {
+    if (adminToken) {
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${adminToken}`;
+    }
+
+    setIsLoading(false);
+  }, [adminToken]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        adminToken,
         isAuthenticated,
         isAdmin,
         isLoading,
         login,
-        
+        logout,
       }}
     >
       {children}

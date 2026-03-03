@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import CATEGORIES from "../data/Categories";
+import axiosInstance from "../utils/axiosinstance";
 
+/* ---------------- Section Header ---------------- */
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -19,7 +21,7 @@ function SectionHeader({ tag, title, highlight, desc }) {
   );
 }
 
-/* ---- Single Card ---- */
+/* ---------------- Single Category Card ---------------- */
 function CategoryCard({ cat }) {
   const Icon = cat.icon;
 
@@ -33,7 +35,7 @@ function CategoryCard({ cat }) {
         "focus:outline-none focus:ring-2 focus:ring-primary/30",
       ].join(" ")}
     >
-      {/* hover glow (soft) */}
+      {/* Hover Glow */}
       <div
         className={[
           "pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
@@ -43,7 +45,7 @@ function CategoryCard({ cat }) {
       />
 
       <div className="relative flex items-start gap-4">
-        {/* Icon box */}
+        {/* Icon */}
         <div
           className={[
             "shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center",
@@ -52,15 +54,25 @@ function CategoryCard({ cat }) {
             cat.iconBg || "",
           ].join(" ")}
         >
-          <Icon className={["w-6 h-6", cat.iconText || "text-gray-800"].join(" ")} />
+          {Icon && (
+            <Icon
+              className={[
+                "w-6 h-6",
+                cat.iconText || "text-gray-800",
+              ].join(" ")}
+            />
+          )}
         </div>
 
         {/* Text */}
         <div className="flex-1">
           <p className="text-slate-900 font-extrabold text-base leading-tight">
-            {cat.label}
+            {cat.name}
           </p>
-          <p className="text-slate-600 text-sm mt-1">{cat.count} Courses</p>
+
+          <p className="text-slate-600 text-sm mt-1">
+            {cat.count || 0} Courses
+          </p>
 
           <div className="mt-4 inline-flex items-center gap-1.5 text-primary text-sm font-bold">
             Explore
@@ -69,13 +81,31 @@ function CategoryCard({ cat }) {
         </div>
       </div>
 
-      {/* bottom hairline */}
       <div className="relative mt-5 h-px w-full bg-gray-100" />
     </button>
   );
 }
 
+/* ---------------- Main Categories Section ---------------- */
 const Categories = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axiosInstance.get("/category/get");
+
+      if (Array.isArray(res.data?.categories)) {
+        setCategories(res.data.categories);
+      }
+    } catch (error) {
+      console.error("Failed to load categories", error);
+    }
+  };
+
   return (
     <section className="py-20 px-[5%] bg-gradient-to-b from-white to-[#f3c97c]">
       <div className="max-w-7xl mx-auto">
@@ -95,9 +125,22 @@ const Categories = () => {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {CATEGORIES.map((cat) => (
-            <CategoryCard key={cat.label} cat={cat} />
-          ))}
+          {categories.map((backendCat) => {
+            // Match backend name with static icon config
+            const staticCat = CATEGORIES.find(
+              (c) => c.label === backendCat.name
+            );
+
+            return (
+              <CategoryCard
+                key={backendCat.id}
+                cat={{
+                  ...backendCat,
+                  ...staticCat, // adds icon, accent, styles
+                }}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

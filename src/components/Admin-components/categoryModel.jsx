@@ -9,13 +9,36 @@ export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
     e.preventDefault();
     if (data.trim() === "") return;
 
-    // const res = await axiosInstance.post("/admin/category/add", {
-    //     name: data.name,
-    //   });
+    if (!name.trim()) {
+      return setError("Category name is required.");
+    }
 
-    onAddCategory({ data, id: Date.now() });
-    setData("");
-    onClose();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const { data } = await axiosInstance.post("/category/add", {
+        name: name,
+      });
+
+      onAddCategory?.(data); // call only if exists
+      setName("");
+      onClose();
+      
+    } catch (err) {
+      console.log(err)
+      const status = err.response?.status;
+
+      if (status === 401) {
+        setError("Session expired. Please login again.");
+      } else if (status === 403) {
+        setError("Admin privileges required.");
+      } else {
+        setError("Failed to create category.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
