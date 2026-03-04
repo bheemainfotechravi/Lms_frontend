@@ -6,14 +6,18 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiLogOut,
-  FiSearch,
 } from "react-icons/fi";
 import { ACTIVITY, NAV_ITEMS } from "./dashboardData.js";
 import axiosInstance from "../../utils/axiosinstance";
 
-export default function TopNavbar({
-  user = null,
-}) {
+
+
+
+
+
+
+export default function TopNavbar({ user = null }) {
+  const notifRef = useRef(null);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const location = useLocation();
@@ -21,31 +25,36 @@ export default function TopNavbar({
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
 
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setProfileOpen(false);
-      }
-    };
+ useEffect(() => {
+  const handleOutsideClick = (event) => {
+    
+    if (profileRef.current && !profileRef.current.contains(event.target)) {
+      setProfileOpen(false);
+    }
+    
+    if (notifRef.current && !notifRef.current.contains(event.target)) {
+      setNotifOpen(false);
+    }
+  };
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+  document.addEventListener("mousedown", handleOutsideClick);
+  return () => document.removeEventListener("mousedown", handleOutsideClick);
+}, []);
 
   const handleLogout = async () => {
-  try {
-    await axiosInstance.post("/admin/logout");
-    logout();
-    navigate("/admin/login", { replace: true });
-  } catch (error) {
-    console.error("Admin logout failed", error);
-  } finally {
-    setProfileOpen(false);
-  }
-};
+    try {
+      await axiosInstance.post("/admin/logout");
+      logout();
+      navigate("/admin/login", { replace: true });
+    } catch (error) {
+      console.error("Admin logout failed", error);
+    } finally {
+      setProfileOpen(false);
+    }
+  };
 
   return (
-    <header className="w-full bg-[#0F172A] text-[#94A3B8] border-b border-[#1E293B]">
+    <header className="w-full bg-[#0F172A] text-[#94A3B8] border-b border-[#1E293B] sticky top-0 z-50">
       <div
         className="absolute inset-x-0 top-0 h-16 opacity-5 pointer-events-none"
         style={{
@@ -54,7 +63,7 @@ export default function TopNavbar({
         }}
       />
 
-      <div className="relative h-16 px-6 flex items-center">
+      <div className="relative h-16 px-4 md:px-6 flex items-center justify-between">
         {/* LEFT - LOGO */}
         <div
           onClick={() => navigate("/")}
@@ -64,15 +73,20 @@ export default function TopNavbar({
             L
           </div>
           <span className="text-white font-bold text-xl tracking-tight hidden sm:inline">
-            LearnX{" "}
-            <span className="text-[10px] bg-violet-500/20 text-violet-400 px-1.5 py-0.5 rounded ml-1 uppercase">
-              Admin
-            </span>
-          </span>
+
+LearnX{" "}
+
+<span className="text-[10px] bg-violet-500/20 text-violet-400 px-1.5 py-0.5 rounded ml-1 uppercase">
+
+Admin
+
+</span>
+
+</span>
         </div>
 
-        {/* CENTER - NAVIGATION */}
-        <nav className="flex-1 flex justify-center items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {/* CENTER - NAVIGATION (Desktop Only) */}
+        <nav className="hidden md:flex flex-1 justify-center items-center gap-2">
           {NAV_ITEMS.map((item) => {
             const active = location.pathname === item.path;
             const Icon = item.icon;
@@ -96,57 +110,35 @@ export default function TopNavbar({
 
         {/* RIGHT - ACTIONS */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* SEARCH */}
-          <div className="relative hidden xl:flex items-center">
-            <span className="absolute left-3 text-slate-400">
-              <FiSearch />
-            </span>
-            <input
-              type="text"
-              placeholder="Search data..."
-              className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500/20 w-56 transition-all"
-            />
-          </div>
-
           {/* NOTIFICATIONS */}
-          <div className="relative">
+         <div className="relative" ref={notifRef}>
             <button
-              onClick={() => setNotifOpen((prev) => !prev)}
-              className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-700 flex items-center justify-center text-lg hover:bg-slate-50 transition-colors relative"
+              onClick={() => {
+      setNotifOpen((prev) => !prev);
+      setProfileOpen(false); 
+    }}
+              className="w-10 h-10 rounded-xl bg-[#1E293B] border border-[#334155] text-slate-300 flex items-center justify-center text-lg hover:bg-slate-800 transition-colors relative"
             >
               <FiBell />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0F172A]" />
             </button>
 
             {notifOpen && (
-              <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 p-2">
-                <div className="px-4 py-3 border-b border-slate-50 flex justify-between items-center">
-                  <span className="font-bold text-sm text-slate-700">
-                    Notifications
-                  </span>
-                  <span className="text-[10px] bg-violet-100 text-violet-600 px-2 py-0.5 rounded-full font-bold">
+              <div className="absolute right-0 mt-3 w-80 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 p-2">
+                <div className="px-4 py-3 border-b border-slate-700/50 flex justify-between items-center">
+                  <span className="font-bold text-sm text-white">Notifications</span>
+                  <span className="text-[10px] bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded-full font-bold">
                     3 NEW
                   </span>
                 </div>
-
                 {ACTIVITY.map((item, index) => {
                   const Icon = item.icon;
-
                   return (
-                    <div
-                      key={`${item.text}-${index}`}
-                      className="p-3 hover:bg-slate-50 rounded-xl flex gap-3 cursor-pointer"
-                    >
-                      <span className="text-lg text-slate-700">
-                        {Icon ? <Icon /> : null}
-                      </span>
+                    <div key={index} className="p-3 hover:bg-white/5 rounded-xl flex gap-3 cursor-pointer">
+                      <span className="text-lg text-violet-400">{Icon ? <Icon /> : null}</span>
                       <div>
-                        <p className="text-[13px] font-semibold text-slate-700 leading-tight">
-                          {item.text}
-                        </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          {item.time}
-                        </p>
+                        <p className="text-[13px] font-semibold text-slate-200 leading-tight">{item.text}</p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">{item.time}</p>
                       </div>
                     </div>
                   );
@@ -155,17 +147,17 @@ export default function TopNavbar({
             )}
           </div>
 
-          {/* PROFILE */}
+          {/* PROFILE & MOBILE MENU */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen((prev) => !prev)}
-              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-[#1E293B] border border-[#334155] hover:bg-slate-800 transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-200">
+              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-500/20">
                 {user?.name?.charAt(0) || "A"}
               </div>
-              <span className="hidden sm:block text-sm font-semibold text-slate-700">
-                Profile
+              <span className="hidden sm:block text-sm font-semibold text-slate-200">
+               Profile
               </span>
               <span className="text-[10px] text-slate-400">
                 {profileOpen ? <FiChevronUp /> : <FiChevronDown />}
@@ -173,22 +165,33 @@ export default function TopNavbar({
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden">
-                <div className="px-4 py-3 border-b border-slate-100">
-                  <p className="text-sm font-bold text-slate-800">
-                    {user?.name || "Admin"}
-                  </p>
-                  <p className="text-xs text-slate-500 truncate">
-                    {user?.email || "admin@dashboard"}
-                  </p>
+              <div className="absolute right-0 mt-3 w-64 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 overflow-hidden">
+                <div className="px-4 py-4 border-b border-slate-700/50 bg-[#0F172A]/50">
+                  <p className="text-sm font-bold text-white">{user?.name || "Admin User"}</p>
+                  <p className="text-xs text-slate-500 truncate">{user?.email || "admin@learnx.com"}</p>
+                </div>
+
+                {/* MOBILE NAV ITEMS (Visible only on small screens) */}
+                <div className="p-2 md:hidden border-b border-slate-700/50">
+                    <p className="text-[10px] font-bold text-slate-500 px-3 mb-1 uppercase tracking-wider">Navigation</p>
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item.path}
+                      onClick={() => { navigate(item.path); setProfileOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                    >
+                      <span className="text-lg">{item.icon && <item.icon />}</span>
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="p-2">
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors inline-flex items-center gap-2"
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-colors inline-flex items-center gap-3"
                   >
-                    <FiLogOut />
+                    <FiLogOut className="text-lg" />
                     Logout
                   </button>
                 </div>

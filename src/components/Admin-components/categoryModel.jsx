@@ -1,73 +1,74 @@
-// src/pages/admin/components/CategoryModal.jsx
 import { useState } from "react";
-import axiosInstance from "../../utils/axiosinstance";
 
-export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
+function CategoryModal({ isOpen, onClose, onAddCategory }) {
   const [data, setData] = useState("");
+  const [imageFile, setImageFile] = useState(null);
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (data.trim() === "") return;
+    if (data.trim() === "" || !imageFile) return;
 
-    if (!name.trim()) {
-      return setError("Category name is required.");
-    }
+    onAddCategory({
+      name: data,
+      image: imageFile
+    });
 
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const { data } = await axiosInstance.post("/category/add", {
-        name: name,
-      });
-
-      onAddCategory?.(data); // call only if exists
-      setName("");
-      onClose();
-      
-    } catch (err) {
-      console.log(err)
-      const status = err.response?.status;
-
-      if (status === 401) {
-        setError("Session expired. Please login again.");
-      } else if (status === 403) {
-        setError("Admin privileges required.");
-      } else {
-        setError("Failed to create category.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setData("");
+    setImageFile(null);
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-white rounded-2xl p-6 w-96 relative">
-        <h3 className="text-lg font-bold mb-4">Add New Category</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            placeholder="Category Name"
-            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
-          />
-          <div className="flex justify-end gap-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl p-6 w-96 relative shadow-2xl animate-in fade-in zoom-in duration-200">
+        <h3 className="text-xl font-black mb-5 text-slate-900">New Category</h3>
+        
+        <form onSubmit={handleSubmit} className="space-y-5">
+          
+          {/* Category Name */}
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">
+              Category Name
+            </label>
+            <input
+              type="text"
+              autoFocus
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+              placeholder="e.g. Cloud Computing"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all"
+            />
+          </div>
+
+          {/* Icon Upload */}
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">
+              Upload Icon
+            </label>
+            <input
+              type="file"
+              accept="image/png, image/jpeg"
+              onChange={(e) => setImageFile(e.target.files[0])}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all"
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition"
+              className="px-5 py-2.5 rounded-xl text-slate-500 font-semibold hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-violet-600 text-white hover:opacity-90 transition"
+              className="px-5 py-2.5 rounded-xl bg-violet-600 text-white font-bold hover:bg-violet-700 shadow-lg shadow-violet-100 transition"
             >
-              Add
+              Save Category
             </button>
           </div>
         </form>
@@ -75,3 +76,5 @@ export default function CategoryModal({ isOpen, onClose, onAddCategory }) {
     </div>
   );
 }
+
+export default CategoryModal;
