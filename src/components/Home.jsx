@@ -111,7 +111,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto h-[70px] flex items-center relative">
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-slate-900 font-black text-lg">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-slate-900 font-black text-lg bg-amber-600">
               L
             </div>
             <span className="text-xl font-black ">

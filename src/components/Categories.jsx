@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import axiosInstance, { image_URl } from "../utils/axiosinstance";
+import axiosInstance, { image_URL } from "../utils/axiosinstance";
 
 /* ---------------- Section Header ---------------- */
 function SectionHeader({ tag, title, highlight, desc }) {
@@ -44,7 +44,7 @@ function CategoryCard({ cat }) {
         {/* Uploaded Icon */}
         <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
           <img
-            src={`${image_URl}/uploads/${cat.icon}`}
+            src={`${image_URL}/uploads/${cat.icon}`}
             alt={cat.name}
             className="w-6 h-6 object-contain transition-transform duration-300 scale-150 group-hover:scale-[1.8]"
           />

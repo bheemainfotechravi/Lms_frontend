@@ -1,6 +1,6 @@
 // utils/axiosInstance.js
 import axios from "axios";
-export const image_URl = "http://10.253.187.145:5000"
+export const image_URL = "http://10.253.187.145:5000"
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://10.253.187.145:5000/api",
   withCredentials: true,
