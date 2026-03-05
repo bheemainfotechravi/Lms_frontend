@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance, { image_URl } from "../utils/axiosinstance";
+import axiosInstance, { image_URL } from "../utils/axiosinstance";
 import { Clock, ScrollText, Users, ArrowRight } from "lucide-react";
 
 export function StarRating({ rating }) {
@@ -66,7 +66,7 @@ function CourseCard({ course }) {
       >
        <div className="w-100 h-100 bg-white shadow-lg overflow-hidden">
           <img 
-            src={`${image_URl}/uploads/${course.thumbnail}`}
+            src={`${image_URL}/uploads/${course.thumbnail}`}
             alt={course.title} 
             className="w-full h-full object-cover"
           />
