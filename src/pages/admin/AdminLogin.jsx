@@ -37,32 +37,20 @@ export default function AdminLogin() {
   try {
     setIsLoading(true);
 
-    const res = await axiosInstance.post("/admin/login", {
-      email: formData.email,
-      password: formData.password,
-    });
+    const res = await axiosInstance.post("/admin/login", formData);
 
-    const user = res.data.admin;
+    const admin = res.data.admin;
     const token = res.data.token;
 
-    // ✅ Store token in localStorage
-    // localStorage.setItem("adminToken", token);
-
-    // (Optional but recommended) store user too
-    // localStorage.setItem("adminUser", JSON.stringify(user));
-
-    console.log("User:", user);
-    console.log("Token:", token);
-
-    login(user, token);
+    login(admin, token);
 
   } catch (err) {
-    setLoginAttempts((prev) => prev + 1);
-
     if (err.response?.status === 401)
       setError("Invalid email or password.");
     else if (err.response?.status === 403)
       setError("Admin privileges required.");
+    else if (err.response?.status === 429)
+      setError("Too many requests. Please wait.");
     else
       setError(err.message || "Login failed.");
   } finally {

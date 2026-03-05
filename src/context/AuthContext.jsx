@@ -1,4 +1,3 @@
-// context/AuthContext.jsx
 
 import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosinstance";
@@ -26,36 +25,32 @@ export const AuthProvider = ({ children }) => {
   const isAdmin =
     user?.role === "admin" || user?.role === "superadmin";
 
-  /* ===============================
-     🔐 LOGIN
-  ================================= */
-  const login = (userData, token) => {
-    // Save to state
-    setUser(userData);
-    setAdminToken(token);
 
-    // Save to localStorage
-    localStorage.setItem("adminToken", token);
-    localStorage.setItem("adminUser", JSON.stringify(userData));
 
-    // Attach token globally
-    axiosInstance.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${token}`;
-  };
+useEffect(() => {
+  setIsLoading(false);
+}, []);
 
-  /* ===============================
-     🚪 LOGOUT
-  ================================= */
-  const logout = () => {
-    setUser(null);
-    setAdminToken(null);
+ const login = (userData, token) => {
+  setUser(userData);
+  setAdminToken(token);
 
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
+  localStorage.setItem("adminUser", JSON.stringify(userData));
+  localStorage.setItem("adminToken", token);
 
-    delete axiosInstance.defaults.headers.common["Authorization"];
-  };
+  axiosInstance.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${token}`;
+};
+     const logout = () => {
+  setUser(null);
+  setAdminToken(null);
+  localStorage.removeItem("adminUser");
+  localStorage.removeItem("adminToken");
+  delete axiosInstance.defaults.headers.common["Authorization"];
+};
+
+
 
   /* ===============================
      🔄 APP LOAD HANDLING

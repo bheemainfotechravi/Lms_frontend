@@ -4,16 +4,16 @@ export const image_URL = "http://10.253.187.145:5000"
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://10.253.187.145:5000/api",
   withCredentials: true,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-/* ===============================
-   REQUEST INTERCEPTOR
-================================= */
+
 axiosInstance.interceptors.request.use(
   (config) => {
+
 
     // ✅ Get token from localStorage
     const token = localStorage.getItem("adminToken");
@@ -28,9 +28,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/* ===============================
-   RESPONSE INTERCEPTOR
-================================= */
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -49,6 +47,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    
     console.error("API Error:", {
       url: error.config?.url,
       method: error.config?.method,
