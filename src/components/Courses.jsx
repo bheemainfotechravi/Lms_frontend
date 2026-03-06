@@ -127,12 +127,12 @@ function CourseCard({ course }) {
           "translate-y-[55%] group-hover:translate-y-0",
           "transition-transform duration-300 ease-out",
           "bg-white/95 backdrop-blur border-t border-gray-200",
-          "p-5",
+          "p-4",
         ].join(" ")}
       >
         <div className="flex items-center justify-between mb-3">
           <p className="text-gray-900 text-xs font-black tracking-wide uppercase">
-            You will learn how to
+            {course.title}
           </p>
           <span className="text-[11px] font-bold text-gray-500">
             {course.level || "Course"}
@@ -167,7 +167,7 @@ function CourseCard({ course }) {
                 course.btnClass
                   ? course.btnClass
                   : "bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600",
-              ].join(" ")}
+              ].join(" ")}  
             >
               Start Learning <ArrowRight className="w-4 h-4" />
             </button>

@@ -69,6 +69,8 @@ export default function UserDashboard() {
                 Here's an overview of your learning journey.
               </p>
             </div>
+            
+            {continueWith && <ContinueLearning course={continueWith} />}
 
             <RecommendedCourses
               courses={RECOMMENDED_COURSES}
@@ -76,7 +78,6 @@ export default function UserDashboard() {
               onViewAll={() => setActiveTab("recommended")}
             />
 
-            {continueWith && <ContinueLearning course={continueWith} />}
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <div className="xl:col-span-2">

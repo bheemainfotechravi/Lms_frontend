@@ -1,33 +1,53 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosinstance.js";
+import axiosInstance from "../../utils/axiosinstance";
 
+import {
+  FiBell,
+  FiChevronDown,
+  FiChevronUp,
+  FiLogOut,
+  FiHome,
+  FiBook,
+  FiPlayCircle,
+  FiTrendingUp,
+  FiSearch,
+  FiAward,
+  FiUser
+} from "react-icons/fi";
 
 const NAV_TABS = [
-  { key: "dashboard", label: "Dashboard", icon: "📊" },
-  { key: "my-courses", label: "My Courses", icon: "📚" },
-  { key: "learn", label: "Continue", icon: "🎥" },
-  { key: "leaderboard", label: "Progress", icon: "📈" },
-  { key: "recommended", label: "Explore", icon: "🔍" },
-  { key: "certificates", label: "Certificates", icon: "🏆" },
-  { key: "settings", label: "Profile", icon: "👤" },
+  { key: "dashboard", label: "Dashboard", icon: FiHome },
+  { key: "my-courses", label: "My Courses", icon: FiBook },
+  { key: "learn", label: "Continue", icon: FiPlayCircle },
+  { key: "leaderboard", label: "Progress", icon: FiTrendingUp },
+  { key: "recommended", label: "Explore", icon: FiSearch },
+  { key: "certificates", label: "Certificates", icon: FiAward },
+  { key: "settings", label: "Profile", icon: FiUser },
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const dropdownRef = useRef(null);
 
-  // Close dropdown on outside click
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
   useEffect(() => {
     const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
@@ -35,136 +55,182 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/user/logout");
-
       navigate("/login", { replace: true });
-
     } catch (error) {
       console.error("Logout failed", error);
+    } finally {
+      setProfileOpen(false);
     }
   };
 
   return (
-    <header className="sticky top-0 z-50
-                   bg-gradient-to-r from-white/5 to-white/0
-                   backdrop-blur-2xl
-                   border-b border-white/20
-                   shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
+    <header className="w-full bg-[#0F172A] text-[#94A3B8] border-b border-[#1E293B] sticky top-0 z-50">
 
-      {/* ── Top bar ── */}
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      <div
+        className="absolute inset-x-0 top-0 h-16 opacity-5 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#94A3B8 0.5px, transparent 0.5px)",
+          backgroundSize: "12px 12px",
+        }}
+      />
 
-        {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={() => navigate("/")}>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-black text-sm">
+      <div className="relative h-16 px-4 md:px-6 flex items-center justify-between">
+
+        {/* LOGO */}
+        <div
+          onClick={() => navigate("/")}
+          className="flex items-center gap-3 cursor-pointer"
+        >
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-violet-500/20">
             L
           </div>
-          <span className="text-base font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+
+          <span className="text-white font-bold text-xl tracking-tight hidden sm:inline">
             LearnX
           </span>
         </div>
 
-        {/* Search */}
-        <div className="flex-1 max-w-sm hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-          <span className="text-sm shrink-0">🔍</span>
-          <input
-            type="text"
-            placeholder="Search courses, topics..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-300"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")}
-              className="text-gray-300 hover:text-gray-500 transition-colors text-sm">
-              ✕
-            </button>
-          )}
-        </div>
+        {/* CENTER NAV */}
+        <nav className="hidden md:flex flex-1 justify-center items-center gap-2">
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2 shrink-0">
-
-          {/* Notification bell */}
-          <button className="relative w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-base hover:border-primary hover:bg-violet-50 transition-all">
-            🔔
-            <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
-          </button>
-
-          {/* Avatar dropdown */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-black text-xs">
-                {user?.name?.charAt(0) || "U"}
-              </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-gray-900 text-xs font-bold leading-none">{user?.first_name?.split(" ")[0] || "Student"}</p>
-                <p className="text-gray-400 text-xs mt-0.5">Student</p>
-              </div>
-              <span className="text-gray-400 text-xs ml-1">{dropdownOpen ? "▲" : "▼"}</span>
-            </button>
-
-            {/* Dropdown menu */}
-            {dropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-gray-100 shadow-xl z-50 overflow-hidden">
-                {/* User info header */}
-                <div className="px-4 py-3 border-b border-gray-50">
-                  <p className="text-gray-900 text-sm font-bold">{user?.first_name || "Student"}</p>
-                  <p className="text-gray-400 text-xs truncate">{user?.email || ""}</p>
-                </div>
-
-                {/* Menu items */}
-                {[
-                  { icon: "👤", label: "Profile & Settings", tab: "settings" },
-                  { icon: "🏆", label: "My Certificates", tab: "certificates" },
-                  { icon: "📚", label: "My Courses", tab: "my-courses" },
-                ].map((item) => (
-                  <button
-                    key={item.tab}
-                    onClick={() => { setActiveTab(item.tab); setDropdownOpen(false); }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors text-left"
-                  >
-                    <span>{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
-                  </button>
-                ))}
-
-                <div className="border-t border-gray-50 p-2">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 font-semibold hover:bg-red-50 rounded-xl transition-colors"
-                  >
-                    <span>🚪</span> Logout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Tab bar ── */}
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
           {NAV_TABS.map((tab) => {
             const active = activeTab === tab.key;
+            const Icon = tab.icon;
+
             return (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-200
-                  ${active
-                    ? "border-primary text-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-200"
-                  }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap
+                ${
+                  active
+                    ? "bg-violet-600/20 text-white border border-violet-500/40"
+                    : "hover:bg-white/5 hover:text-white border border-transparent"
+                }`}
               >
-                <span className="text-base">{tab.icon}</span>
+                <span className="text-lg">
+                  <Icon />
+                </span>
+
                 {tab.label}
               </button>
             );
           })}
+
+        </nav>
+
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center gap-3">
+
+          {/* NOTIFICATIONS */}
+          <div className="relative" ref={notifRef}>
+
+            <button
+              onClick={() => {
+                setNotifOpen((prev) => !prev);
+                setProfileOpen(false);
+              }}
+              className="w-10 h-10 rounded-xl bg-[#1E293B] border border-[#334155] text-slate-300 flex items-center justify-center text-lg hover:bg-slate-800 transition-colors relative"
+            >
+              <FiBell />
+
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0F172A]" />
+            </button>
+
+            {notifOpen && (
+              <div className="absolute right-0 mt-3 w-80 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 p-2">
+
+                <div className="px-4 py-3 border-b border-slate-700/50">
+                  <span className="font-bold text-sm text-white">
+                    Notifications
+                  </span>
+                </div>
+
+                <div className="p-3 hover:bg-white/5 rounded-xl text-sm text-slate-300">
+                  No new notifications
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          {/* PROFILE */}
+          <div className="relative" ref={profileRef}>
+
+            <button
+              onClick={() => setProfileOpen((prev) => !prev)}
+              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-[#1E293B] border border-[#334155] hover:bg-slate-800 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-500/20">
+                {user?.name?.charAt(0) || "U"}
+              </div>
+
+              <span className="hidden sm:block text-sm font-semibold text-slate-200">
+                Profile
+              </span>
+
+              <span className="text-[10px] text-slate-400">
+                {profileOpen ? <FiChevronUp /> : <FiChevronDown />}
+              </span>
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 mt-3 w-64 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 overflow-hidden">
+
+                <div className="px-4 py-4 border-b border-slate-700/50 bg-[#0F172A]/50">
+                  <p className="text-sm font-bold text-white">
+                    {user?.name || "Student"}
+                  </p>
+
+                  <p className="text-xs text-slate-500 truncate">
+                    {user?.email}
+                  </p>
+                </div>
+
+                {/* MOBILE NAV */}
+                <div className="p-2 md:hidden border-b border-slate-700/50">
+
+                  <p className="text-[10px] font-bold text-slate-500 px-3 mb-1 uppercase tracking-wider">
+                    Navigation
+                  </p>
+
+                  {NAV_TABS.map((tab) => {
+                    const Icon = tab.icon;
+
+                    return (
+                      <button
+                        key={tab.key}
+                        onClick={() => {
+                          setActiveTab(tab.key);
+                          setProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                      >
+                        <Icon className="text-lg" />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+
+                </div>
+
+                <div className="p-2">
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-colors inline-flex items-center gap-3"
+                  >
+                    <FiLogOut className="text-lg" />
+                    Logout
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
         </div>
       </div>
     </header>
