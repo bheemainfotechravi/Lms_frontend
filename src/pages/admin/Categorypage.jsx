@@ -21,7 +21,7 @@ const handleAddCategory = async (category) => {
     formData.append("name", category.name);
     formData.append("icon", category.image); // MUST match multer field name
 
-    await axiosInstance.post("/category/add", formData, {
+    await axiosInstance.post("admin/category/add", formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
@@ -36,7 +36,7 @@ const handleAddCategory = async (category) => {
 
   const showCategories = async () => {
     try {
-      const res = await axiosInstance.get("/category/get");
+      const res = await axiosInstance.get("admin/category/get");
       if (Array.isArray(res.data?.categories)) {
        setCategories(res.data.categories);
       }
@@ -54,7 +54,7 @@ const handleAddCategory = async (category) => {
 
       if (!confirmDelete) return;
 
-      const res = await axiosInstance.delete(`/category/delete/${id}`, {
+      const res = await axiosInstance.delete(`admin/category/delete/${id}`, {
         withCredentials: true, 
       });
       console.log(res)
@@ -78,7 +78,7 @@ const handleAddCategory = async (category) => {
   const updateCategory = async (id, name) => {
   try {
     await axiosInstance.patch(
-      `/category/update/${id}`,
+      `admin/category/update/${id}`,
       { name }
     );
 
