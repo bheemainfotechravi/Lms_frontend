@@ -17,6 +17,8 @@ import Admindashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/Adminlogin";
 import CategoryPage from "./pages/admin/Categorypage";
 import Coursepage from "./pages/admin/Coursepage";
+import ReviewCourses from "./pages/admin/ReviewCourses";
+import GetUser from "./components/Admin-components/getUsers";
 
 export default function App() {
   return (
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="/admin/category" element={<CategoryPage />} />
             <Route path="/admin/courses" element={<Coursepage />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
+             <Route path="/admin/get-users" element={<GetUser />} />
 
             {/* Role Based Route Groups */}
             {/* <Route path="/admin" element={<AdminRoutes />} />
@@ -47,6 +51,7 @@ export default function App() {
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
+           
 
           </Routes>
         </Router>

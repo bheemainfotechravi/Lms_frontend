@@ -20,7 +20,7 @@ export default function CoursePage() {
 
   const showCourse = async () => {
     try {
-      const res = await axiosInstance.get("/course/get");
+      const res = await axiosInstance.get("admin/course/get");
       if (Array.isArray(res.data?.courses)) {
         setCourse(res.data.courses);
       }
@@ -37,7 +37,7 @@ export default function CoursePage() {
 
       if (!confirmDelete) return;
       console.log(id)
-      await axiosInstance.delete(`/course/delete/${id}`);
+      await axiosInstance.delete(`admin/course/delete/${id}`);
 
       setCourse((prev) => prev.filter((c) => c.id !== id));
     } catch (error) {
@@ -56,7 +56,7 @@ export default function CoursePage() {
   const updateCourse = async (id, updatedData) => {
     try {
       console.log(id)
-      await axiosInstance.patch(`/course/update/${id}`, updatedData);
+      await axiosInstance.patch(`admin/course/update/${id}`, updatedData);
 
       setCourse((prev) =>
         prev.map((c) =>

@@ -7,7 +7,7 @@ import {
   FiChevronUp,
   FiLogOut,
 } from "react-icons/fi";
-import { ACTIVITY, NAV_ITEMS } from "./dashboardData.js";
+import { NAV_ITEMS } from "./dashboardData.js";
 import axiosInstance from "../../utils/axiosinstance";
 
 
