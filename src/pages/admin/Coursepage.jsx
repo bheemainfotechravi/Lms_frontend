@@ -24,7 +24,6 @@ export default function CoursePage() {
       if (Array.isArray(res.data?.courses)) {
         setCourse(res.data.courses);
       }
-      console.log(res.data.courses)
     } catch (error) {
       console.error("Failed to load Course", error);
     }

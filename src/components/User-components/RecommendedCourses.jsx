@@ -1,5 +1,3 @@
-// RecommendedCourses.jsx
-
 import { useState, useEffect } from "react";
 import axiosInstance, { image_URL } from "../../utils/axiosinstance.js";
 
@@ -9,9 +7,10 @@ import {
   FaStar,
   FaClock,
   FaSignal,
-  FaBookOpen
+  FaBookOpen,
+  FaImage
 } from "react-icons/fa";
-
+import { SiReact } from "react-icons/si";
 
 const CATEGORY_FILTERS = ["All", "Development", "AI & ML", "Design", "Cloud"];
 
@@ -65,40 +64,38 @@ export default function RecommendedCourses({ limit, onViewAll }) {
     .slice(0, limit || courses.length);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
 
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h3 className="text-gray-900 font-black text-sm">
-            Recommended for You ✨
+          <h3 className="text-[#0F172A] font-black text-lg">
+            Recommended for You
           </h3>
-          <p className="text-gray-400 text-xs mt-0.5">
-            Based on your enrolled courses
-          </p>
         </div>
 
         {onViewAll && (
           <button
             onClick={onViewAll}
-            className="text-primary text-xs font-bold hover:opacity-75"
+            className="text-[#E3A83C] text-sm font-bold hover:opacity-80"
           >
             Browse All →
           </button>
         )}
       </div>
 
-      {/* Category Filters */}
+      {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         {CATEGORY_FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
             className={`text-xs font-semibold px-4 py-1.5 rounded-full border transition
-              ${activeFilter === f
-                ? "bg-primary text-white border-primary"
-                : "bg-white text-gray-500 border-gray-200 hover:border-primary hover:text-primary"
-              }`}
+            ${
+              activeFilter === f
+                ? "bg-[#E3A83C] text-white border-[#E3A83C]"
+                : "bg-white text-gray-600 border-[#EAD7B1] hover:border-[#E3A83C]"
+            }`}
           >
             {f}
           </button>
@@ -107,7 +104,7 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
       {/* Course Grid */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center shadow-sm">
+        <div className="bg-white rounded-2xl border border-[#EAD7B1] py-16 text-center shadow-sm">
           <FaBookOpen className="text-3xl text-gray-400 mx-auto mb-2" />
           <p className="text-gray-500 text-sm font-semibold">
             No courses found in this category
@@ -117,111 +114,119 @@ export default function RecommendedCourses({ limit, onViewAll }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filtered.map((c) => (
             <div key={c.id} className="group [perspective:1000px]">
-              <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
 
-                {/* FRONT SIDE */}
-                <div className="absolute inset-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col [backface-visibility:hidden]">
+  <div className="relative h-[320px] w-full transition-transform duration-700 
+  [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
 
-                  {/* Thumbnail */}
-                  {/* Thumbnail */}
-                  <div className="h-40 w-full bg-gray-100 relative overflow-hidden flex items-center justify-center">
+    {/* FRONT SIDE */}
 
-                    {c.thumbnail ? (
-                      <img
-                        src={`${image_URL}/uploads/${c.thumbnail}`}
-                        alt={c.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center w-full h-full text-gray-400">
-                        <FaImage size={28} />
-                      </div>
-                    )}
+    <div className="absolute inset-0 bg-white rounded-2xl border border-[#EAD7B1] shadow-sm overflow-hidden flex flex-col [backface-visibility:hidden]">
 
-                  </div>
+      {/* Thumbnail */}
+      <div className="h-40 w-full bg-[#F6F1E7] flex items-center justify-center overflow-hidden">
 
-                  {/* Body */}
-                  <div className="p-4 flex flex-col flex-1 justify-between">
+        {c.thumbnail ? (
+          <img
+            src={`${image_URL}/uploads/${c.thumbnail}`}
+            alt={c.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <FaImage className="text-gray-400 text-xl" />
+        )}
 
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-1">
-                      {c.category}
-                    </p>
+      </div>
 
-                    <h4 className="text-gray-900 text-sm font-bold leading-snug mb-1 line-clamp-2 min-h-[40px]">
-                      {c.title}
-                    </h4>
+      {/* Body */}
 
-                    <p className="text-gray-400 text-xs mb-3 line-clamp-2">
-                      {c.short_description}
-                    </p>
+      <div className="p-4 flex flex-col flex-1">
 
-                    <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-bold text-[#E3A83C] uppercase mb-1">
+          {c.category}
+        </p>
 
-                      <div className="flex items-center gap-1">
-                        <FaStar className="text-amber-400 text-xs" />
-                        <span className="text-xs font-bold text-gray-700">
-                          {c.rating}
-                        </span>
-                      </div>
+        <h4 className="text-[#0F172A] text-sm font-bold leading-snug mb-1 line-clamp-2">
+          {c.title}
+        </h4>
 
-                      <div className="flex items-center gap-1 text-gray-400 text-xs">
-                        <FaClock />
-                        {c.duration}
-                      </div>
-                    </div>
+        <p className="text-gray-500 text-xs mb-3 line-clamp-2">
+          {c.short_description}
+        </p>
 
-                    <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between mb-3">
 
-                      <span className="text-gray-900 text-base font-black">
-                        ₹{c.price}
-                      </span>
+          <div className="flex items-center gap-1">
+            <FaStar className="text-amber-400 text-xs" />
+            <span className="text-xs font-bold text-gray-700">
+              {c.rating}
+            </span>
+          </div>
 
-                      <button className="bg-primary text-white text-xs font-bold px-3 py-2 rounded-lg hover:opacity-90">
-                        Enroll
-                      </button>
+          <div className="flex items-center gap-1 text-gray-500 text-xs">
+            <FaClock />
+            {c.duration}
+          </div>
 
-                    </div>
-                  </div>
-                </div>
+        </div>
 
-                {/* BACK SIDE */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-5 flex flex-col justify-center [transform:rotateY(180deg)] [backface-visibility:hidden]">
+        <div className="flex items-center justify-between mt-auto">
 
-                  <h3 className="font-bold text-sm mb-4 text-center tracking-wide">
-                    Course Overview
-                  </h3>
+          <span className="text-[#0F172A] text-base font-black">
+            ₹{c.price}
+          </span>
 
-                  <div className="space-y-3 text-xs">
+          <button className="bg-[#E3A83C] text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-[#cf962c] transition">
+            Enroll
+          </button>
 
-                    <div className="flex items-center gap-2 text-gray-200">
-                      <FaClock className="text-primary" />
-                      <span>Duration: {c.duration}</span>
-                    </div>
+        </div>
 
-                    <div className="flex items-center gap-2 text-gray-200">
-                      <FaStar className="text-yellow-400" />
-                      <span>{c.students}+ Learners</span>
-                    </div>
+      </div>
 
-                    <div className="flex items-center gap-2 text-gray-200">
-                      <FaBookOpen className="text-secondary" />
-                      <span>Instructor: {c.instructor}</span>
-                    </div>
+    </div>
 
-                    <p className="text-gray-300 text-xs mt-3 leading-relaxed line-clamp-4">
-                      {c.short_description}
-                    </p>
 
-                  </div>
 
-                  <button className="mt-5 bg-white text-gray-900 text-xs font-bold py-2 rounded-lg hover:bg-gray-100 transition">
-                    View Course
-                  </button>
+    {/* BACK SIDE */}
 
-                </div>
+    <div className="absolute inset-0 rounded-2xl bg-[#0F172A] text-white p-5 flex flex-col justify-center 
+    [transform:rotateY(180deg)] [backface-visibility:hidden]">
 
-              </div>
-            </div>
+      <h3 className="font-bold text-sm mb-4 text-center">
+        Course Overview
+      </h3>
+
+      <div className="space-y-3 text-xs">
+
+        <div className="flex items-center gap-2 text-gray-300">
+          <FaClock className="text-[#E3A83C]" />
+          <span>Duration: {c.duration}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-gray-300">
+          <FaStar className="text-yellow-400" />
+          <span>{c.students}+ Learners</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-gray-300">
+          <FaBookOpen className="text-[#E3A83C]" />
+          <span>Instructor: {c.instructor}</span>
+        </div>
+
+        <p className="text-gray-400 text-xs mt-3 line-clamp-4">
+          {c.short_description}
+        </p>
+
+      </div>
+
+      <button className="mt-5 bg-[#E3A83C] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#cf962c] transition">
+        View Course
+      </button>
+
+    </div>
+
+  </div>
+</div>
           ))}
         </div>
       )}

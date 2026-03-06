@@ -11,20 +11,14 @@ import {
   FiHome,
   FiBook,
   FiPlayCircle,
-  FiTrendingUp,
-  FiSearch,
   FiAward,
-  FiUser
 } from "react-icons/fi";
 
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome },
   { key: "my-courses", label: "My Courses", icon: FiBook },
   { key: "learn", label: "Continue", icon: FiPlayCircle },
-  { key: "leaderboard", label: "Progress", icon: FiTrendingUp },
-  { key: "recommended", label: "Explore", icon: FiSearch },
   { key: "certificates", label: "Certificates", icon: FiAward },
-  { key: "settings", label: "Profile", icon: FiUser },
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
@@ -64,28 +58,20 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
   };
 
   return (
-    <header className="w-full bg-[#0F172A] text-[#94A3B8] border-b border-[#1E293B] sticky top-0 z-50">
+    <header className="w-full bg-[#F3E1BD] border-b border-[#EAD7B1] sticky top-0 z-50">
 
-      <div
-        className="absolute inset-x-0 top-0 h-16 opacity-5 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#94A3B8 0.5px, transparent 0.5px)",
-          backgroundSize: "12px 12px",
-        }}
-      />
-
-      <div className="relative h-16 px-4 md:px-6 flex items-center justify-between">
+      <div className="h-16 px-4 md:px-6 flex items-center justify-between">
 
         {/* LOGO */}
         <div
           onClick={() => navigate("/")}
           className="flex items-center gap-3 cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-violet-500/20">
+          <div className="w-9 h-9 rounded-lg bg-[#E3A83C] flex items-center justify-center text-white font-bold text-lg">
             L
           </div>
 
-          <span className="text-white font-bold text-xl tracking-tight hidden sm:inline">
+          <span className="text-[#0F172A] font-bold text-xl tracking-tight hidden sm:inline">
             LearnX
           </span>
         </div>
@@ -101,17 +87,14 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap
                 ${
                   active
-                    ? "bg-violet-600/20 text-white border border-violet-500/40"
-                    : "hover:bg-white/5 hover:text-white border border-transparent"
+                    ? "bg-[#E3A83C] text-white shadow-sm"
+                    : "text-[#0F172A] hover:bg-[#EAD7B1]"
                 }`}
               >
-                <span className="text-lg">
-                  <Icon />
-                </span>
-
+                <Icon className="text-base" />
                 {tab.label}
               </button>
             );
@@ -130,23 +113,23 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                 setNotifOpen((prev) => !prev);
                 setProfileOpen(false);
               }}
-              className="w-10 h-10 rounded-xl bg-[#1E293B] border border-[#334155] text-slate-300 flex items-center justify-center text-lg hover:bg-slate-800 transition-colors relative"
+              className="w-10 h-10 rounded-xl bg-white border border-[#EAD7B1] text-[#0F172A] flex items-center justify-center text-lg hover:bg-[#F6F1E7] transition-colors relative"
             >
               <FiBell />
 
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0F172A]" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
             </button>
 
             {notifOpen && (
-              <div className="absolute right-0 mt-3 w-80 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 p-2">
+              <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-lg border border-[#EAD7B1] z-50 p-2">
 
-                <div className="px-4 py-3 border-b border-slate-700/50">
-                  <span className="font-bold text-sm text-white">
+                <div className="px-4 py-3 border-b border-[#F0E3C7]">
+                  <span className="font-bold text-sm text-[#0F172A]">
                     Notifications
                   </span>
                 </div>
 
-                <div className="p-3 hover:bg-white/5 rounded-xl text-sm text-slate-300">
+                <div className="p-3 hover:bg-[#F6F1E7] rounded-xl text-sm text-gray-500">
                   No new notifications
                 </div>
 
@@ -159,38 +142,38 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
             <button
               onClick={() => setProfileOpen((prev) => !prev)}
-              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-[#1E293B] border border-[#334155] hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-white border border-[#EAD7B1] hover:bg-[#F6F1E7] transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-500/20">
+              <div className="w-10 h-10 rounded-xl bg-[#E3A83C] flex items-center justify-center text-white font-bold">
                 {user?.name?.charAt(0) || "U"}
               </div>
 
-              <span className="hidden sm:block text-sm font-semibold text-slate-200">
+              <span className="hidden sm:block text-sm font-semibold text-[#0F172A]">
                 Profile
               </span>
 
-              <span className="text-[10px] text-slate-400">
+              <span className="text-xs text-gray-500">
                 {profileOpen ? <FiChevronUp /> : <FiChevronDown />}
               </span>
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-64 bg-[#1E293B] rounded-2xl shadow-2xl border border-[#334155] z-50 overflow-hidden">
+              <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-lg border border-[#EAD7B1] z-50 overflow-hidden">
 
-                <div className="px-4 py-4 border-b border-slate-700/50 bg-[#0F172A]/50">
-                  <p className="text-sm font-bold text-white">
+                <div className="px-4 py-4 border-b border-[#F0E3C7] bg-[#F6F1E7]">
+                  <p className="text-sm font-bold text-[#0F172A]">
                     {user?.name || "Student"}
                   </p>
 
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-xs text-gray-500 truncate">
                     {user?.email}
                   </p>
                 </div>
 
                 {/* MOBILE NAV */}
-                <div className="p-2 md:hidden border-b border-slate-700/50">
+                <div className="p-2 md:hidden border-b border-[#F0E3C7]">
 
-                  <p className="text-[10px] font-bold text-slate-500 px-3 mb-1 uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-gray-500 px-3 mb-1 uppercase tracking-wider">
                     Navigation
                   </p>
 
@@ -204,7 +187,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                           setActiveTab(tab.key);
                           setProfileOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
                       >
                         <Icon className="text-lg" />
                         {tab.label}
@@ -218,7 +201,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-colors inline-flex items-center gap-3"
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors inline-flex items-center gap-3"
                   >
                     <FiLogOut className="text-lg" />
                     Logout
@@ -228,7 +211,6 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
               </div>
             )}
-
           </div>
 
         </div>

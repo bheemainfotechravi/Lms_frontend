@@ -6,10 +6,8 @@ import { Hand, Search, PlayCircle, BarChart3, Award, User } from "lucide-react";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar";
 import ContinueLearning from "../../components/User-components/ContinueLearning";
 import MyCourses from "../../components/User-components/MyCourses";
-import LeaderboardProgress from "../../components/User-components/LeaderboardProgress";
 import RecommendedCourses from "../../components/User-components/RecommendedCourses";
 import Certificates from "../../components/User-components/Certificates";
-import ProfileSettings from "../../components/User-components/ProfileSettings";
 
 // ── Data ──
 import {
@@ -18,16 +16,16 @@ import {
   PROGRESS_STATS,
   RECOMMENDED_COURSES,
   CERTIFICATES,
-  MOCK_PROFILE,
 } from "../../components/User-components/dashboardData.js";
+import Footer from "../../components/Footer.jsx";
 
 function PageTitle({ children, icon: Icon }) {
   return (
     <h1
-      className="text-2xl font-black text-gray-900 flex items-center gap-2"
+      className="text-3xl font-black text-[#0F172A] flex items-center gap-2"
       style={{ letterSpacing: "-0.5px" }}
     >
-      {children} <Icon className="w-6 h-6" />
+      {children} <Icon className="w-6 h-6 text-[#E3A83C]" />
     </h1>
   );
 }
@@ -38,38 +36,43 @@ export default function UserDashboard() {
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    return hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+    return hour < 12
+      ? "Good Morning"
+      : hour < 17
+        ? "Good Afternoon"
+        : "Good Evening";
   }, []);
 
-  // ✅ compute from ENROLLED_COURSES (no stale memo)
   const continueWith = useMemo(() => {
     return ENROLLED_COURSES.find((c) => c.progress > 0 && c.progress < 100);
-  }, [ENROLLED_COURSES]);
+  }, []);
 
   const inProgressCourses = useMemo(() => {
     return ENROLLED_COURSES.filter((c) => c.progress < 100);
-  }, [ENROLLED_COURSES]);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fceed4]">
       <DashboardNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-10">
         {/* ── DASHBOARD ── */}
         {activeTab === "dashboard" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
               <h1
-                className="text-2xl font-black text-gray-900 flex items-center gap-2"
+                className="text-3xl font-black text-[#0F172A] flex items-center gap-2"
                 style={{ letterSpacing: "-0.5px" }}
               >
-                {greeting}, {user?.first_name} <Hand className="w-6 h-6" />
+                {greeting}, {user?.first_name}
+                <Hand className="w-6 h-6 text-[#E3A83C]" />
               </h1>
-              <p className="text-gray-400 text-sm mt-1">
+
+              <p className="text-[#6B7280] text-sm mt-1">
                 Here's an overview of your learning journey.
               </p>
             </div>
-            
+
             {continueWith && <ContinueLearning course={continueWith} />}
 
             <RecommendedCourses
@@ -78,41 +81,33 @@ export default function UserDashboard() {
               onViewAll={() => setActiveTab("recommended")}
             />
 
+            <div className="w-full h-full">
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <MyCourses
-                  courses={ENROLLED_COURSES}
-                  limit={4}
-                  onViewAll={() => setActiveTab("my-courses")}
-                />
-              </div>
+  <MyCourses
+    courses={ENROLLED_COURSES}
+    limit={4}
+    onViewAll={() => setActiveTab("my-courses")}
+  />
 
-              <div className="xl:col-span-1">
-                <LeaderboardProgress leaderboard={LEADERBOARD} stats={PROGRESS_STATS} compact />
-              </div>
-            </div>
+</div>
           </div>
         )}
 
         {/* ── RECOMMENDED ── */}
         {activeTab === "recommended" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <PageTitle icon={Search}>Explore Courses</PageTitle>
+
             <RecommendedCourses courses={RECOMMENDED_COURSES} />
           </div>
         )}
 
         {/* ── MY COURSES ── */}
         {activeTab === "my-courses" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <div className="xl:col-span-2">
                 <MyCourses courses={ENROLLED_COURSES} />
-              </div>
-
-              <div className="xl:col-span-1">
-                <LeaderboardProgress leaderboard={LEADERBOARD} stats={PROGRESS_STATS} compact />
               </div>
             </div>
           </div>
@@ -120,22 +115,28 @@ export default function UserDashboard() {
 
         {/* ── CONTINUE LEARNING ── */}
         {activeTab === "learn" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <PageTitle icon={PlayCircle}>Continue Learning</PageTitle>
 
             {continueWith ? (
               <ContinueLearning course={continueWith} expanded />
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
-                <p className="text-gray-900 font-black text-lg mb-1">All caught up!</p>
-                <p className="text-gray-400 text-sm">
-                  You've completed all in-progress courses. Enroll in something new!
+              <div className="bg-white rounded-2xl border border-[#EAD7B1] p-12 text-center shadow-sm">
+                <p className="text-[#0F172A] font-black text-lg mb-1">
+                  All caught up!
                 </p>
+
+                <p className="text-[#6B7280] text-sm">
+                  You've completed all in-progress courses. Enroll in something
+                  new!
+                </p>
+
                 <button
                   onClick={() => setActiveTab("recommended")}
-                  className="mt-5 bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:opacity-90 transition-all inline-flex items-center gap-2"
+                  className="mt-6 bg-[#E3A83C] hover:bg-[#cf962c] text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-all inline-flex items-center gap-2 shadow-sm"
                 >
-                  Explore Courses <Search className="w-4 h-4" />
+                  Explore Courses
+                  <Search className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -144,30 +145,18 @@ export default function UserDashboard() {
           </div>
         )}
 
-        {/* ── LEADERBOARD ── */}
-        {activeTab === "leaderboard" && (
-          <div className="space-y-6">
-            <PageTitle icon={BarChart3}>Progress & Leaderboard</PageTitle>
-            <LeaderboardProgress leaderboard={LEADERBOARD} stats={PROGRESS_STATS} />
-          </div>
-        )}
-
         {/* ── CERTIFICATES ── */}
         {activeTab === "certificates" && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <PageTitle icon={Award}>My Certificates</PageTitle>
+
             <Certificates certificates={CERTIFICATES} />
           </div>
         )}
 
-        {/* ── SETTINGS ── */}
-        {activeTab === "settings" && (
-          <div className="space-y-6">
-            <PageTitle icon={User}>Profile & Settings</PageTitle>
-            <ProfileSettings profile={MOCK_PROFILE} />
-          </div>
-        )}
+
       </main>
+      <Footer />
     </div>
   );
 }

@@ -53,7 +53,7 @@ const handleAddCategory = async (category) => {
       );
 
       if (!confirmDelete) return;
-
+      
       const res = await axiosInstance.delete(`/category/delete/${id}`, {
         withCredentials: true, 
       });
@@ -144,7 +144,7 @@ const handleAddCategory = async (category) => {
                       Edit
                     </button>
                     <button
-                     onClick={() => deleteCategory(cat._id)}
+                     onClick={() => deleteCategory(cat.id)}
                       className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
                     >
                       Delete
