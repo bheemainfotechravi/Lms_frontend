@@ -83,13 +83,13 @@ export default function UserDashboard() {
 
             <div className="w-full h-full">
 
-  <MyCourses
-    courses={ENROLLED_COURSES}
-    limit={4}
-    onViewAll={() => setActiveTab("my-courses")}
-  />
+              <MyCourses
+                courses={ENROLLED_COURSES}
+                limit={4}
+                onViewAll={() => setActiveTab("my-courses")}
+              />
 
-</div>
+            </div>
           </div>
         )}
 
@@ -105,9 +105,13 @@ export default function UserDashboard() {
         {/* ── MY COURSES ── */}
         {activeTab === "my-courses" && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <MyCourses courses={ENROLLED_COURSES} />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full">
+              <div className="xl:col-span-3 w-full">
+                <MyCourses
+                  courses={ENROLLED_COURSES}
+                  limit={4}
+                  onViewAll={() => setActiveTab("my-courses")}
+                />
               </div>
             </div>
           </div>

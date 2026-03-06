@@ -108,7 +108,6 @@ export default function CoursePage() {
                 <tr key={c.id} className="hover:bg-slate-50">
 
                   <td className="p-3 text-sm text-slate-600">{c.id}</td>
-                  {console.log(c.thumbnail)}
                   {/* Thumbnail */}
                   <td className="p-3">
                     {c.thumbnail ? (
