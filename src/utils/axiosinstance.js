@@ -1,6 +1,10 @@
 // utils/axiosInstance.js
 import axios from "axios";
+<<<<<<< HEAD
 export const image_URL = "http://192.168.1.14:5000"
+=======
+export const image_URl = "http://192.168.1.14:5000"
+>>>>>>> cba1a01e231e194bff2bce61e011c0017206897a
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://192.168.1.14:5000/api",
   withCredentials: true,
