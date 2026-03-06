@@ -50,11 +50,9 @@ export default function Login() {
       });
 
       if (res.data.success) {
-        login(res.data.user);
+        login(res.data.user, res.data.token);
+        navigate("/user/dashboard", { replace: true });
       }
-
-      console.log(res.data, res.token);
-      navigate("/user/dashboard", { replace: true });
     } catch (err) {
       console.log(err);
       setError("Invalid email or password. Please try again.");
@@ -66,29 +64,7 @@ export default function Login() {
   const inputClass =
     "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
 
-  const STATS = [
-    {
-      label: "Courses Completed",
-      value: "12",
-      icon: CircleCheckBig,
-      valueClass: "text-emerald-600",
-      bg: "bg-emerald-50",
-    },
-    {
-      label: "Hours Learned",
-      value: "148h",
-      icon: Clock3,
-      valueClass: "text-primary",
-      bg: "bg-violet-50",
-    },
-    {
-      label: "Certificates Earned",
-      value: "5",
-      icon: Trophy,
-      valueClass: "text-amber-600",
-      bg: "bg-amber-50",
-    },
-  ];
+
 
   return (
     <>
@@ -130,7 +106,7 @@ export default function Login() {
         <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-16 py-20 relative">
           {/* Logo */}
           <div className="absolute top-8 left-10 flex items-center gap-2.5">
-            <div className="w-12 h-12 rounded-xl  flex items-center justify-center text-slate-900 font-black text-2xl">
+            <div className="w-12 h-12 rounded-xl  flex items-center justify-center text-slate-900 font-black text-2xl bg-amber-500">
               L
             </div>
             <span className="text-xl font-black text-slate-900">
@@ -157,7 +133,7 @@ export default function Login() {
                   </p>
                 </div>
               </div>
-              <img src={loginImg} alt="login-image"/>
+              <img src={loginImg} alt="login-image" />
 
             </div>
 
@@ -189,7 +165,7 @@ export default function Login() {
           <div className="anim-fadeup">
             {/* Logo */}
             <div className="flex items-center gap-2 mb-9">
-  
+
               <span className="text-2xl text-[#de950c] font-extrabold">
                 LearnX
               </span>
