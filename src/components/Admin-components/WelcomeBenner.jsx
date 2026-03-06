@@ -20,13 +20,13 @@ export default function WelcomeBanner({ user }) {
           </p>
 
           <div className="flex gap-3">
-            <button
-              onClick={() => navigate("/admin/approve-courses")}
-              className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity inline-flex items-center gap-2"
-            >
-              Review Courses
-              <FiArrowRight />
-            </button>
+          <button
+  onClick={() => navigate("/admin/reviewcourses")}
+  className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-cyan-500 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-lg shadow-violet-500/20"
+>
+  Review Courses
+  <FiArrowRight />
+</button>
 
             <button
               onClick={() => navigate("/admin/users")}
