@@ -9,7 +9,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 800);
+    setTimeout(() => setIsLoading(false), 100);
   }, []);
 
   const today = new Date().toLocaleDateString("en-IN", {

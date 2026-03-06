@@ -66,8 +66,8 @@ export default function TopNavbar({ user = null }) {
       <div className="relative h-16 px-4 md:px-6 flex items-center justify-between">
         {/* LEFT - LOGO */}
         <div
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 shrink-0 cursor-pointer"
+          onClick={() => navigate("/admin/dashboard")}
+          className="flex items-center gap-3 shrink-0 cursor-pointer" 
         >
           <div className="w-9 h-9 min-w-[36px] rounded-lg bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-violet-500/20">
             L
