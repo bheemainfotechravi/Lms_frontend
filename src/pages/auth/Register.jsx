@@ -25,7 +25,6 @@ export default function Register() {
     email: "",
     mobile: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -49,8 +48,7 @@ export default function Register() {
     if (!formData.password) return "Password is required.";
     if (!passwordRegex.test(formData.password))
       return "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
-    if (formData.password !== formData.confirmPassword)
-      return "Passwords do not match.";
+    
 
     return null;
   };
@@ -85,173 +83,230 @@ export default function Register() {
     "w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
 
  return (
-  <div className="min-h-screen flex bg-[#F0D5A1]">
+  <>
+    <style>{`
+      @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+      @keyframes float  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+      @keyframes spin   { to{transform:rotate(360deg)} }
+      .anim-fadeup { animation: fadeUp 0.6s ease both; }
+      .anim-float  { animation: float 4s ease-in-out infinite; }
+      .anim-spin   { animation: spin 0.8s linear infinite; }
+    `}</style>
 
-    {/* ================= LEFT IMAGE SECTION ================= */}
-    <div className="hidden lg:flex flex-1 relative items-center justify-center p-10 overflow-hidden">
+    <div className="min-h-screen flex relative overflow-hidden bg-[#F0D5A1]">
 
-      <style>{`
-        @keyframes floatY {
-          0%,100% { transform: translateY(0); }
-          50% { transform: translateY(-14px); }
-        }
-        .float-y {
-          animation: floatY 4.5s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* Glow Background */}
+      {/* Background blobs */}
       <div
-        className="absolute -top-16 -left-16 w-80 h-80 rounded-full opacity-40 pointer-events-none"
+        className="absolute top-[5%] right-[10%] w-96 h-96 rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(124,58,237,0.35) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute bottom-[-80px] right-10 w-72 h-72 rounded-full opacity-35 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(6,182,212,0.35) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
         }}
       />
 
-      {/* Floating Image */}
-      <div className="relative float-y">
-        <div
-          className="absolute -inset-6 rounded-[2rem] blur-2xl opacity-40"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(124,58,237,0.35), rgba(6,182,212,0.35))",
-          }}
-        />
-        <img
-          src={signupImg}
-          alt="Signup Illustration"
-          className="relative rounded-3xl shadow-2xl w-[420px] h-[520px] object-contain"
-        />
-      </div>
-    </div>
+      <div
+        className="absolute bottom-[5%] left-[5%] w-72 h-72 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)",
+        }}
+      />
 
-    {/* ================= RIGHT FORM SECTION ================= */}
-    <div className="flex-1 flex items-center justify-center px-6 py-10">
-      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+      <div
+        className="absolute inset-0 pointer-events-none opacity-25"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(15,23,42,0.18) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
 
-        <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
-          Create your account
-          <Rocket className="w-5 h-5 text-violet-600" />
-        </h1>
+      {/* ================= LEFT PANEL ================= */}
+      <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-16 py-20 relative">
 
-        <p className="text-slate-500 text-sm mb-6">
-          Join LearnX and start learning today.
-        </p>
-
-        {error && (
-          <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">
-            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-            <span>{error}</span>
+        {/* Logo */}
+        <div className="absolute top-8 left-10 flex items-center gap-2.5">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-900 font-black text-2xl bg-amber-500">
+            L
           </div>
-        )}
+          <span className="text-xl font-black text-slate-900">
+            LearnX
+          </span>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="max-w-sm w-full text-center">
 
-          <input
-            type="text"
-            name="first_name"
-            placeholder="First Name"
-            value={formData.first_name}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          {/* Floating Card */}
+          <div
+            className="bg-white/30 rounded-2xl p-7 border border-violet-100 mb-6 anim-float"
+            style={{ boxShadow: "0 20px 60px rgba(124,58,237,0.12)" }}
+          >
 
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last Name"
-            value={formData.last_name}
-            onChange={handleChange}
-            className={inputClass}
-          />
+            <div className="text-left mb-4">
+              <p className="text-gray-900 font-black text-md">
+                Start Your Journey
+              </p>
+              <p className="text-gray-400 text-sm mt-0.5">
+                Join thousands of learners today
+              </p>
+            </div>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            className={inputClass}
-          />
+            <img src={signupImg} alt="signup-image" />
+          </div>
 
-          <input
-            type="number"
-            name="mobile"
-            placeholder="Mobile Number"
-            value={formData.mobile}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          {/* Stats */}
+          <div className="flex justify-center gap-8 mt-7">
+            {[
+              ["50K+", "Students"],
+              ["1.2K+", "Courses"],
+              ["98%", "Satisfaction"],
+            ].map(([val, label], i) => (
+              <div key={i} className="text-center">
+                <p className="text-xl font-black text-slate-900">
+                  {val}
+                </p>
+                <p className="text-slate-900 text-xs mt-0.5">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
 
-          {/* Password */}
-          <div className="relative">
+        </div>
+      </div>
+
+      {/* ================= RIGHT PANEL ================= */}
+      <div
+        className="w-full lg:w-[768px] shrink-0 bg-white flex flex-col justify-center px-10 py-12 relative z-10 min-h-screen"
+        style={{ boxShadow: "-20px 0 60px rgba(0,0,0,0.06)" }}
+      >
+
+        <div className="anim-fadeup">
+
+          {/* Logo */}
+          <div className="flex items-center gap-2 mb-9">
+            <span className="text-2xl text-[#de950c] font-extrabold">
+              LearnX
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
+            Create your account
+            <Rocket className="w-5 h-5 text-amber-500" />
+          </h1>
+
+          <p className="text-slate-500 text-sm mb-8">
+            Join LearnX and start learning today.
+          </p>
+
+          {/* Error */}
+          {error && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-xl px-4 py-3 mb-5">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
             <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={formData.password}
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value={formData.first_name}
               onChange={handleChange}
-              className={`${inputClass} pr-12`}
+              className={inputClass}
             />
+
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value={formData.last_name}
+              onChange={handleChange}
+              className={inputClass}
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClass}
+            />
+
+            <input
+              type="number"
+              name="mobile"
+              placeholder="Mobile Number"
+              value={formData.mobile}
+              onChange={handleChange}
+              className={inputClass}
+            />
+
+            {/* Password */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`${inputClass} pr-12`}
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
+           
+            {/* Submit */}
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#ffc65c] flex items-center justify-center gap-2 text-slate-800 font-bold text-sm py-3.5 rounded-xl transition-all
+              disabled:opacity-70 disabled:cursor-not-allowed hover:opacity-90 hover:-translate-y-0.5"
             >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 anim-spin" />
+                  Creating account...
+                </>
               ) : (
-                <Eye className="w-5 h-5" />
+                <>
+                  Create Account <ArrowRight className="w-4 h-4" />
+                </>
               )}
             </button>
-          </div>
 
-          <input
-            type={showPassword ? "text" : "password"}
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          </form>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-70 flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Creating account...
-              </>
-            ) : (
-              <>
-                Create Account <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+          {/* Login link */}
+          <p className="text-center text-gray-500 py-5 text-sm">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-[#fda707] font-bold hover:underline hover:text-[#ffc65c]"
+            >
+              Sign in →
+            </Link>
+          </p>
 
-        </form>
-
-        <p className="text-center text-gray-500 text-sm mt-5">
-          Already have an account?{" "}
-          <Link to="/login" className="text-primary font-bold">
-            Sign in →
-          </Link>
-        </p>
-
+        </div>
       </div>
-    </div>
 
-  </div>
+    </div>
+  </>
 );
 }
