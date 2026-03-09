@@ -27,7 +27,6 @@ export default function CoursePage() {
       if (Array.isArray(res.data?.courses)) {
         setCourse(res.data.courses);
       }
-      console.log(res.data.courses)
     } catch (error) {
       console.error("Failed to load Course", error);
     }
@@ -113,7 +112,6 @@ export default function CoursePage() {
                 <tr key={c.id} className="hover:bg-slate-50">
 
                   <td className="p-3 text-sm text-slate-600">{c.id}</td>
-                  {console.log(c.thumbnail)}
                   {/* Thumbnail */}
                   <td className="p-3">
                     {c.thumbnail ? (

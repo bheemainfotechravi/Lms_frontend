@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosinstance";
-
+ 
 export default function CourseModal({ isOpen, onClose, onAddCourse }) {
   const [formData, setFormData] = useState({
     title: "",
@@ -9,17 +9,17 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
     price: "",
     level: "",
     language: "English", 
-    duration: "",       
+    duration: "",        
     total_lectures: "",
-    category_id: "", 
+    category_id: "",
     is_published: false,
   });
-
+ 
   const [categories, setCategories] = useState([]);
   const [thumbnail, setThumbnail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+ 
   useEffect(() => {
     if (isOpen) {
       const fetchCategories = async () => {
@@ -35,9 +35,9 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       fetchCategories();
     }
   }, [isOpen]);
-
+ 
   if (!isOpen) return null;
-
+ 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -45,16 +45,16 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim() || !formData.category_id) {
       return setError("Title and Category are required.");
     }
-
+ 
     setIsLoading(true);
     setError("");
-
+ 
     try {
       const payload = new FormData();
       Object.keys(formData).forEach((key) => {
@@ -64,19 +64,19 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
           payload.append(key, formData[key]);
         }
       });
-
+ 
       if (thumbnail) {
         payload.append("thumbnail", thumbnail);
       }
-
+ 
       const res = await axiosInstance.post("/admin/course/add", payload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+ 
       // Refresh parent list
       onAddCourse(res.data.course || res.data);
       onClose();
-      
+     
       // Reset Form
       setFormData({
         title: "", description: "", short_description: "",
@@ -91,23 +91,23 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       setIsLoading(false);
     }
   };
-
+ 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        
+       
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h3 className="text-xl font-semibold text-gray-800">Add New Course</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl font-light">×</button>
         </div>
-
+ 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
             <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
               {error}
             </div>
           )}
-
+ 
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Course Title</label>
@@ -121,7 +121,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
             />
           </div>
-
+ 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Category */}
             <div>
@@ -139,7 +139,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 ))}
               </select>
             </div>
-
+ 
             {/* Level */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
@@ -155,7 +155,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 <option value="Advanced">Advanced</option>
               </select>
             </div>
-
+ 
             {/* Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
@@ -168,7 +168,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
+ 
             {/* Language */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
@@ -181,7 +181,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
+ 
             {/* Duration */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Duration (Hours)</label>
@@ -194,7 +194,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
+ 
             {/* Total Lectures */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Total Lectures</label>
@@ -208,7 +208,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               />
             </div>
           </div>
-
+ 
           {/* Descriptions */}
           <div className="space-y-4">
             <div>
@@ -232,7 +232,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               />
             </div>
           </div>
-
+ 
           {/* Thumbnail & Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-end">
             <div>
@@ -255,7 +255,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               <label className="text-sm font-medium text-gray-700">Publish immediately</label>
             </div>
           </div>
-
+ 
           <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
             <button
               type="button"
