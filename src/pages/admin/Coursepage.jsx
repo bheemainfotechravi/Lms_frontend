@@ -3,12 +3,14 @@ import CourseModal from "../../components/Admin-components/CourseModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance, { image_URL } from "../../utils/axiosinstance";
 import UpdateCourseModal from "../../components/Admin-components/UpdateCourseModal";
+import MaterialDashboard from "../../components/Admin-components/MaterialDashboard";
 
 export default function CoursePage() {
   const [course, setCourse] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [openMaterialView, setOpenMaterialView] = useState(false);
 
   useEffect(() => {
     showCourse();
@@ -16,6 +18,7 @@ export default function CoursePage() {
 
   const handleAddCourse = (newCourse) => {
     setCourse((prev) => [...prev, newCourse]);
+    showCourse(); 
   };
 
   const showCourse = async () => {
@@ -101,6 +104,7 @@ export default function CoursePage() {
                 <th className="p-3 text-sm font-semibold text-slate-700">Level</th>
                 <th className="p-3 text-sm font-semibold text-slate-700">Published</th>
                 <th className="p-3 text-sm font-semibold text-slate-700">Actions</th>
+                <th className="p-3 text-sm font-semibold text-slate-700">Content</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -131,11 +135,12 @@ export default function CoursePage() {
                   <td className="p-3 text-sm text-slate-600">{c.price}</td>
                   <td className="p-3 text-sm text-slate-600">{c.level}</td>
 
-                  <td className="p-3 text-sm text-slate-600">
-                    {c.is_published ? "Yes" : "No"}
-                  </td>
+                  {/* Change this line */}
+<td className="p-3 text-sm text-slate-600">
+  {Number(c.is_published) === 1 ? "Yes" : "No"}
+</td>
 
-                  <td className="p-3 text-sm text-slate-600 flex gap-2">
+                  <td className="p-3 text-sm text-slate-600 flex gap-2 mt-4">
                     <button
                       onClick={() => {
                         setSelectedCourse(c);
@@ -153,6 +158,17 @@ export default function CoursePage() {
                       Delete
                     </button>
                   </td>
+                  <td className="p-3 text-sm text-slate-600">
+  <button
+    onClick={() => {
+      setSelectedCourse(c);
+      setOpenMaterialView(true); // New state to show the material dashboard
+    }}
+    className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition font-medium"
+  >
+    Manage Materials
+  </button>
+</td>
                 </tr>
               ))}
             </tbody>
@@ -174,6 +190,12 @@ export default function CoursePage() {
           course={selectedCourse}
           onUpdate={updateCourse}
         />
+       
+<MaterialDashboard
+  isOpen={openMaterialView}
+  onClose={() => setOpenMaterialView(false)}
+  course={selectedCourse}
+/>
       </main>
     </div>
   );

@@ -10,17 +10,18 @@ function StatsGrid() {
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    const fetchDashboardStats = async () => {
-      try {
-        setLoading(true);
-        
-        const [userRes, courseRes] = await Promise.all([
-          axiosInstance.get("/admin/user/all-users"),
-          axiosInstance.get("/admin/course/active-courses")
-        ]);
+   const fetchDashboardStats = async () => {
+  try {
+    setLoading(true);
 
-        const userCount = userRes.data?.users?.length || 0;
-        const courseCount = courseRes.data?.activeCourses?.length || 0;
+    // Use .catch() on individual requests so one 404 doesn't kill the whole page
+    const [userRes, courseRes] = await Promise.all([
+      axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
+      axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } }))
+    ]);
+
+    const userCount = userRes.data?.users?.length || 0;
+    const courseCount = courseRes.data?.activeCourses?.length || 0;
 
         const dynamicStats = [
           {
