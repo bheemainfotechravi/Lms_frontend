@@ -1,4 +1,3 @@
-// RecommendedCourses.jsx
 
 import { useState, useEffect } from "react";
 import axiosInstance, { image_URL } from "../../utils/axiosinstance.js";

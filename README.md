@@ -24,3 +24,9 @@ get  - /api/admin/course/courses/id
 get - /api/admin/course/active-courses
 get  - /api/admin/user/all-users
  
+
+
+add - /api/std_material/new - post { title, material_type, link, course_title , file_url }
+get - /api/std_material/courseId
+patch - /api/std_material/update/material_id
+delete - /api/std_material/remove/material_id

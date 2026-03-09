@@ -47,6 +47,7 @@ const handleAddCategory = async (category) => {
 
   
   const deleteCategory = async (id) => {
+    c
     try {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this category?"
