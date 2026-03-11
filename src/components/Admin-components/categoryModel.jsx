@@ -6,11 +6,16 @@ function CategoryModal({ isOpen, onClose, onAddCategory }) {
   const [imageFile, setImageFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (data.trim() === "" || !imageFile) return;
 
     setIsSubmitting(true);
+    // console.log("data:", data);
+    // console.log("typeof data:", typeof data);
+    // console.log("imageFile:", imageFile);
+    
     try {
       // 1. Prepare FormData for the backend
       const formData = new FormData();
@@ -22,8 +27,8 @@ function CategoryModal({ isOpen, onClose, onAddCategory }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      
-      onAddCategory(response.data.category || response.data); 
+
+      onAddCategory(response.data.category || response.data);
 
       setData("");
       setImageFile(null);
@@ -42,7 +47,7 @@ function CategoryModal({ isOpen, onClose, onAddCategory }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-6 w-96 relative shadow-2xl animate-in fade-in zoom-in duration-200">
         <h3 className="text-xl font-black mb-5 text-slate-900">New Category</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5 ml-1">

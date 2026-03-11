@@ -48,7 +48,7 @@ export default function Login() {
         email: formData.email,
         password: formData.password,
       });
-
+      console.log(res.data)
       if (res.data.success) {
         login(res.data.user, res.data.token);
         navigate("/user/dashboard", { replace: true });
