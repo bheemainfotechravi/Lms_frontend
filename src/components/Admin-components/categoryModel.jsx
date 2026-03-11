@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axiosInstance from "../../utils/axiosinstance"; // Assuming you use this for API calls
+import axiosInstance from "../../utils/axiosinstance"; 
 
 function CategoryModal({ isOpen, onClose, onAddCategory }) {
   const [data, setData] = useState("");
@@ -14,13 +14,12 @@ function CategoryModal({ isOpen, onClose, onAddCategory }) {
     try {
       // 1. Prepare FormData for the backend
       const formData = new FormData();
+      console.log("Submitting category with name:",typeof data);
+      console.log("Submitting category with image file:", typeof imageFile);
       formData.append("name", data);
       formData.append("icon", imageFile);
 
-      // 2. Post to your category API
-      const response = await axiosInstance.post("/category/add", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axiosInstance.post("/category/add", formData);
 
       
       onAddCategory(response.data.category || response.data); 

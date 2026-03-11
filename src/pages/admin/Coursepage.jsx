@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CourseModal from "../../components/Admin-components/CourseModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
-import axiosInstance, { image_URL } from "../../utils/axiosinstance";
+import axiosInstance from "../../utils/axiosinstance";
 import UpdateCourseModal from "../../components/Admin-components/UpdateCourseModal";
 import MaterialDashboard from "../../components/Admin-components/MaterialDashboard";
 
@@ -107,71 +107,75 @@ export default function CoursePage() {
                 <th className="p-3 text-sm font-semibold text-slate-700">Content</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {course?.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-50">
+           <tbody className="divide-y divide-slate-100">
+  {course?.map((c, index) => (
+    /* Use a fallback key to ensure the warning disappears */
+    <tr key={c.id || c._id || index} className="hover:bg-slate-50">
+      <td className="p-3 text-sm text-slate-600">{c.id || c._id}</td>
+      
+      {/* Thumbnail */}
+      <td className="p-3">
+        {c.thumbnail ? (
+          <img
+            src={`${c.thumbnail}`}
+            alt={c.title}
+            className="w-16 h-12 object-cover rounded-lg border"
+          />
+        ) : (
+          <span className="text-xs text-gray-400">No Image</span>
+        )}
+      </td>
 
-                  <td className="p-3 text-sm text-slate-600">{c.id}</td>
-                  {/* Thumbnail */}
-                  <td className="p-3">
-                    {c.thumbnail ? (
-                      <img
-                        src={`${image_URL}/uploads/${c.thumbnail}`}
-                        alt={c.title}
-                        className="w-16 h-12 object-cover rounded-lg border"
-                      />
-                    ) : (
-                      <span className="text-xs text-gray-400">No Image</span>
-                    )}
-                  </td>
+      <td className="p-3 text-sm text-slate-600">{c.title}</td>
 
-                  <td className="p-3 text-sm text-slate-600">{c.title}</td>
+      {/* Category */}
+      <td className="p-3 text-sm text-slate-600">
+        {c.category?.name || c.category_name || c.category_id || "Uncategorized"}
+      </td>
 
-                  {/* Category */}
-                  <td className="p-3 text-sm text-slate-600">
-                    {c.category?.name || c.category_name || c.category_id}
-                  </td>
+      <td className="p-3 text-sm text-slate-600">{c.price}</td>
+      <td className="p-3 text-sm text-slate-600">{c.level}</td>
 
-                  <td className="p-3 text-sm text-slate-600">{c.price}</td>
-                  <td className="p-3 text-sm text-slate-600">{c.level}</td>
+      <td className="p-3 text-sm text-slate-600">
+        {Number(c.is_published) === 1 ? "Yes" : "No"}
+      </td>
 
-                  {/* Change this line */}
-<td className="p-3 text-sm text-slate-600">
-  {Number(c.is_published) === 1 ? "Yes" : "No"}
-</td>
+      {/* Actions - Removed mt-4 to keep row alignment straight */}
+      <td className="p-3 text-sm text-slate-600">
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setSelectedCourse(c);
+              setUpdateModalOpen(true);
+            }}
+            className="px-3 py-1 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-600 transition"
+          >
+            Edit
+          </button>
 
-                  <td className="p-3 text-sm text-slate-600 flex gap-2 mt-4">
-                    <button
-                      onClick={() => {
-                        setSelectedCourse(c);
-                        setUpdateModalOpen(true);
-                      }}
-                      className="px-3 py-1 rounded-lg bg-emerald-500 text-white text-xs hover:bg-emerald-600 transition"
-                    >
-                      Edit
-                    </button>
+          <button
+            onClick={() => deleteCourse(c.id || c._id)}
+            className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
 
-                    <button
-                      onClick={() => deleteCourse(c.id)}
-                      className="px-3 py-1 rounded-lg bg-red-500 text-white text-xs hover:bg-red-600 transition"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                  <td className="p-3 text-sm text-slate-600">
-  <button
-    onClick={() => {
-      setSelectedCourse(c);
-      setOpenMaterialView(true); // New state to show the material dashboard
-    }}
-    className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition font-medium"
-  >
-    Manage Materials
-  </button>
-</td>
-                </tr>
-              ))}
-            </tbody>
+      <td className="p-3 text-sm text-slate-600">
+        <button
+          onClick={() => {
+            setSelectedCourse(c);
+            setOpenMaterialView(true);
+          }}
+          className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition font-medium"
+        >
+          Manage Materials
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
 

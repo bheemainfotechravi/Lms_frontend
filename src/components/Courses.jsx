@@ -66,7 +66,7 @@ function CourseCard({ course }) {
       >
        <div className="w-100 h-100 bg-white shadow-lg overflow-hidden">
           <img 
-            src={`${image_URL}/uploads/${course.thumbnail}`}
+            src={`${course.thumbnail}`}
             alt={course.title} 
             className="w-full h-full object-cover"
           />

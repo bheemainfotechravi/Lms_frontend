@@ -148,7 +148,7 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
                     {c.thumbnail ? (
                       <img
-                        src={`${image_URL}/uploads/${c.thumbnail}`}
+                        src={`${c.thumbnail}`}
                         alt={c.title}
                         className="w-full h-full object-cover"
                       />
