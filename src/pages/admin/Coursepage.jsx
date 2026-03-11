@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CourseModal from "../../components/Admin-components/CourseModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
-import axiosInstance, { image_URL } from "../../utils/axiosinstance";
+import axiosInstance from "../../utils/axiosinstance";
 import UpdateCourseModal from "../../components/Admin-components/UpdateCourseModal";
 import MaterialDashboard from "../../components/Admin-components/MaterialDashboard";
 
@@ -116,7 +116,7 @@ export default function CoursePage() {
                   <td className="p-3">
                     {c.thumbnail ? (
                       <img
-                        src={`${image_URL}/uploads/${c.thumbnail}`}
+                        src={`${c.thumbnail}`}
                         alt={c.title}
                         className="w-16 h-12 object-cover rounded-lg border"
                       />

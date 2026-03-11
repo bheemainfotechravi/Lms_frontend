@@ -19,6 +19,7 @@ import CategoryPage from "./pages/admin/Categorypage";
 import Coursepage from "./pages/admin/Coursepage";
 import ReviewCourses from "./pages/admin/ReviewCourses";
 import GetUser from "./components/Admin-components/getUsers";
+import CourseDetails from "./components/User-components/CourseDetails";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/category" element={<CategoryPage />} />
             <Route path="/admin/courses" element={<Coursepage />} />
+            <Route path="/course/:id" element={<CourseDetails />} />  // new
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
              <Route path="/admin/get-users" element={<GetUser />} />
