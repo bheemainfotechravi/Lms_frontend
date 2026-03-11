@@ -88,11 +88,10 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap
-                ${
-                  active
+                ${active
                     ? "bg-[#E3A83C] text-white shadow-sm"
                     : "text-[#0F172A] hover:bg-[#EAD7B1]"
-                }`}
+                  }`}
               >
                 <Icon className="text-base" />
                 {tab.label}
@@ -110,8 +109,8 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
             <button
               onClick={() => {
-                setNotifOpen((prev) => !prev);
-                setProfileOpen(false);
+                setActiveTab?.(tab.key);
+                navigate(`/${tab.key}`);
               }}
               className="w-10 h-10 rounded-xl bg-white border border-[#EAD7B1] text-[#0F172A] flex items-center justify-center text-lg hover:bg-[#F6F1E7] transition-colors relative"
             >
@@ -184,7 +183,8 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                       <button
                         key={tab.key}
                         onClick={() => {
-                          setActiveTab(tab.key);
+                          setActiveTab?.(tab.key);
+                          navigate(`/${tab.key}`);
                           setProfileOpen(false);
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"

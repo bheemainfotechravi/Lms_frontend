@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance, { image_URL } from "../utils/axiosinstance";
+import axiosInstance from "../utils/axiosinstance";
 import { Clock, ScrollText, Users, ArrowRight } from "lucide-react";
 
 export function StarRating({ rating }) {
