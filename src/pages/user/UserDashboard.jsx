@@ -81,7 +81,7 @@ export default function UserDashboard() {
               onViewAll={() => setActiveTab("recommended")}
             />
 
-            <div className="w-full h-full">
+            {/* <div className="w-full h-full">
 
               <MyCourses
                 courses={ENROLLED_COURSES}
@@ -89,7 +89,7 @@ export default function UserDashboard() {
                 onViewAll={() => setActiveTab("my-courses")}
               />
 
-            </div>
+            </div> */}
           </div>
         )}
 

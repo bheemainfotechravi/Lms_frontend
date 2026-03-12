@@ -15,6 +15,7 @@ import ReviewCourses from "./pages/admin/ReviewCourses";
 import GetUser from "./components/Admin-components/getUsers";
 import AdminLogin from "./pages/admin/AdminLogin";
 import MyCourses from "./components/User-components/MyCourses";
+import AllCourses from "./components/User-components/AllCourses";
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
              <Route path="/admin/get-users" element={<GetUser />} />
+             <Route path="/courses/all" element={<AllCourses />} />
  
             {/* Role Based Route Groups */}
             {/* <Route path="/admin" element={<AdminRoutes />} />
