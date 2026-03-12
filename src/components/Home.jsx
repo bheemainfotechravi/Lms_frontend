@@ -1,5 +1,6 @@
 import React, {  useState } from "react";
 import { Link } from "react-router-dom";
+import RecommendedCourses from "../components/User-components/RecommendedCourses"
 import {
   Search,
   Clock,
@@ -254,6 +255,7 @@ export default function Home() {
 
         <section id="courses">
           <Courses />
+          {/* <RecommendedCourses/> */}
         </section>
 
         <section id="career">

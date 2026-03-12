@@ -408,7 +408,6 @@ export default function CourseDetails() {
               <PurchaseCard course={course} enrolling={enrolling} onEnroll={handleEnroll} />
             </div>
           </div>
-
         </div>
 
         {/* ── Mobile Buy Bar ── */}
