@@ -71,7 +71,7 @@ export default function Register() {
         password: formData.password,
       });
 
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       setError("Registration failed. Please try again.");
     } finally {
