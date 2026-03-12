@@ -41,257 +41,141 @@ function SectionHeader({ tag, title, highlight, desc }) {
   );
 }
 
-// function CourseCard({ course }) {
-//   const points =
-//     course.points?.length > 0
-//       ? course.points
-//       : [
-//           "Understand core concepts step-by-step",
-//           "Build real-world projects and workflows",
-//           "Get a certificate after completion",
-//         ];
-
-//   return (
-//     <div
-//       className={[
-//         "group relative  bg-white border border-gray-200 rounded-2xl overflow-hidden",
-//         "transition-all duration-300 cursor-pointer hover:-translate-y-1.5 hover:shadow-xl",
-//         course.borderHover || "",
-//       ].join(" ")}
-//     >
-//       <div
-//         className={[
-//           "h-40 bg-gradient-to-br flex items-center justify-center relative",
-//           course.thumbClass || "from-slate-50 to-slate-100",
-//         ].join(" ")}
-//       >
-//        <div className="w-100 h-100 bg-white shadow-lg overflow-hidden">
-//           <img 
-//             src={`${course.thumbnail}`}
-//             alt={course.title}
-//             className="w-full h-full object-cover"
-//           />
-//         </div>
-
-//         {course.tag && (
-//           <span
-//             className={[
-//               "absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full",
-//               course.tagClass || "bg-gray-100 text-gray-700",
-//             ].join(" ")}
-//           >
-//             {course.tag}
-//           </span>
-//         )}
-
-//         {course.level && (
-//           <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/90 text-gray-500 border border-gray-200">
-//             {course.level}
-//           </span>
-//         )}
-
-//         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-//       </div>
-
-//       <div className="p-5">
-//         <p className={`text-xs font-bold tracking-widest uppercase mb-2 ${course.accentClass || "text-gray-700"}`}>
-//           {course.category}
-//         </p>
-
-//         <h3 className="text-gray-900 text-sm font-extrabold leading-snug mb-2 line-clamp-2">
-//           {course.title}
-//         </h3>
-
-//         <p className="text-gray-400 text-xs mb-3">by {course.instructor}</p>
-
-//         <div className="flex items-center justify-between mb-3">
-//           <StarRating rating={course.rating} />
-//           <span className="text-gray-400 text-xs inline-flex items-center gap-1.5">
-//             <Users className="w-4 h-4" />
-//             {course.students} students
-//           </span>
-//         </div>
-
-//         <div className="flex gap-4">
-//           <span className="text-gray-500 text-xs inline-flex items-center gap-1.5">
-//             <Clock className="w-4 h-4" /> {course.hours}h
-//           </span>
-//           <span className="text-gray-500 text-xs inline-flex items-center gap-1.5">
-//             <ScrollText className="w-4 h-4" /> Certificate
-//           </span>
-//         </div>
-//       </div>
-
-//       <div
-//         className={[
-//           "absolute inset-x-0 bottom-0",
-//           "translate-y-[55%] group-hover:translate-y-0",
-//           "transition-transform duration-300 ease-out",
-//           "bg-white/95 backdrop-blur border-t border-gray-200",
-//           "p-4",
-//         ].join(" ")}
-//       >
-//         <div className="flex items-center justify-between mb-3">
-//           <p className="text-gray-900 text-xs font-black tracking-wide uppercase">
-//             {course.title}
-//           </p>
-//           <span className="text-[11px] font-bold text-gray-500">
-//             {course.level || "Course"}
-//           </span>
-//         </div>
-
-//         <ul className="space-y-2 mb-4">
-//           {points.slice(0, 3).map((t, idx) => (
-//             <li key={idx} className="flex gap-2 text-sm text-slate-600 leading-snug">
-//               <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-//               <span className="line-clamp-2">{t}</span>
-//             </li>
-//           ))}
-//         </ul>
-
-//         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-//           <div>
-//             <span className="text-gray-900 text-lg font-black">₹{course.price}</span>
-//             <span className="text-gray-400 text-xs line-through ml-2">
-//               ₹{course.originalPrice}
-//             </span>
-//           </div>
-
-//           <div className="flex gap-2">
-//             <button className="border border-gray-300 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-lg hover:bg-gray-50 transition">
-//               More Info
-//             </button>
-
-//             <button
-//               className={[
-//                 "text-xs font-bold px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5",
-//                 course.btnClass
-//                   ? course.btnClass
-//                   : "bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600",
-//               ].join(" ")}  
-//             >
-//               Start Learning <ArrowRight className="w-4 h-4" />
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//       <div className="absolute inset-0 pointer-events-none ring-0 group-hover:ring-2 group-hover:ring-primary/15 transition" />
-//     </div>
-//   );
-// }
-
-import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-
 function CourseCard({ course }) {
-
-  const navigate = useNavigate();
+  const points =
+    course.points?.length > 0
+      ? course.points
+      : [
+          "Understand core concepts step-by-step",
+          "Build real-world projects and workflows",
+          "Get a certificate after completion",
+        ];
 
   return (
     <div
-      onClick={() => navigate(`/course/${course.id}`)}
-      className="group cursor-pointer [perspective:1000px]"
+      className={[
+        "group relative  bg-white border border-gray-200 rounded-2xl overflow-hidden",
+        "transition-all duration-300 cursor-pointer hover:-translate-y-1.5 hover:shadow-xl",
+        course.borderHover || "",
+      ].join(" ")}
     >
-      <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-
-        {/* FRONT SIDE */}
-        <div className="absolute inset-0 bg-white rounded-2xl border border-[#EAD7B1] shadow-sm overflow-hidden flex flex-col [backface-visibility:hidden]">
-
-          {/* Thumbnail */}
-          <div className="h-40 w-full bg-[#F6F1E7] flex items-center justify-center overflow-hidden">
-            {course.thumbnail ? (
-              <img
-                src={course.thumbnail}
-                alt={course.title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <FaImage className="text-gray-400 text-xl" />
-            )}
-          </div>
-
-          {/* Body */}
-          <div className="p-4 flex flex-col flex-1">
-
-            <p className="text-xs font-bold text-[#E3A83C] uppercase mb-1">
-              {course.category}
-            </p>
-
-            <h4 className="text-[#0F172A] text-sm font-bold leading-snug mb-1 line-clamp-2 min-h-[40px]">
-              {course.title}
-            </h4>
-
-            <p className="text-gray-500 text-xs mb-3 line-clamp-2 min-h-[32px]">
-              {course.points?.[0]}
-            </p>
-
-            <div className="flex items-center justify-between mb-3">
-
-              <div className="flex items-center gap-1">
-                <FaStar className="text-amber-400 text-xs" />
-                <span className="text-xs font-bold text-gray-700">
-                  {course.rating}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1 text-gray-500 text-xs">
-                <FaClock />
-                {course.hours}h
-              </div>
-
-            </div>
-
-            <div className="flex items-center justify-between mt-auto">
-
-              <span className="text-[#0F172A] text-base font-black">
-                ₹{course.price}
-              </span>
-
-              <button className="bg-[#E3A83C] text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-[#cf962c] transition">
-                Learn More
-              </button>
-
-            </div>
-          </div>
+      <div
+        className={[
+          "h-40 bg-gradient-to-br flex items-center justify-center relative",
+          course.thumbClass || "from-slate-50 to-slate-100",
+        ].join(" ")}
+      >
+       <div className="w-100 h-100 bg-white shadow-lg overflow-hidden">
+          <img 
+            src={`${course.thumbnail}`}
+            alt={course.title} 
+            className="w-full h-full object-cover"
+          />
         </div>
 
-        {/* BACK SIDE */}
-        <div className="absolute inset-0 rounded-2xl bg-[#0F172A] text-white p-5 flex flex-col justify-center [transform:rotateY(180deg)] [backface-visibility:hidden]">
+        {course.tag && (
+          <span
+            className={[
+              "absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full",
+              course.tagClass || "bg-gray-100 text-gray-700",
+            ].join(" ")}
+          >
+            {course.tag}
+          </span>
+        )}
 
-          <h3 className="font-bold text-sm mb-4 text-center">
-            Course Overview
-          </h3>
+        {course.level && (
+          <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/90 text-gray-500 border border-gray-200">
+            {course.level}
+          </span>
+        )}
 
-          <div className="space-y-3 text-xs">
-
-            <div className="flex items-center gap-2 text-gray-300">
-              <FaClock className="text-[#E3A83C]" />
-              <span>Duration: {course.hours} hours</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-300">
-              <FaStar className="text-yellow-400" />
-              <span>{course.students}+ Learners</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-300">
-              <FaBookOpen className="text-[#E3A83C]" />
-              <span>Instructor: {course.instructor}</span>
-            </div>
-
-            <p className="text-gray-400 text-xs mt-3 line-clamp-4">
-              {course.points?.[0]}
-            </p>
-
-          </div>
-
-          <button className="mt-10 h-10 bg-[#E3A83C] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#cf962c] transition">
-            Enroll Course
-          </button>
-
-        </div>
-
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
       </div>
+
+      <div className="p-5">
+        <p className={`text-xs font-bold tracking-widest uppercase mb-2 ${course.accentClass || "text-gray-700"}`}>
+          {course.category}
+        </p>
+
+        <h3 className="text-gray-900 text-sm font-extrabold leading-snug mb-2 line-clamp-2">
+          {course.title}
+        </h3>
+
+        <p className="text-gray-400 text-xs mb-3">by {course.instructor}</p>
+
+        <div className="flex items-center justify-between mb-3">
+          <StarRating rating={course.rating} />
+          <span className="text-gray-400 text-xs inline-flex items-center gap-1.5">
+            <Users className="w-4 h-4" />
+            {course.students} students
+          </span>
+        </div>
+
+        <div className="flex gap-4">
+          <span className="text-gray-500 text-xs inline-flex items-center gap-1.5">
+            <Clock className="w-4 h-4" /> {course.hours}h
+          </span>
+          <span className="text-gray-500 text-xs inline-flex items-center gap-1.5">
+            <ScrollText className="w-4 h-4" /> Certificate
+          </span>
+        </div>
+      </div>
+
+      <div
+        className={[
+          "absolute inset-x-0 bottom-0",
+          "translate-y-[55%] group-hover:translate-y-0",
+          "transition-transform duration-300 ease-out",
+          "bg-white/95 backdrop-blur border-t border-gray-200",
+          "p-4",
+        ].join(" ")}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-gray-900 text-xs font-black tracking-wide uppercase">
+            {course.title}
+          </p>
+          <span className="text-[11px] font-bold text-gray-500">
+            {course.level || "Course"}
+          </span>
+        </div>
+
+        <ul className="space-y-2 mb-4">
+          {points.slice(0, 3).map((t, idx) => (
+            <li key={idx} className="flex gap-2 text-sm text-slate-600 leading-snug">
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className="line-clamp-2">{t}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+          <div>
+            <span className="text-gray-900 text-lg font-black">₹{course.price}</span>
+            <span className="text-gray-400 text-xs line-through ml-2">
+              ₹{course.originalPrice}
+            </span>
+          </div>
+
+          <div className="flex gap-2">
+            <button className="border border-gray-300 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-lg hover:bg-gray-50 transition">
+              More Info
+            </button>
+
+            <button
+              className={[
+                "text-xs font-bold px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5",
+                course.btnClass
+                  ? course.btnClass
+                  : "bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600",
+              ].join(" ")}  
+            >
+              Start Learning <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="absolute inset-0 pointer-events-none ring-0 group-hover:ring-2 group-hover:ring-primary/15 transition" />
     </div>
   );
 }
@@ -339,19 +223,17 @@ const Courses = () => {
           <SectionHeader
             title="Most Popular"
           />
-          <button
-            onClick={() => navigate("/courses")} 
-           className="border border-primary text-primary font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all shrink-0">
+          <button className="border border-primary text-primary font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all shrink-0">
             View All Courses →
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {courses.map((course) => (
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"> */}
+          {/* {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
-          ))}
-          {/* <RecommendedCourses/> */}
-        </div>
+          ))} */}
+          <RecommendedCourses/>
+        {/* </div> */}
       </div>
     </section>
   );
