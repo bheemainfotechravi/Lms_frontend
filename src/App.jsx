@@ -15,7 +15,7 @@ import ReviewCourses from "./pages/admin/ReviewCourses";
 import GetUser from "./components/Admin-components/getUsers";
 import AdminLogin from "./pages/admin/AdminLogin";
 import MyCourses from "./components/User-components/MyCourses";
-import AllCourses from "./components/User-components/AllCourses";
+import AllCourses from "./components/User-components/Allcourses";
 
 export default function App() {
   return (
@@ -31,6 +31,7 @@ export default function App() {
             {/* Roles */}
             <Route path="/user/dashboard" element={<ProtectedRoute allowedRoles={"user"}><UserDashboard /></ProtectedRoute>} />
              <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={"user"}><MyCourses /></ProtectedRoute>} /> 
+             <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={"user"}><AllCourses /></ProtectedRoute>} /> 
             <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin", "superadmin"]}><Admindashboard /></ProtectedRoute>}
             />
             {/* Admin */}
