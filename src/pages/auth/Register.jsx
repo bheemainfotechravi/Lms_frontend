@@ -184,11 +184,11 @@ export default function Register() {
         <div className="anim-fadeup">
 
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-9">
-            <span className="text-2xl text-[#de950c] font-extrabold">
-              LearnX
-            </span>
-          </div>
+          <Link to="/" className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity">
+  <span className="text-2xl text-[#de950c] font-extrabold">
+    LearnX
+  </span>
+</Link>
 
           <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
             Create your account
@@ -238,7 +238,7 @@ export default function Register() {
             />
 
             <input
-              type="number"
+              type="string"
               name="mobile"
               placeholder="Mobile Number"
               value={formData.mobile}
