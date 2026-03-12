@@ -22,23 +22,24 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
   useEffect(() => {
   fetchCourses();
-  }, []);
+  fetchCategories();
+}, []);
 
-  // const fetchCategories = async () => {
-  //   try {
-  //     const res = await axiosInstance.get("/category/get");
+  const fetchCategories = async () => {
+    try {
+      const res = await axiosInstance.get("/category/get");
 
-  //     const formatted = res.data.categories.map((c) => ({
-  //       id: c.id,
-  //       name: c.name
-  //     }));
+      const formatted = res.data.categories.map((c) => ({
+        id: c.id,
+        name: c.name
+      }));
 
-  //     setCategories([{ id: "all", name: "All" }, ...formatted]);
+      setCategories([{ id: "all", name: "All" }, ...formatted]);
 
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //   }
-  // };
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchCourses = async () => {
     try {
