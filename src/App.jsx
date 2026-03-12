@@ -1,11 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
-import AdminRoutes from "./routes/AdminRoutes";
-import UserRoutes from "./routes/UserRoutes";
-import TeacherRoutes from "./routes/TeacherRoutes";
-import CompanyRoutes from "./routes/CompanyRoutes";
-
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Unauthorized from "./pages/admin/Unauthorized";
@@ -14,11 +8,12 @@ import Home from "./components/Home";
 import UserDashboard from "./pages/user/UserDashboard";
 import ProtectedRoute from "./routes/guards/ProtectedRoute";
 import Admindashboard from "./pages/admin/AdminDashboard";
-import AdminLogin from "./pages/admin/Adminlogin";
+
 import CategoryPage from "./pages/admin/Categorypage";
 import Coursepage from "./pages/admin/Coursepage";
 import ReviewCourses from "./pages/admin/ReviewCourses";
 import GetUser from "./components/Admin-components/getUsers";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 export default function App() {
   return (

@@ -77,7 +77,7 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
           doneHours: c.completed_hours || 0,
           totalHours: c.duration || 0,
 
-          thumbnail: `${image_URL}/uploads/${c.thumbnail}`,
+          thumbnail: `${c.thumbnail}`,
 
           tag: c.progress === 100 ? "Completed" : "In Progress",
           tagClass:
