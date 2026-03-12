@@ -12,6 +12,9 @@ export default function SkillPills() {
     "Management",
     "Accounting",
     "Health and Safety",
+    "Project Management",
+    "Supply Chain Management",
+    "Business Analytics"
   ];
 
   return (

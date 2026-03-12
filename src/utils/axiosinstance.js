@@ -1,6 +1,6 @@
 // utils/axiosInstance.js
 import axios from "axios";
-export const image_URL = "http://192.168.1.14:5000"
+// export const image_URL = "http://192.168.1.14:5000"
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://192.168.1.14:5000/api",
   withCredentials: true,
@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    
 
     const token = localStorage.getItem("adminToken");
 

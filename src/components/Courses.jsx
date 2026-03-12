@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance, { image_URL } from "../utils/axiosinstance";
+import axiosInstance from "../utils/axiosinstance";
 import { Clock, ScrollText, Users, ArrowRight } from "lucide-react";
+import RecommendedCourses from "./User-components/RecommendedCourses";
 
 export function StarRating({ rating }) {
   return (
@@ -187,7 +188,6 @@ const Courses = () => {
       try {
         const res = await axiosInstance.get("/course/get");
         
-        
         const formatted = res.data.courses.map((c) => ({
           id: c.id,
           title: c.title,
@@ -219,23 +219,21 @@ const Courses = () => {
   return (
     <section className="py-20 px-[5%]  bg-gradient-to-b from-[#f3c97c] to-white/30 ">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-2">
           <SectionHeader
-            tag="Featured Courses"
             title="Most Popular"
-            highlight="Right Now"
-            desc="Handpicked courses loved by thousands of students."
           />
           <button className="border border-primary text-primary font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all shrink-0">
             View All Courses →
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {courses.map((course) => (
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"> */}
+          {/* {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
+          ))} */}
+          <RecommendedCourses/>
+        {/* </div> */}
       </div>
     </section>
   );

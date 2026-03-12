@@ -1,34 +1,21 @@
-import React, {  useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  Search,
-  Clock,
-  ScrollText,
-  BadgeCheck,
-  Users,
-} from "lucide-react";
+import React, { useState } from "react";
+import { Search, Clock, ScrollText, BadgeCheck, Users } from "lucide-react";
 
+// Components
+import Navbar from "../components/Navbar"; 
 import Footer from "./Footer";
 import Courses from "./Courses";
 import Categories from "./Categories";
 import CareerReadyPlan from "./CareerReadyPlan";
 import SkillPills from "./SkillPills";
 import CareerCTASection from "./CareerCTASection";
-import IBM from '../assets/home/IBM.jpg'
-import Google from '../assets/home/Google.webp'
-import MIT from "../assets/home/MIT.png"
-import MS from "../assets/home/Ms.avif"
 
+// Assets
+import IBM from '../assets/home/IBM.jpg';
+import Google from '../assets/home/Google.webp';
+import MIT from "../assets/home/MIT.png";
+import MS from "../assets/home/Ms.avif";
 
-const NAV_LINKS = [
-  { name: "Browse", id: "categories" },
-  { name: "Courses", id: "courses" },
-  { name: "Career Ready", id: "career" },
-  { name: "Skills", id: "skills" },
-  { name: "For Business", id: "business" },
-];
-
-/* ── Segmented Toggle (like screenshot) ── */
 const HeroToggle = ({ active, setActive }) => {
   const tabs = [
     { key: "cert", label: "Learn & Get Certificates" },
@@ -61,11 +48,9 @@ const HeroToggle = ({ active, setActive }) => {
   );
 };
 
-/* ── Main Home ── */
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("cert");
-
 
   const heroCopy = {
     cert: {
@@ -91,10 +76,7 @@ export default function Home() {
   const current = heroCopy[activeTab];
 
   return (
-    <div
-      className=" min-h-screen overflow-x-hidden"
-    >
-      {/* ── KEYFRAMES (minimal — only what Tailwind can't do) ── */}
+    <div className="min-h-screen overflow-x-hidden">
       <style>{`
         @keyframes float  { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-12px)} }
         @keyframes float2 { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-16px)} }
@@ -104,60 +86,14 @@ export default function Home() {
         .anim-pulse  { animation: pulse-dot 2s infinite }
       `}</style>
 
-      {/* ════════════ NAVBAR ════════════ */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 px-[5%] transition-all duration-300 bg-white/10  backdrop-blur-xl`}
-      >
-        <div className="max-w-7xl mx-auto h-[70px] flex items-center relative">
-          {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-slate-900 font-black text-lg bg-amber-600">
-              L
-            </div>
-            <span className="text-xl font-black ">
-              LearnX
-            </span>
-          </div>
+      {/* Render Navbar Component */}
+      <Navbar />
 
-          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.name}
-                type="button"
-                onClick={() => handleScroll(link.id)}
-                className="relative text-slate-900 text-md font-semibold transition-colors hover:text-[#d68d06]
-        after:absolute after:left-0 after:-bottom-1 after:h-[2px]
-        after:w-0 after:bg-[#d68d06] after:transition-all
-        hover:after:w-full"
-              >
-                {link.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Auth buttons */}
-          <div className="ml-auto flex items-center gap-3">
-            <Link to="/login">
-              <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
-                Log In
-              </button>
-            </Link>
-            <Link to="/register">
-              <button className="border border-[#d68d06] text-gray-700 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
-                Register
-              </button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* ════════════ HERO (LMS style like screenshot) ════════════ */}
-      <section className="pt-28 pb-0 px-[5%] bg-[#F0D5A1]  border-gray-100">
+      {/* HERO SECTION */}
+      <section className="pt-28 pb-0 px-[5%] bg-[#F0D5A1] border-gray-100">
         <div className="max-w-7xl mx-auto">
-          {/* Toggle */}
           <HeroToggle active={activeTab} setActive={setActiveTab} />
 
-          {/* Title */}
           <div className="text-center mt-10">
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-gray-900">
               {current.title}
@@ -167,7 +103,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Search */}
           <div className="mt-8 max-w-3xl mx-auto">
             <div className="flex items-center bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
               <span className="px-4 py-4 text-gray-500">
@@ -186,7 +121,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Logos */}
           <div className="mt-10 text-center">
             <p className="text-xs font-bold tracking-widest uppercase text-gray-500 mb-5">
               Learn From World Leading Experts
@@ -196,7 +130,6 @@ export default function Home() {
               <img src={MS} alt="microsoft" className="w-18 h-16 rounded-2xl"/>
               <img src={IBM} alt="ibm" className="w-18 h-16 rounded-2xl"/>
               <img src={MIT} alt="mit" className="w-18 h-16 rounded-2xl"/>
-
             </div>
           </div>
         </div>
@@ -248,28 +181,14 @@ export default function Home() {
           </div>
         </div>
 
-        <section id="categories">
-          <Categories />
-        </section>
-
-        <section id="courses">
-          <Courses />
-        </section>
-
-        <section id="career">
-          <CareerReadyPlan />
-        </section>
-
-        <section id="skills">
-          <SkillPills />
-        </section>
-
-        <section id="business">
-          <CareerCTASection />
-        </section>
+        {/* Content Sections */}
+        <section id="categories"><Categories /></section>
+        <section id="courses"><Courses /></section>
+        <section id="career"><CareerReadyPlan /></section>
+        <section id="skills"><SkillPills /></section>
+        <section id="business"><CareerCTASection /></section>
       </section>
 
-      {/* ════════════ FOOTER ════════════ */}
       <Footer />
     </div>
   );
