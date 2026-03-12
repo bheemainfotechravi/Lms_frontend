@@ -22,23 +22,24 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
   useEffect(() => {
   fetchCourses();
-  }, []);
+  fetchCategories();
+}, []);
 
-  // const fetchCategories = async () => {
-  //   try {
-  //     const res = await axiosInstance.get("/category/get");
+  const fetchCategories = async () => {
+    try {
+      const res = await axiosInstance.get("/category/get");
 
-  //     const formatted = res.data.categories.map((c) => ({
-  //       id: c.id,
-  //       name: c.name
-  //     }));
+      const formatted = res.data.categories.map((c) => ({
+        id: c.id,
+        name: c.name
+      }));
 
-  //     setCategories([{ id: "all", name: "All" }, ...formatted]);
+      setCategories([{ id: "all", name: "All" }, ...formatted]);
 
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //   }
-  // };
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchCourses = async () => {
     try {
@@ -68,31 +69,6 @@ export default function RecommendedCourses({ limit, onViewAll }) {
     }
   };
 
-  // const handleBuyCourse = async (course) => {
-  //   try {
-  //     if (!user) {
-  //       alert("Please login to enroll in a course");
-  //       return;
-  //     }
-
-  //     const payload = {
-  //       user_id: user.id,
-  //       course_id: course.id,
-  //       amount: course.price
-  //     };
-
-  //     const res = await axiosInstance.post("/course/enroll", payload);
-
-  //     console.log("Course enrolled:", res.data);
-
-  //     alert("Course added to My Courses 🎉");
-
-  //   } catch (error) {
-  //     console.error("Error buying course:", error.response?.data || error);
-  //     alert("Failed to purchase course");
-  //   }
-  // };
-
   const getOneCoursePerCategory = (courses) => {
     const map = new Map();
 
@@ -107,15 +83,20 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
   let displayCourses = courses;
 
+  // If viewing ALL categories
   if (activeFilter === "All") {
-    // Show one course per category
-    displayCourses = getOneCoursePerCategory(courses);
+
+    // On dashboard (limit exists) → show one per category
+    if (limit) {
+      displayCourses = getOneCoursePerCategory(courses);
+    }
+
   } else {
-    // Show all courses from selected category
+    // If a specific category is selected → show all
     displayCourses = courses.filter((c) => c.category === activeFilter);
   }
 
-  // Apply limit only in recommended section
+  // Only limit dashboard cards
   if (limit) {
     displayCourses = displayCourses.slice(0, limit);
   }
@@ -131,14 +112,12 @@ export default function RecommendedCourses({ limit, onViewAll }) {
           </h3>
         </div>
 
-        {onViewAll && (
-          <button
-            onClick={onViewAll}
-            className="text-[#E3A83C] text-sm font-bold hover:opacity-80"
-          >
-            Browse All →
-          </button>
-        )}
+        <button
+          onClick={() => navigate("/courses/all")}
+          className="text-[#E3A83C] text-sm font-bold hover:opacity-80"
+        >
+          Browse All →
+        </button>
       </div>
 
       {/* Filters */}
