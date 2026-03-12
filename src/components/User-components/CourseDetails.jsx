@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx"
 import Footer from "../../components/Footer.jsx"
 import {
-  FaStar, FaClock, FaBookOpen, FaGlobe, FaSignal,
-  FaPlayCircle, FaCheckCircle, FaUsers, FaChevronDown,
-  FaChevronUp, FaInfinity, FaMobile, FaImage
+  FaClock, FaBookOpen, FaGlobe, FaSignal,
+  FaCheckCircle,
+  FaInfinity, FaMobile, FaImage
 } from "react-icons/fa";
 
 export default function CourseDetails() {
@@ -18,8 +18,6 @@ export default function CourseDetails() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
-  const [expandedSections, setExpandedSections] = useState({});
-  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => { fetchCourse(); }, [id]);
 
@@ -62,31 +60,41 @@ export default function CourseDetails() {
     }
   };
 
-  const toggleSection = (sectionId) =>
-    setExpandedSections((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
-
   const handleEnroll = async () => {
-    if (!user) {
-      alert("Please login to enroll in a course");
-      navigate("/login");
-      return;
-    }
-    try {
-      setEnrolling(true);
-      const payload = { user_id: user.id, course_id: course.id, amount: course.price };
-      const res = await axiosInstance.post("/course/enroll", payload);
-      console.log("Course enrolled:", res.data);
-      alert("Course added to My Courses 🎉");
-      navigate("/my-courses");       // ← redirect after success, change route as needed
-    } catch (error) {
-      console.error("Error buying course:", error.response?.data || error);
-      alert("Failed to purchase course");
-    } finally {
-      setEnrolling(false);
-    }
-  };
+  if (!user || !user.id) {
+    alert("Please login to enroll in this course");
 
-  const tabs = ["overview", "curriculum", "instructor", "reviews"];
+    navigate("/login", {
+      state: { redirectTo: `/course/${id}` }
+    });
+
+    return;
+  }
+
+  try {
+    setEnrolling(true);
+
+    const payload = {
+      user_id: user.id,
+      course_id: course.id,
+      amount: course.price
+    };
+
+    const res = await axiosInstance.post("/course/enroll", payload);
+
+    console.log("Course enrolled:", res.data);
+
+    alert("Course added to My Courses 🎉");
+
+    navigate("/courses");
+
+  } catch (error) {
+    console.error("Error buying course:", error.response?.data || error);
+    alert("Failed to purchase course");
+  } finally {
+    setEnrolling(false);
+  }
+};
 
   if (loading) return (
     <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center">
@@ -109,11 +117,9 @@ export default function CourseDetails() {
     </div>
   );
 
-  const filledStars = Math.floor(course.rating);
-
   return (
     <>
-      <DashboardNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <DashboardNavbar />
 
       <div className="min-h-screen bg-[#F6F1E7]">
 
@@ -149,7 +155,7 @@ export default function CourseDetails() {
               </p>
 
               {/* Rating */}
-              <div className="flex flex-wrap items-center gap-4 mb-4">
+              {/* <div className="flex flex-wrap items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className={`text-xs ${i < filledStars ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
@@ -161,7 +167,7 @@ export default function CourseDetails() {
                   <FaUsers className="text-[#E3A83C]" />
                   <span>{course.students.toLocaleString()} students enrolled</span>
                 </div>
-              </div>
+              </div> */}
 
               {/* Meta Pills */}
               <div className="flex flex-wrap gap-2 mb-4">
@@ -185,220 +191,80 @@ export default function CourseDetails() {
               </p>
             </div>
 
-            {/* ── Tabs ── */}
-            <div className="flex gap-1 bg-white rounded-xl border border-[#EAD7B1] p-1 overflow-x-auto shadow-sm">
-              {tabs.map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold capitalize transition whitespace-nowrap
-                    ${activeTab === tab
-                      ? "bg-[#0F172A] text-white shadow"
-                      : "text-gray-400 hover:text-[#0F172A] hover:bg-[#F6F1E7]"}`}>
-                  {tab}
-                </button>
-              ))}
+            {/* What You'll Learn */}
+            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
+              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
+                What You'll Learn
+              </h2>
+              {course.what_you_learn.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                  {course.what_you_learn.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <FaCheckCircle className="text-[#E3A83C] text-sm mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400 text-sm">Details coming soon.</p>
+              )}
             </div>
 
-            {/* ── Overview ── */}
-            {activeTab === "overview" && (
-              <div className="space-y-5">
+            {/* Description */}
+            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
+              <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
+                Course Description
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed">{course.description}</p>
+            </div>
 
-                {/* What You'll Learn */}
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                  <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                    What You'll Learn
-                  </h2>
-                  {course.what_you_learn.length > 0 ? (
-                    <div className="flex flex-col gap-3">
-                      {course.what_you_learn.map((item, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <FaCheckCircle className="text-[#E3A83C] text-sm mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-600 text-sm">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-400 text-sm">Details coming soon.</p>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                  <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                    Course Description
-                  </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">{course.description}</p>
-                </div>
-
-                {/* Requirements */}
-                {course.requirements.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                    <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                      Requirements
-                    </h2>
-                    <ul className="space-y-2">
-                      {course.requirements.map((r, i) => (
-                        <li key={i} className="flex items-center gap-2 text-gray-600 text-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#E3A83C] flex-shrink-0" />
-                          {r}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Course Details */}
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                  <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                    Course Details
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {[
-                      { icon: <FaClock />, label: "Duration", value: course.duration },
-                      { icon: <FaBookOpen />, label: "Lectures", value: course.total_lectures },
-                      { icon: <FaSignal />, label: "Level", value: course.level },
-                      { icon: <FaGlobe />, label: "Language", value: course.language },
-                      { icon: <FaInfinity />, label: "Access", value: "Full Lifetime" },
-                      { icon: <FaMobile />, label: "Devices", value: "Mobile & Desktop" },
-                    ].map((d, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3 bg-[#F6F1E7] rounded-xl border border-[#EAD7B1]">
-                        <div className="text-[#E3A83C] text-sm">{d.icon}</div>
-                        <div>
-                          <p className="text-gray-400 text-xs">{d.label}</p>
-                          <p className="text-[#0F172A] text-xs font-bold">{d.value}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── Curriculum ── */}
-            {activeTab === "curriculum" && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-[#0F172A] font-black text-base">Course Curriculum</h2>
-                  <span className="text-gray-400 text-xs">{course.total_lectures} lectures · {course.duration}</span>
-                </div>
-                {course.curriculum.length > 0 ? course.curriculum.map((section) => (
-                  <div key={section.id} className="bg-white rounded-2xl border border-[#EAD7B1] overflow-hidden shadow-sm">
-                    <button onClick={() => toggleSection(section.id)}
-                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#F6F1E7] transition text-left">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0
-                          ${expandedSections[section.id]
-                            ? "bg-[#E3A83C] text-white"
-                            : "bg-[#F6F1E7] text-[#0F172A] border border-[#EAD7B1]"}`}>
-                          {section.id}
-                        </div>
-                        <div>
-                          <p className="text-[#0F172A] font-bold text-sm">{section.title}</p>
-                          <p className="text-gray-400 text-xs">{section.lectures} lectures · {section.duration}</p>
-                        </div>
-                      </div>
-                      {expandedSections[section.id]
-                        ? <FaChevronUp className="text-[#E3A83C] text-xs flex-shrink-0" />
-                        : <FaChevronDown className="text-gray-400 text-xs flex-shrink-0" />}
-                    </button>
-                    {expandedSections[section.id] && (
-                      <div className="border-t border-[#EAD7B1]">
-                        {section.lessons?.map((lesson, i) => (
-                          <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-[#F6F1E7] transition border-b border-[#EAD7B1] last:border-0">
-                            <FaPlayCircle className={`text-sm flex-shrink-0 ${lesson.preview ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
-                            <span className="flex-1 text-gray-600 text-sm">{lesson.title}</span>
-                            {lesson.preview && (
-                              <span className="text-[#E3A83C] text-xs font-bold border border-[#EAD7B1] bg-[#F6F1E7] px-2 py-0.5 rounded-full">
-                                Preview
-                              </span>
-                            )}
-                            <span className="text-gray-400 text-xs">{lesson.duration}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )) : (
-                  <div className="bg-white rounded-2xl border border-[#EAD7B1] py-12 text-center shadow-sm">
-                    <FaBookOpen className="text-3xl text-[#EAD7B1] mx-auto mb-2" />
-                    <p className="text-gray-400 text-sm font-semibold">Curriculum coming soon</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ── Instructor ── */}
-            {activeTab === "instructor" && (
+            {/* Requirements */}
+            {course.requirements.length > 0 && (
               <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                <h2 className="text-[#0F172A] font-black text-base mb-5 flex items-center gap-2">
+                <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
                   <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                  Your Instructor
+                  Requirements
                 </h2>
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#E3A83C] to-[#0F172A] flex items-center justify-center text-white font-black text-2xl flex-shrink-0">
-                    {course.instructor.charAt(0)}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-[#0F172A] font-black text-base">{course.instructor}</h3>
-                    <p className="text-[#E3A83C] text-sm font-semibold mb-3">Course Instructor</p>
-                    <div className="flex flex-wrap gap-4 mb-4">
-                      {[
-                        { icon: <FaStar />, text: `${course.rating} Rating` },
-                        { icon: <FaUsers />, text: `${course.students.toLocaleString()} Students` },
-                        { icon: <FaBookOpen />, text: "Expert Educator" },
-                      ].map((m, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-gray-500 text-xs">
-                          <span className="text-[#E3A83C]">{m.icon}</span>
-                          <span>{m.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-gray-500 text-sm leading-relaxed">
-                      An experienced instructor passionate about teaching. This course has been carefully crafted to give you the most practical, hands-on learning experience possible.
-                    </p>
-                  </div>
-                </div>
+                <ul className="space-y-2">
+                  {course.requirements.map((r, i) => (
+                    <li key={i} className="flex items-center gap-2 text-gray-600 text-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E3A83C] flex-shrink-0" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
-            {/* ── Reviews ── */}
-            {activeTab === "reviews" && (
-              <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                <h2 className="text-[#0F172A] font-black text-base mb-5 flex items-center gap-2">
-                  <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                  Student Reviews
-                </h2>
-                <div className="flex items-center gap-6 p-4 bg-[#F6F1E7] rounded-2xl border border-[#EAD7B1] mb-6">
-                  <div className="text-center">
-                    <div className="text-[#E3A83C] font-black text-4xl">{course.rating}</div>
-                    <div className="flex justify-center gap-0.5 my-1">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={`text-xs ${i < filledStars ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
-                      ))}
+            {/* Course Details */}
+            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
+              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
+                Course Details
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[
+                  { icon: <FaClock />, label: "Duration", value: course.duration },
+                  { icon: <FaBookOpen />, label: "Lectures", value: course.total_lectures },
+                  { icon: <FaSignal />, label: "Level", value: course.level },
+                  { icon: <FaGlobe />, label: "Language", value: course.language },
+                  { icon: <FaInfinity />, label: "Access", value: "Full Lifetime" },
+                  { icon: <FaMobile />, label: "Devices", value: "Mobile & Desktop" },
+                ].map((d, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-[#F6F1E7] rounded-xl border border-[#EAD7B1]">
+                    <div className="text-[#E3A83C] text-sm">{d.icon}</div>
+                    <div>
+                      <p className="text-gray-400 text-xs">{d.label}</p>
+                      <p className="text-[#0F172A] text-xs font-bold">{d.value}</p>
                     </div>
-                    <p className="text-gray-400 text-xs">Course Rating</p>
                   </div>
-                  <div className="flex-1 space-y-1.5">
-                    {[5, 4, 3, 2, 1].map((star) => (
-                      <div key={star} className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-[#EAD7B1] rounded-full overflow-hidden">
-                          <div className="h-full bg-[#E3A83C] rounded-full"
-                            style={{ width: star === 5 ? "70%" : star === 4 ? "20%" : star === 3 ? "6%" : "4%" }} />
-                        </div>
-                        <div className="flex items-center gap-1 w-8">
-                          <FaStar className="text-[#E3A83C] text-xs" />
-                          <span className="text-xs text-gray-500">{star}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-center text-gray-400 text-sm">No reviews yet. Be the first to review!</p>
+                ))}
               </div>
-            )}
+            </div>
+
+
 
           </div>
 

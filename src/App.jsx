@@ -39,7 +39,15 @@ export default function App() {
             <Route path="/course/:id" element={<CourseDetails/>} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
-            <Route path="/admin/get-users" element={<GetUser />} />
+             <Route path="/admin/get-users" element={<GetUser />} />
+ 
+            {/* Role Based Route Groups */}
+            {/* <Route path="/admin" element={<AdminRoutes />} />
+          <Route path="/user" element={<UserRoutes />} />
+          <Route path="/teacher" element={<TeacherRoutes />} />
+          <Route path="/company" element={<CompanyRoutes />} /> */}
+
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
            {/* user */}
             
