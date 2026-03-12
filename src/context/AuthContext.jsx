@@ -1,21 +1,11 @@
-
 import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosinstance";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  /* ===============================
-     🔹 INITIAL STATE
-  ================================= */
-  const [adminToken, setAdminToken] = useState(
-    localStorage.getItem("adminToken") || null
-  );
-
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("adminUser")) || null
-  );
-
+  const [token, setToken] = useState(localStorage.getItem("authToken") || null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
   const [isLoading, setIsLoading] = useState(true);
 
   /* ===============================
@@ -48,28 +38,32 @@ useEffect(() => {
   delete axiosInstance.defaults.headers.common["Authorization"];
 };
 
+  const login = (userData, token) => {
+    setUser(userData);
+    setToken(token);
 
+    localStorage.setItem("userData", JSON.stringify(userData));
+    localStorage.setItem("authToken", token);
 
-  /* ===============================
-     🔄 APP LOAD HANDLING
-  ================================= */
-  useEffect(() => {
-    if (adminToken) {
-      axiosInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${adminToken}`;
-    }
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  };
 
-    setIsLoading(false);
-  }, [adminToken]);
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("userData");
+    localStorage.removeItem("authToken");
+    delete axiosInstance.defaults.headers.common["Authorization"];
+  };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        adminToken,
+        token, // Unified name
         isAuthenticated,
         isAdmin,
+        isUser,
         isLoading,
         login,
         logout,

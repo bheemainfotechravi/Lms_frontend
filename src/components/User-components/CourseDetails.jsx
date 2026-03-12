@@ -347,3 +347,4 @@ function PurchaseCard({ course, enrolling, onEnroll }) {
     </div>
   );
 }
+
