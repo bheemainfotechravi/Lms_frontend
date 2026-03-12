@@ -2,14 +2,14 @@ import { useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Hand, Search, PlayCircle, BarChart3, Award, User } from "lucide-react";
 
-// ── Components ──
+
 import DashboardNavbar from "../../components/User-components/DashboardNavbar";
 import ContinueLearning from "../../components/User-components/ContinueLearning";
 import MyCourses from "../../components/User-components/MyCourses";
 import RecommendedCourses from "../../components/User-components/RecommendedCourses";
 import Certificates from "../../components/User-components/Certificates";
 
-// ── Data ──
+
 import {
   ENROLLED_COURSES,
   LEADERBOARD,
@@ -56,7 +56,6 @@ export default function UserDashboard() {
       <DashboardNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="max-w-7xl mx-auto px-6 py-10">
-        {/* ── DASHBOARD ── */}
         {activeTab === "dashboard" && (
           <div className="space-y-8">
             <div>

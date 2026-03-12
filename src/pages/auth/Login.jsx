@@ -163,13 +163,12 @@ export default function Login() {
           style={{ boxShadow: "-20px 0 60px rgba(0,0,0,0.06)" }}
         >
           <div className="anim-fadeup">
-            {/* Logo */}
-            <div className="flex items-center gap-2 mb-9">
-
-              <span className="text-2xl text-[#de950c] font-extrabold">
-                LearnX
-              </span>
-            </div>
+         
+            <Link to="/" className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity">
+  <span className="text-2xl text-[#de950c] font-extrabold">
+    LearnX
+  </span>
+</Link>
 
             <h1
               className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2"
