@@ -79,6 +79,16 @@ export default function UserDashboard() {
               limit={4}
               onViewAll={() => setActiveTab("recommended")}
             />
+
+            {/* <div className="w-full h-full">
+
+              <MyCourses
+                courses={ENROLLED_COURSES}
+                limit={4}
+                onViewAll={() => setActiveTab("my-courses")}
+              />
+
+            </div> */}
           </div>
         )}
 
