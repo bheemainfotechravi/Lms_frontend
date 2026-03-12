@@ -25,8 +25,6 @@ export const AuthProvider = ({ children }) => {
   const isAdmin =
     user?.role === "admin" || user?.role === "superadmin";
 
-
-
 useEffect(() => {
   setIsLoading(false);
 }, []);
@@ -35,7 +33,7 @@ useEffect(() => {
   setUser(userData);
   setAdminToken(token);
 
-  localStorage.setItem("adminUser", JSON.stringify(userData));
+  localStorage.setItem("userToken", JSON.stringify(userData));
   localStorage.setItem("adminToken", token);
 
   axiosInstance.defaults.headers.common[

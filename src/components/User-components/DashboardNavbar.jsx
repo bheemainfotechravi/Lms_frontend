@@ -52,7 +52,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
       navigate("/login", { replace: true });
     } catch (error) {
       console.error("Logout failed", error);
-    } finally {
+    } finally { 
       setProfileOpen(false);
     }
   };

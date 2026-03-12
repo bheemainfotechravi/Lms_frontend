@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import axiosInstance from "../utils/axiosinstance";
-
+ 
 /* ---------------- Section Header ---------------- */
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
@@ -19,99 +19,95 @@ function SectionHeader({ tag, title, highlight, desc }) {
     </div>
   );
 }
-
+ 
 /* ---------------- Category Card ---------------- */
 function CategoryCard({ cat }) {
   return (
     <button
       className={[
-        "group text-left w-full relative overflow-hidden rounded-2xl p-6",
-        "bg-white border border-gray-200",
-        "shadow-sm transition-all duration-200",
-        "hover:-translate-y-1 hover:shadow-lg hover:border-primary/25",
-        "focus:outline-none focus:ring-2 focus:ring-primary/30",
+        "group w-full rounded-2xl p-6 text-center",
+        "bg-[#D68D06] text-black",
+        "shadow-md transition-all duration-200",
+        "hover:-translate-y-1 hover:shadow-xl",
       ].join(" ")}
     >
-      <div
-        className={[
-          "pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-          "bg-gradient-to-br from-primary/5 to-secondary/5",
-        ].join(" ")}
-      />
-
-      <div className="relative flex items-start gap-4">
-
-        {/* Uploaded Icon */}
-        <div className="w-12 h-12 rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+      {/* Icon */}
+      <div className="flex justify-center mb-4">
+        <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow">
           <img
-            src={`${cat.icon}`}
+            src={cat.icon}
             alt={cat.name}
-            className="w-6 h-6 object-contain transition-transform duration-300 scale-150 group-hover:scale-[1.8]"
+            className="w-7 h-7 object-contain"
           />
         </div>
-
-        <div className="flex-1">
-          <p className="text-slate-900 font-extrabold text-base leading-tight">
-            {cat.name}
-          </p>
-
-          <p className="text-slate-600 text-sm mt-1">
-            {cat.count || 2} Courses
-          </p>
-
-          <div className="mt-4 inline-flex items-center gap-1.5 text-primary text-sm font-bold">
-            Explore
-            <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-          </div>
-        </div>
       </div>
-
-      <div className="relative mt-5 h-px w-full bg-gray-100" />
+ 
+      {/* Category Name */}
+      <p className="font-bold text-xl leading-tight">
+        {cat.name}
+      </p>
+ 
+      {/* Course Count */}
+      <p className="font-bold text-lg opacity-90 mt-1">
+        {cat.count} Courses
+      </p>
+ 
+      {/* Explore */}
+      <div className="mt-4 flex items-center justify-center gap-1 text-lg font-bold text-white">
+        Explore
+        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+      </div>
     </button>
   );
 }
-
+ 
 /* ---------------- Main Categories Section ---------------- */
 const Categories = () => {
   const [categories, setCategories] = useState([]);
-
+ 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axiosInstance.get("/category/get");
-
+ 
+ 
+ 
         const formatted = res.data.categories.map((cat) => ({
           id: cat.id,
           name: cat.name,
-          count: cat.courseCount || 0,
+          count: cat.course_count || 0,
           icon: cat.icon,
         }));
-
+ 
+ 
         setCategories(formatted);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
-
+ 
     fetchCategories();
   }, []);
-
+ 
   return (
     <section className="py-20 px-[5%] bg-gradient-to-b from-white to-[#f3c97c]">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
-          <SectionHeader
-            tag="Browse by Category"
-            title="Explore Top"
-            highlight="Categories"
-            desc="From coding to creative arts — find your path to success."
-          />
-
+ 
+          <div className="text-center sm:text-left">
+            <SectionHeader
+           
+              title="Explore Top"
+              highlight="Categories"
+            />
+          </div>
+ 
           <button className="inline-flex items-center gap-2 border border-primary text-primary font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all shrink-0 w-fit">
             View All <ArrowRight className="w-4 h-4" />
           </button>
+ 
         </div>
-
+ 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {categories.map((cat) => (
             <CategoryCard key={cat.id} cat={cat} />
@@ -121,5 +117,5 @@ const Categories = () => {
     </section>
   );
 };
-
+ 
 export default Categories;
