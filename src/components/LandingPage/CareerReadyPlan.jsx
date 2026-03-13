@@ -1,8 +1,8 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import job from '../assets/career-images/job.svg'
-import skill from '../assets/career-images/skill.svg'
-import career from '../assets/career-images/career.svg' 
+import job from '../../assets/career-images/job.svg'
+import skill from '../../assets/career-images/skill.svg'
+import career from '../../assets/career-images/career.svg' 
 
 /**
  * Alison-style "Career Ready Plan" component (3 option cards)

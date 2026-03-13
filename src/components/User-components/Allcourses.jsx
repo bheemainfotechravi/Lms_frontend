@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import DashboardNavbar from "./DashboardNavbar.jsx";
-import Footer from "../Footer.jsx";
+import Footer from "../LandingPage/Footer.jsx";
 
 export default function AllCourses() {
     const [courses, setCourses] = useState([]);

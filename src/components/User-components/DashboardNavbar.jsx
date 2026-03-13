@@ -19,7 +19,7 @@ import {
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome, path: "/user/dashboard" },
   { key: "my-courses", label: "My Courses", icon: FiBook, path: "/user/mycourses" },
-  { key: "learn", label: "Continue", icon: FiPlayCircle, path: "/user/learning" },
+  { key: "learn", label: "Continue", icon: FiPlayCircle, path: `/learning` },
   { key: "certificates", label: "Certificates", icon: FiAward, path: "/user/certificates" },
 ];
 

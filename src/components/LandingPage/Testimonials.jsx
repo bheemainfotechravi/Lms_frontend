@@ -1,5 +1,5 @@
 import React from 'react'
-import TESTIMONIALS from '../data/Testimonials.js'
+import TESTIMONIALS from '../../data/Testimonials.js'
 const Testimonials = () => {
   return (
      <section className="py-20 px-[5%] bg-white border-t border-gray-100">
