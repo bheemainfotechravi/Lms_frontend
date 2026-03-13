@@ -110,7 +110,7 @@ export default function Login() {
               L
             </div>
             <span className="text-xl font-black text-slate-900">
-              Learn
+              LearnX
             </span>
           </div>
 
