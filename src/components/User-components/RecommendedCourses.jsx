@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../../utils/axiosinstance.js";
-import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -9,6 +7,8 @@ import {
   FaBookOpen,
   FaImage
 } from "react-icons/fa";
+import axiosInstance from "../../utils/axiosinstance.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 
 

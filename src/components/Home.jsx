@@ -15,6 +15,7 @@ import IBM from '../assets/home/IBM.jpg';
 import Google from '../assets/home/Google.webp';
 import MIT from "../assets/home/MIT.png";
 import MS from "../assets/home/Ms.avif";
+import RecommendedCourses from "./User-components/RecommendedCourses";
 
 const HeroToggle = ({ active, setActive }) => {
   const tabs = [
@@ -184,6 +185,7 @@ export default function Home() {
         {/* Content Sections */}
         <section id="categories"><Categories /></section>
         <section id="courses"><Courses /></section>
+        {/* <section id="courses"><RecommendedCourses /></section> */}
         <section id="career"><CareerReadyPlan /></section>
         <section id="skills"><SkillPills /></section>
         <section id="business"><CareerCTASection /></section>

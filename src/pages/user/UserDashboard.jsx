@@ -6,7 +6,7 @@ import { Hand, Search, PlayCircle, BarChart3, Award, User } from "lucide-react";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar";
 import ContinueLearning from "../../components/User-components/ContinueLearning";
 import MyCourses from "../../components/User-components/MyCourses";
-import RecommendedCourses from "../../components/User-components/RecommendedCourses";
+import RecommendedCourses from "../../components/User-components/RecommendedCourses.jsx";
 import Certificates from "../../components/User-components/Certificates";
 
 
@@ -80,15 +80,7 @@ export default function UserDashboard() {
               onViewAll={() => setActiveTab("recommended")}
             />
 
-            {/* <div className="w-full h-full">
-
-              <MyCourses
-                courses={ENROLLED_COURSES}
-                limit={4}
-                onViewAll={() => setActiveTab("my-courses")}
-              />
-
-            </div> */}
+            
           </div>
         )}
 
