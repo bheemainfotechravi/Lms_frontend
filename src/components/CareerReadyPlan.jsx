@@ -4,11 +4,7 @@ import job from '../assets/career-images/job.svg'
 import skill from '../assets/career-images/skill.svg'
 import career from '../assets/career-images/career.svg' 
 
-/**
- * Alison-style "Career Ready Plan" component (3 option cards)
- * - TailwindCSS required
- * - Replace images with your own if you want
- */
+
 export default function CareerReadyPlan() {
   const items = [
     {
@@ -70,7 +66,7 @@ export default function CareerReadyPlan() {
                 "flex items-center gap-5 p-5",
               ].join(" ")}
               onClick={() => {
-                // optional: route/scroll/handler
+                
                 console.log("Selected:", it.alt);
               }}
             >

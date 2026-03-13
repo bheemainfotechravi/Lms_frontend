@@ -43,7 +43,7 @@ export default function App() {
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
             <Route path="/admin/get-users" element={<GetUser />} />
             <Route path="*" element={<NotFound />} />
-           {/* user */}
+        
             
 
           </Routes>

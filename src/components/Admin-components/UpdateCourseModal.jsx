@@ -19,7 +19,7 @@ export default function UpdateCourseModal({
     is_published: false,
   });
 
-  // Prefill data when modal opens
+  
   useEffect(() => {
     if (course) {
       setFormData({

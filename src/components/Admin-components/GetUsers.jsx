@@ -15,14 +15,14 @@ const GetUser = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 1. Fetch Users Data
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get("/admin/user/all-users");
         
-        // Mounting data from response.data.users
+ 
         if (response.data && response.data.users) {
           setUsers(response.data.users);
         }
@@ -36,7 +36,7 @@ const GetUser = () => {
     fetchUsers();
   }, []);
 
-  // 2. Search Filter Logic (Filter by Name or Email)
+ 
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
     const email = user.email.toLowerCase();
@@ -44,7 +44,7 @@ const GetUser = () => {
     return fullName.includes(search) || email.includes(search);
   });
 
-  // 3. Helper to format date
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',

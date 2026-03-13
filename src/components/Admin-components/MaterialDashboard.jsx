@@ -60,7 +60,7 @@ const handleSubmit = async (e) => {
         payload.append("link", item.link);
       } else {
         if (!item.file) throw new Error(`Please upload a PDF for "${item.title}"`);
-        // Ensure "file" matches your backend upload.single("file")
+        
         payload.append("pdf", item.file); 
       }
 
@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
 
     await Promise.all(uploadPromises);
 
-    // Success Actions
+    
     setStagedItems([{ title: "", material_type: "pdf", link: "", file: null }]);
     setShowForm(false);
     fetchMaterials();
@@ -134,7 +134,7 @@ const handleSubmit = async (e) => {
       </tr>
     ))
   ) : (
-    // Empty State Message
+    
     <tr>
       <td colSpan="4" className="py-20 text-center">
         <div className="flex flex-col items-center justify-center text-slate-400">

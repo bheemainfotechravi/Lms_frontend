@@ -8,7 +8,7 @@ export default function UpdateCategoryModal({
 }) {
   const [name, setName] = useState("");
 
-  // Prefill category name when modal opens
+  
   useEffect(() => {
     if (category) {
       setName(category.name);

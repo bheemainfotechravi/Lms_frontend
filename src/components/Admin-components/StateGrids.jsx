@@ -14,7 +14,7 @@ function StatsGrid() {
   try {
     setLoading(true);
 
-    // Use .catch() on individual requests so one 404 doesn't kill the whole page
+    
     const [userRes, courseRes] = await Promise.all([
       axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
       axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } }))

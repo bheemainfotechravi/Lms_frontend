@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, Clock, ScrollText, BadgeCheck, Users } from "lucide-react";
 
-// Components
+
 import Navbar from "../components/Navbar"; 
 import Footer from "./Footer";
 import Courses from "./Courses";
@@ -10,7 +10,7 @@ import CareerReadyPlan from "./CareerReadyPlan";
 import SkillPills from "./SkillPills";
 import CareerCTASection from "./CareerCTASection";
 
-// Assets
+
 import IBM from '../assets/home/IBM.jpg';
 import Google from '../assets/home/Google.webp';
 import MIT from "../assets/home/MIT.png";

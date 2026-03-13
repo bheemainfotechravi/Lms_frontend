@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import axiosInstance from "../utils/axiosinstance";
 
-/* ---------------- Section Header ---------------- */
+
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -20,7 +20,7 @@ function SectionHeader({ tag, title, highlight, desc }) {
   );
 }
 
-/* ---------------- Category Card ---------------- */
+
 function CategoryCard({ cat }) {
   return (
     <button
@@ -71,7 +71,7 @@ function CategoryCard({ cat }) {
   );
 }
 
-/* ---------------- Main Categories Section ---------------- */
+
 const Categories = () => {
   const [categories, setCategories] = useState([]);
 
