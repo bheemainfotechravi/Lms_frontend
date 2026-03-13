@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axiosinstance.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx"
-import Footer from "../../components/Footer.jsx"
+import Footer from "../../components/LandingPage/Footer.jsx"
 import {
   FaClock, FaBookOpen, FaGlobe, FaSignal,
   FaCheckCircle,

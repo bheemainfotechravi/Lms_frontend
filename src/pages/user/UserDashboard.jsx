@@ -17,7 +17,7 @@ import {
   RECOMMENDED_COURSES,
   CERTIFICATES,
 } from "../../components/User-components/dashboardData.js";
-import Footer from "../../components/Footer.jsx";
+import Footer from "../../components/LandingPage/Footer.jsx";
 
 function PageTitle({ children, icon: Icon }) {
   return (
