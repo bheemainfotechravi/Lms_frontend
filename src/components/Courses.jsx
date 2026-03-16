@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosinstance";
+import axiosInstance from "../../utils/axiosinstance";
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
 

@@ -1,9 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from 'react'; // React import ensure karein
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react"; // Scroll logic ke liye
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Unauthorized from "./pages/admin/Unauthorized";
-import NotFound from "./components/NotFound";
+import NotFound from "./components/LandingPage/NotFound";
 import Home from "./components/Home";
 import UserDashboard from "./pages/user/UserDashboard";
 import ProtectedRoute from "./routes/guards/ProtectedRoute";
@@ -17,11 +19,21 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import MyCourses from "./components/User-components/MyCourses";
 import AllCourses from "./components/User-components/Allcourses";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <>
       <AuthProvider>
         <Router>
+          <ScrollToTop /> 
+          
           <Routes>
             {/* Home */}
             <Route path="/" element={<Home />} />
@@ -30,10 +42,11 @@ export default function App() {
 
             {/* Roles */}
             <Route path="/user/dashboard" element={<ProtectedRoute allowedRoles={"user"}><UserDashboard /></ProtectedRoute>} />
-             <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={"user"}><MyCourses /></ProtectedRoute>} /> 
-             <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={"user"}><AllCourses /></ProtectedRoute>} /> 
-            <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin", "superadmin"]}><Admindashboard /></ProtectedRoute>}
-            />
+            <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={"user"}><MyCourses /></ProtectedRoute>} /> 
+            <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={"user"}><AllCourses /></ProtectedRoute>} /> 
+            
+            <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin", "superadmin"]}><Admindashboard /></ProtectedRoute>} />
+
             {/* Admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/category" element={<CategoryPage />} />
@@ -42,15 +55,13 @@ export default function App() {
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
             <Route path="/admin/get-users" element={<GetUser />} />
-            <Route path="*" element={<NotFound />} />
-        
-            
+            <Route path="/courses/all" element={<AllCourses />} />
 
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </AuthProvider>
     </>
   );
 }
-
-

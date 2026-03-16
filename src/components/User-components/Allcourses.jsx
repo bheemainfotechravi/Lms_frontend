@@ -68,7 +68,8 @@ export default function AllCourses() {
     return (
         <>
             <DashboardNavbar />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="min-h-screen bg-[#fceed4]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ">
 
                 {/* Header */}
                 <div className="flex items-center justify-between flex-wrap gap-3">
@@ -200,6 +201,7 @@ export default function AllCourses() {
                         ))}
                     </div>
                 )}
+            </div>
             </div>
             <Footer />
         </>

@@ -57,10 +57,10 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
     try {
       await axiosInstance.post("/user/logout");
     } catch (error) {
-      console.error("Backend logout failed", error);
+      console.error("Logout failed", error);
     } finally {
-      logout(); 
-      navigate("/login", { replace: true });
+      logout();
+      navigate("/login",{replace:true})
       setProfileOpen(false);
     }
   };

@@ -1,6 +1,6 @@
 import React from "react";
-import hiring from '../assets/CTA-images/hiring.svg'
-import edu from "../assets/CTA-images/education.svg"
+import hiring from '../../assets/CTA-images/hiring.svg'
+import edu from "../../assets/CTA-images/education.svg"
 
 export default function CareerCTASection() {
   return (

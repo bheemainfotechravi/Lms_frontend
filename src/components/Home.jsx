@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { Search, Clock, ScrollText, BadgeCheck, Users } from "lucide-react";
-
-
-import Navbar from "../components/Navbar"; 
+import Navbar from "./LandingPage/Navbar"; 
 import Footer from "./Footer";
 import Courses from "./Courses";
 import Categories from "./Categories";
 import CareerReadyPlan from "./CareerReadyPlan";
-import SkillPills from "./SkillPills";
+import SkillPills from "./LandingPage/SkillPills";
 import CareerCTASection from "./CareerCTASection";
 
 
-import IBM from '../assets/home/IBM.jpg';
-import Google from '../assets/home/Google.webp';
-import MIT from "../assets/home/MIT.png";
-import MS from "../assets/home/Ms.avif";
+import IBM from '../../assets/home/IBM.jpg';
+import Google from '../../assets/home/Google.webp';
+import MIT from "../../assets/home/MIT.png";
+import MS from "../../assets/home/Ms.avif";
+
 
 const HeroToggle = ({ active, setActive }) => {
   const tabs = [
@@ -184,6 +183,7 @@ export default function Home() {
         {/* Content Sections */}
         <section id="categories"><Categories /></section>
         <section id="courses"><Courses /></section>
+        {/* <section id="courses"><RecommendedCourses /></section> */}
         <section id="career"><CareerReadyPlan /></section>
         <section id="skills"><SkillPills /></section>
         <section id="business"><CareerCTASection /></section>
