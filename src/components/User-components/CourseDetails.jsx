@@ -7,7 +7,8 @@ import Footer from "../../components/LandingPage/Footer.jsx"
 import {
   FaClock, FaBookOpen, FaGlobe, FaSignal,
   FaCheckCircle,
-  FaInfinity, FaMobile, FaImage
+  FaInfinity, FaMobile, FaImage,
+  FaStar, FaUsers
 } from "react-icons/fa";
 
 export default function CourseDetails() {
@@ -26,6 +27,7 @@ export default function CourseDetails() {
       setLoading(true);
       const res = await axiosInstance.get(`/course/get/${id}`);
       const c = res.data.data;
+
       setCourse({
         id: c.id,
         title: c.title,
@@ -40,11 +42,12 @@ export default function CourseDetails() {
         is_published: c.is_published,
         thumbnail: c.thumbnail,
         instructor: c.instructor_name || "Expert Instructor",
-        rating: c.rating || 4.8,
-        total_ratings: c.total_ratings || 0,
         students: c.students || 0,
         last_updated: c.updated_at
-          ? new Date(c.updated_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+          ? new Date(c.updated_at).toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          })
           : "Recently",
         requirements: c.requirements || [],
         curriculum: c.curriculum || [],
@@ -52,6 +55,11 @@ export default function CourseDetails() {
         what_you_learn: c.material_titles
           ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
           : c.what_you_learn || [],
+
+        // reviews data
+        rating: Number(res.data.avgRating || 0),
+        total_ratings: Number(res.data.totalReviews || 0),
+        reviews: res.data.reviews || [],
       });
     } catch (error) {
       console.error("Error fetching course:", error);
@@ -61,40 +69,40 @@ export default function CourseDetails() {
   };
 
   const handleEnroll = async () => {
-  if (!user || !user.id) {
-    alert("Please login to enroll in this course");
+    if (!user || !user.id) {
+      alert("Please login to enroll in this course");
 
-    navigate("/login", {
-      state: { redirectTo: `/course/${id}` }
-    });
+      navigate("/login", {
+        state: { redirectTo: `/course/${id}` }
+      });
 
-    return;
-  }
+      return;
+    }
 
-  try {
-    setEnrolling(true);
+    try {
+      setEnrolling(true);
 
-    const payload = {
-      user_id: user.id,
-      course_id: course.id,
-      amount: course.price
-    };
+      const payload = {
+        user_id: user.id,
+        course_id: course.id,
+        amount: course.price
+      };
 
-    const res = await axiosInstance.post("/course/enroll", payload);
+      const res = await axiosInstance.post("/course/enroll", payload);
 
-    console.log("Course enrolled:", res.data);
+      console.log("Course enrolled:", res.data);
 
-    alert("Course added to My Courses 🎉");
+      alert("Course added to My Courses 🎉");
 
-    navigate("/courses");
+      navigate("/user/mycourses");
 
-  } catch (error) {
-    console.error("Error buying course:", error.response?.data || error);
-    alert("Failed to purchase course");
-  } finally {
-    setEnrolling(false);
-  }
-};
+    } catch (error) {
+      console.error("Error buying course:", error.response?.data || error);
+      alert("Failed to purchase course");
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   if (loading) return (
     <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center">
@@ -116,7 +124,7 @@ export default function CourseDetails() {
       </div>
     </div>
   );
-
+  const filledStars = Math.round(course?.rating || 0);
   return (
     <>
       <DashboardNavbar />
@@ -155,7 +163,7 @@ export default function CourseDetails() {
               </p>
 
               {/* Rating */}
-              {/* <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div className="flex flex-wrap items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className={`text-xs ${i < filledStars ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
@@ -167,7 +175,7 @@ export default function CourseDetails() {
                   <FaUsers className="text-[#E3A83C]" />
                   <span>{course.students.toLocaleString()} students enrolled</span>
                 </div>
-              </div> */}
+              </div>
 
               {/* Meta Pills */}
               <div className="flex flex-wrap gap-2 mb-4">
@@ -264,7 +272,96 @@ export default function CourseDetails() {
               </div>
             </div>
 
+            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+                <div>
+                  <h2 className="text-[#0F172A] font-black text-base flex items-center gap-2">
+                    <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
+                    Ratings & Reviews
+                  </h2>
+                  <p className="text-gray-400 text-sm mt-1">
+                    Feedback from enrolled learners
+                  </p>
+                </div>
 
+                <div className="bg-[#F6F1E7] border border-[#EAD7B1] rounded-2xl px-4 py-3 min-w-[180px]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#0F172A] font-black text-2xl">
+                      {course.rating?.toFixed(1) || "0.0"}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar
+                            key={i}
+                            className={`text-xs ${i < Math.round(course.rating || 0)
+                                ? "text-[#E3A83C]"
+                                : "text-[#EAD7B1]"
+                              }`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-gray-400 text-xs mt-1">
+                        {course.total_ratings || 0} review{course.total_ratings === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {course.reviews && course.reviews.length > 0 ? (
+                <div className="space-y-4">
+                  {course.reviews.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-[#FDFAF5] border border-[#EAD7B1] rounded-2xl p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div>
+                          <p className="text-[#0F172A] text-sm font-bold">
+                            Student Review
+                          </p>
+                          <p className="text-gray-400 text-xs">
+                            {item.created_at
+                              ? new Date(item.created_at).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })
+                              : "Recently"}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-1 bg-white border border-[#EAD7B1] rounded-full px-3 py-1">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar
+                              key={i}
+                              className={`text-[10px] ${i < item.rating ? "text-[#E3A83C]" : "text-[#EAD7B1]"
+                                }`}
+                            />
+                          ))}
+                          <span className="text-[#0F172A] text-xs font-bold ml-1">
+                            {item.rating}/5
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {item.review_text || "No written review provided."}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-10 text-center">
+                  <FaStar className="text-2xl text-[#EAD7B1] mx-auto mb-2" />
+                  <p className="text-[#0F172A] font-bold text-sm">No reviews yet</p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    Be the first to review this course after completing it.
+                  </p>
+                </div>
+              )}
+            </div>
 
           </div>
 
