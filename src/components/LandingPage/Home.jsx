@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { Search, Clock, ScrollText, BadgeCheck, Users } from "lucide-react";
-
-// Components
 import Navbar from "../LandingPage/Navbar"; 
 import Footer from "./Footer";
 import Courses from "../LandingPage/Courses";
 import Categories from "../LandingPage/Categories";
 import CareerReadyPlan from "./CareerReadyPlan";
-import SkillPills from "./SkillPills";
+import SkillPills from "../LandingPage/SkillPills";
 import CareerCTASection from "./CareerCTASection";
 
-// Assets
 import IBM from '../../assets/home/IBM.jpg';
 import Google from '../../assets/home/Google.webp';
 import MIT from "../../assets/home/MIT.png";
 import MS from "../../assets/home/Ms.avif";
-import RecommendedCourses from "../User-components/RecommendedCourses";
 
 const HeroToggle = ({ active, setActive }) => {
   const tabs = [

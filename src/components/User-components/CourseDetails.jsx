@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axiosinstance.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx"
-import Footer from "../../components/LandingPage/Footer.jsx"
+import Footer from "../LandingPage/Footer.jsx"
 import {
   FaClock, FaBookOpen, FaGlobe, FaSignal,
   FaCheckCircle,
@@ -94,7 +94,7 @@ export default function CourseDetails() {
 
       alert("Course added to My Courses 🎉");
 
-      navigate("/user/mycourses");
+    navigate("/user/mycourses");
 
     } catch (error) {
       console.error("Error buying course:", error.response?.data || error);

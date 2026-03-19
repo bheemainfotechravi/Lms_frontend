@@ -10,12 +10,6 @@ import {
 import { NAV_ITEMS } from "./dashboardData.js";
 import axiosInstance from "../../utils/axiosinstance";
 
-
-
-
-
-
-
 export default function TopNavbar({ user = null }) {
   const notifRef = useRef(null);
   const navigate = useNavigate();

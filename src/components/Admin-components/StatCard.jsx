@@ -5,7 +5,7 @@ const StatCard = ({ stat, onClick }) => {
   const [displayValue, setDisplayValue] = useState(0);
   const Icon = stat.icon;
 
-  // Logic for counting up animation
+  
   useEffect(() => {
     let start = 0;
     const end = parseInt(stat.value);
@@ -26,7 +26,7 @@ const StatCard = ({ stat, onClick }) => {
     return () => clearInterval(timer);
   }, [stat.value]);
 
-  // Helper to add leading zero for numbers 0-9
+  
   const formatNumber = (num) => {
     return num < 10 ? `0${num}` : num.toLocaleString();
   };

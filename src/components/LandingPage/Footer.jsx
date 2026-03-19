@@ -1,5 +1,7 @@
 import React from "react";
+import { FaHeart, FaLock, FaStar } from "react-icons/fa";
 import { FaXTwitter, FaLinkedinIn, FaFacebookF, FaYoutube } from "react-icons/fa6";
+import { GrCertificate } from "react-icons/gr";
 
 const Footer = () => {
   return (
@@ -75,12 +77,15 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-gray-100">
-          <p className="text-slate-900 text-xs">
-            © 2025 LearnX. All rights reserved. Made with ❤️ in India.
-          </p>
+         <p className="text-slate-900 text-xs flex items-center justify-center gap-1">
+        © 2026 LearnX. All rights reserved. 
+        <span>Made with</span>
+        <FaHeart className="text-red-500 inline" /> 
+        <span>in India.</span>
+      </p>
 
           <p className="text-slate-900 text-xs">
-            🔒 Secure Payments • 📜 ISO Certified • ⭐ 4.9/5 Rated
+           <FaLock className=" inline"/> <span> Secure Payments •</span> <GrCertificate className="inline"/> <span> ISO Certified • </span>  <FaStar  className="inline" />  <span>4.9/5 Rated</span> 
           </p>
         </div>
 
