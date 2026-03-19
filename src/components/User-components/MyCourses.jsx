@@ -4,7 +4,7 @@ import axiosInstance from "../../utils/axiosinstance";
 import { useAuth } from "../../context/AuthContext";
 import { FaBookOpen, FaClock, FaGlobe, FaSignal, FaCheckCircle } from "react-icons/fa";
 import DashboardNavbar from "./DashboardNavbar";
-import Footer from "../Footer";
+import Footer from "../LandingPage/Footer";
 
 // ── Circular progress ring (Kept exactly as yours) ──
 function ProgressRing({ percent, size = 40, stroke = 3.5 }) {

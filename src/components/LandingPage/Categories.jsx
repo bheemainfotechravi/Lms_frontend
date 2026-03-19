@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
+import { useNavigate } from "react-router-dom";
 
 
 function SectionHeader({ tag, title, highlight, desc }) {
@@ -22,8 +23,16 @@ function SectionHeader({ tag, title, highlight, desc }) {
 
 
 function CategoryCard({ cat }) {
+ 
+  const navigate = useNavigate();
+ 
+  const handleClick = () => {
+    navigate(`/category/${cat.id}`);
+  };
+ 
   return (
     <button
+      onClick={handleClick}
       className={[
         "group w-full rounded-2xl p-6 text-center",
         "bg-[#D68D06] text-black",
@@ -52,11 +61,10 @@ function CategoryCard({ cat }) {
         {cat.count} Courses
       </p>
  
-      {/* Explore */}
       <div className="mt-4 flex items-center justify-center gap-1 text-lg font-bold text-white">
         Explore
-        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
       </div>
+ 
     </button>
   );
 }

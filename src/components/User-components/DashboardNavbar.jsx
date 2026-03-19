@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Added Link
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axiosInstance from "../../utils/axiosinstance";
 
@@ -12,6 +12,7 @@ import {
   FiBook,
   FiPlayCircle,
   FiAward,
+  FiUser, // Added for the new Profile link
   FiUserPlus,
   FiLogIn
 } from "react-icons/fi";
@@ -19,12 +20,11 @@ import {
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome, path: "/user/dashboard" },
   { key: "my-courses", label: "My Courses", icon: FiBook, path: "/user/mycourses" },
-  { key: "learn", label: "Continue", icon: FiPlayCircle, path: "/user/learning" },
+  { key: "learn", label: "Continue", icon: FiPlayCircle, path: `/learning` },
   { key: "certificates", label: "Certificates", icon: FiAward, path: "/user/certificates" },
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
-  // Destructure isAuthenticated from useAuth
   const { user, logout, isAuthenticated } = useAuth(); 
   const navigate = useNavigate();
 
@@ -82,7 +82,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
           </span>
         </div>
 
-        {/* CENTER NAV (Only visible if logged in) */}
+        {/* CENTER NAV */}
         <nav className="hidden md:flex flex-1 justify-center items-center gap-2">
           {isAuthenticated && NAV_TABS.map((tab) => {
             const active = activeTab === tab.key;
@@ -104,7 +104,6 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
         {/* RIGHT ACTIONS */}
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
-            /* --- LOGGED IN STATE --- */
             <>
               {/* NOTIFICATIONS */}
               <div className="relative" ref={notifRef}>
@@ -152,7 +151,21 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                       <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                     </div>
 
-                    {/* MOBILE NAV (Inside Profile Menu for Small Screens) */}
+                    <div className="p-2 border-b border-[#F0E3C7]">
+                      {/* NEW: MY PROFILE NAVIGATION */}
+                      <button
+                        onClick={() => {
+                          navigate("/user/user-profile/:id");
+                          setProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
+                      >
+                        <FiUser className="text-lg text-[#E3A83C]" />
+                        My Profile
+                      </button>
+                    </div>
+
+                    {/* MOBILE NAV */}
                     <div className="p-2 md:hidden border-b border-[#F0E3C7]">
                       <p className="text-[10px] font-bold text-gray-500 px-3 mb-1 uppercase tracking-wider">Navigation</p>
                       {NAV_TABS.map((tab) => {
@@ -184,19 +197,18 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
               </div>
             </>
           ) : (
-            /* --- LOGGED OUT STATE --- */
-           <div className="ml-auto flex items-center gap-3">
-                     <Link to="/login">
-                       <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
-                         Log In
-                       </button>
-                     </Link>
-                     <Link to="/register">
-                       <button className="border border-[#d68d06] text-gray-700 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
-                         Register
-                       </button>
-                     </Link>
-                   </div>
+            <div className="ml-auto flex items-center gap-3">
+              <Link to="/login">
+                <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
+                  Log In
+                </button>
+              </Link>
+              <Link to="/register">
+                <button className="border border-[#d68d06] text-gray-700 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
+                  Register
+                </button>
+              </Link>
+            </div>
           )}
         </div>
       </div>
