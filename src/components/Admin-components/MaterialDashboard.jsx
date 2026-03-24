@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosinstance";
+import { Plus, Trash2, Clock, HelpCircle } from "lucide-react"; // 'Clock' sahi hai
 
 export default function MaterialDashboard({ isOpen, onClose, course }) {
   const [materials, setMaterials] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("materials"); // "materials" or "assessment"
 
+  // Assessment State
+  const [quizDuration, setQuizDuration] = useState(300); // default 5 mins
+  const [quizQuestions, setQuizQuestions] = useState([
+    { questions: "", options: ["", "", "", ""], correct: 0 }
+  ]);
 
   const [stagedItems, setStagedItems] = useState([
     { title: "", material_type: "pdf", link: "", file: null }
@@ -28,6 +35,61 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     }
   };
 
+  // --- Assessment Handlers ---
+  const addQuizQuestion = () => {
+    setQuizQuestions([...quizQuestions, { questions: "", options: ["", "", "", ""], correct: 0 }]);
+  };
+
+  const removeQuizQuestion = (index) => {
+    setQuizQuestions(quizQuestions.filter((_, i) => i !== index));
+  };
+
+  const handleQuizInputChange = (qIndex, field, value) => {
+    const updated = [...quizQuestions];
+    updated[qIndex][field] = value;
+    setQuizQuestions(updated);
+  };
+
+  const handleOptionChange = (qIndex, optIndex, value) => {
+    const updated = [...quizQuestions];
+    updated[qIndex].options[optIndex] = value;
+    setQuizQuestions(updated);
+  };
+
+const submitAssessment = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError("");
+
+  try {
+    console.log(course.id)
+    const payload = {
+      // 1. Try 'course_id' again but ensure it's a Number
+      course_id: Number(course.id), 
+      duration_second: Number(quizDuration),
+      assessment_data: quizQuestions.map(q => ({
+        question: q.questions, 
+        options: q.options,
+        correct_options:(q.correct)
+      }))
+    };
+
+    console.log("FINAL PAYLOAD ATTEMPT:", payload);
+
+    const res = await axiosInstance.post(`/assessment/add_assessment/${course.id}`, payload);
+
+    if (res.data.success) {
+      alert("Assessment saved successfully!");
+      setActiveTab("materials");
+    }
+  } catch (err) {
+    console.error("Submission Error Details:", err.response?.data);
+    setError(err.response?.data?.message || "Check console for details");
+  } finally {
+    setIsLoading(false);
+  }
+};
+  // --- Material Handlers ---
   const addMoreItems = () => {
     setStagedItems([...stagedItems, { title: "", material_type: "pdf", link: "", file: null }]);
   };
@@ -42,43 +104,38 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     setStagedItems(updated);
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-  try {
+    try {
+      const uploadPromises = stagedItems.map(async (item) => {
+        const payload = new FormData();
+        payload.append("course_title", course.title);
+        payload.append("course_id", course.id);
+        payload.append("title", item.title);
+        payload.append("material_type", item.material_type);
 
-    const uploadPromises = stagedItems.map(async (item) => {
-      const payload = new FormData();
-      payload.append("course_title", course.title);
-      payload.append("course_id", course.id);
-      payload.append("title", item.title);
-      payload.append("material_type", item.material_type);
+        if (item.material_type === "link") {
+          payload.append("link", item.link);
+        } else {
+          if (!item.file) throw new Error(`Please upload a PDF for "${item.title}"`);
+          payload.append("pdf", item.file);
+        }
+        return axiosInstance.post("/std_material/new", payload);
+      });
 
-      if (item.material_type === "link") {
-        payload.append("link", item.link);
-      } else {
-        if (!item.file) throw new Error(`Please upload a PDF for "${item.title}"`);
-        
-        payload.append("pdf", item.file); 
-      }
-
-      return axiosInstance.post("/std_material/new", payload);
-    });
-
-    await Promise.all(uploadPromises);
-
-    
-    setStagedItems([{ title: "", material_type: "pdf", link: "", file: null }]);
-    setShowForm(false);
-    fetchMaterials();
-  } catch (err) {
-    setError(err.response?.data?.message || err.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      await Promise.all(uploadPromises);
+      setStagedItems([{ title: "", material_type: "pdf", link: "", file: null }]);
+      setShowForm(false);
+      fetchMaterials();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -89,69 +146,162 @@ const handleSubmit = async (e) => {
         {/* Header */}
         <div className="p-6 border-b flex justify-between items-center bg-slate-50">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Course Content</h2>
-            <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest">{course?.title}</p>
+            <h2 className="text-xl font-bold text-slate-800">Management Dashboard</h2>
+            <div className="flex gap-4 mt-2">
+                <button 
+                    onClick={() => setActiveTab("materials")}
+                    className={`text-xs font-bold uppercase tracking-widest pb-1 border-b-2 transition-all ${activeTab === "materials" ? "text-indigo-600 border-indigo-600" : "text-slate-400 border-transparent"}`}
+                >
+                    Course Content
+                </button>
+                <button 
+                    onClick={() => setActiveTab("assessment")}
+                    className={`text-xs font-bold uppercase tracking-widest pb-1 border-b-2 transition-all ${activeTab === "assessment" ? "text-indigo-600 border-indigo-600" : "text-slate-400 border-transparent"}`}
+                >
+                    Final Assessment
+                </button>
+            </div>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => setShowForm(true)} className="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all">
-              + Add Materials
-            </button>
+            {activeTab === "materials" && (
+                <button onClick={() => setShowForm(true)} className="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all">
+                + Add Materials
+                </button>
+            )}
             <button onClick={onClose} className="text-slate-400 text-3xl hover:text-slate-600">&times;</button>
           </div>
         </div>
 
-        {/* Table Area */}
+        {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6">
-          <table className="w-full text-left">
-            <thead className="border-b text-slate-400 text-[10px] uppercase tracking-widest font-black">
-              <tr>
-                <th className="pb-4 px-4">Topic Name</th>
-                <th className="pb-4 px-4">Type</th>
-                <th className="pb-4 px-4">Content</th>
-                <th className="pb-4 px-4 text-right">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-  {materials.length > 0 ? (
-    materials.map((m, index) => (
-      <tr key={index} className="hover:bg-slate-50">
-        <td className="py-4 px-4 font-bold text-slate-700">{m.title}</td>
-        <td className="py-4 px-4">
-          <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
-            m.material_type === 'pdf' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'
-          }`}>
-            {m.material_type === 'pdf' ? 'Doc' : 'Video'}
-          </span>
-        </td>
-        <td className="py-4 px-4 text-xs truncate max-w-[200px]">
-          <a href={m.file_url || m.youtube_url} target="_blank" rel="noreferrer" className="text-blue-500 underline">
-            View {m.material_type === 'pdf' ? 'Document' : 'Video'}
-          </a>
-        </td>
-        <td className="py-4 px-4 text-right text-slate-400 text-xs">
-          {new Date(m.created_at).toLocaleDateString()}
-        </td>
-      </tr>
-    ))
-  ) : (
-    
-    <tr>
-      <td colSpan="4" className="py-20 text-center">
-        <div className="flex flex-col items-center justify-center text-slate-400">
-          <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p className="text-sm font-medium">Material not added for this course</p>
-          <p className="text-[10px] uppercase tracking-widest mt-1">Click "+ Add Materials" to begin</p>
-        </div>
-      </td>
-    </tr>
-  )}
-</tbody>
-          </table>
+          {activeTab === "materials" ? (
+            <table className="w-full text-left">
+              <thead className="border-b text-slate-400 text-[10px] uppercase tracking-widest font-black">
+                <tr>
+                  <th className="pb-4 px-4">Topic Name</th>
+                  <th className="pb-4 px-4">Type</th>
+                  <th className="pb-4 px-4">Content</th>
+                  <th className="pb-4 px-4 text-right">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {materials.length > 0 ? (
+                  materials.map((m, index) => (
+                    <tr key={index} className="hover:bg-slate-50">
+                      <td className="py-4 px-4 font-bold text-slate-700">{m.title}</td>
+                      <td className="py-4 px-4">
+                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                          m.material_type === 'pdf' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'
+                        }`}>
+                          {m.material_type === 'pdf' ? 'Doc' : 'Video'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-xs truncate max-w-[200px]">
+                        <a href={m.file_url || m.youtube_url} target="_blank" rel="noreferrer" className="text-blue-500 underline">
+                          View {m.material_type === 'pdf' ? 'Document' : 'Video'}
+                        </a>
+                      </td>
+                      <td className="py-4 px-4 text-right text-slate-400 text-xs">
+                        {new Date(m.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="py-20 text-center">
+                      <p className="text-sm font-medium text-slate-400">No content added yet.</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <div className="max-w-3xl mx-auto py-4">
+               <div className="bg-indigo-50 p-6 rounded-2xl mb-6 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-indigo-900">Quiz Settings</h3>
+                    <p className="text-xs text-indigo-600">This assessment will appear at the end of the course.</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-black text-indigo-900 uppercase">Duration (Sec):</label>
+                    <input 
+                        type="number" 
+                        value={quizDuration} 
+                        onChange={(e) => setQuizDuration(e.target.value)}
+                        className="w-20 p-2 rounded-lg border border-indigo-200 text-sm font-bold focus:outline-indigo-500"
+                    />
+                  </div>
+               </div>
+
+               <form onSubmit={submitAssessment} className="space-y-8">
+                  {quizQuestions.map((q, qIndex) => (
+                    <div key={qIndex} className="p-6 border border-slate-100 rounded-2xl bg-slate-50/30 relative">
+                        <button 
+                            type="button" 
+                            onClick={() => removeQuizQuestion(qIndex)}
+                            className="absolute top-4 right-4 text-red-400 hover:text-red-600"
+                        >
+                            <Trash2 size={18} />
+                        </button>
+
+                        <div className="mb-4">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Question {qIndex + 1}</label>
+                            <input 
+                                type="text" 
+                                required
+                                value={q.questions}
+                                onChange={(e) => handleQuizInputChange(qIndex, 'questions', e.target.value)}
+                                className="w-full p-3 rounded-xl border border-slate-200 text-sm outline-indigo-500 font-bold"
+                                placeholder="Enter question string..."
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {q.options.map((opt, oIndex) => (
+                                <div key={oIndex} className="flex items-center gap-2">
+                                    <input 
+                                        type="radio" 
+                                        name={`correct-${qIndex}`}
+                                        checked={q.correct === oIndex}
+                                        onChange={() => handleQuizInputChange(qIndex, 'correct', oIndex)}
+                                        className="w-4 h-4 accent-indigo-600"
+                                    />
+                                    <input 
+                                        type="text" 
+                                        required
+                                        value={opt}
+                                        onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                                        className="flex-1 p-2.5 rounded-xl border border-slate-200 text-xs outline-indigo-500"
+                                        placeholder={`Option ${oIndex + 1}`}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                  ))}
+
+                  <div className="flex gap-4">
+                    <button 
+                        type="button" 
+                        onClick={addQuizQuestion}
+                        className="flex-1 py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold hover:bg-slate-50 transition-all"
+                    >
+                        + Add More Question
+                    </button>
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-lg disabled:bg-slate-300"
+                    >
+                        {isLoading ? "Saving Assessment..." : "Save Assessment"}
+                    </button>
+                  </div>
+               </form>
+            </div>
+          )}
         </div>
 
-        {/* Form Overlay */}
+        {/* Existing Material Form Overlay */}
         {showForm && (
           <div className="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4">
             <div className="bg-white p-8 rounded-3xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh]">
