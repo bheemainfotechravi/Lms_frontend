@@ -18,6 +18,7 @@ import {
   FaCheck,
   FaVideo,
 } from "react-icons/fa";
+import { FaClipboardList, FaLock } from "react-icons/fa6";
 
 export default function CoursePlayer() {
   const { id } = useParams();
@@ -437,12 +438,41 @@ export default function CoursePlayer() {
                                   {lesson.duration || "—"}
                                 </span>
                               </div>
+
                             </div>
                           </button>
+                          
                         );
+                        
                       })}
+
                     </div>
+                    
                   )}
+                  {/* Assignment */}
+                  <button
+                    onClick={() => progress === 100 && navigate(`/quiz`)}
+                    disabled={progress !== 100}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left border-t border-[#EAD7B1] transition ${progress === 100
+                        ? "hover:bg-[#F6F1E7]"
+                        : "opacity-60 cursor-not-allowed bg-gray-50"
+                      }`}
+                  >
+                    <div className="w-5 h-5 flex items-center justify-center">
+                      {progress === 100 ? (
+                        <FaClipboardList className="text-[#E3A83C] text-sm" />
+                      ) : (
+                        <FaLock className="text-gray-400 text-sm" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#0F172A]">Assignment</p>
+                      <p className="text-[11px] text-gray-400">
+                        {progress === 100 ? "Unlocked" : "Complete all lessons to unlock"}
+                      </p>
+                    </div>
+                  </button>
                 </div>
               ))
             ) : (

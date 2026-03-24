@@ -33,36 +33,85 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
   const [activeTab, setActiveTab] = useState("my-courses");
 
   useEffect(() => {
-    if (!user?.id) return;
+  if (!user?.id) return;
 
-    const fetchMyCourses = async () => {
-      try {
-        const res = await axiosInstance.get(`/course/mycourses/${user.id}`);
-        const formatted = res.data.courses.map((c) => ({
-          id: c.id,
-          title: c.title,
-          short_description: c.short_description,
-          level: c.level,
-          language: c.language,
-          duration: c.duration,
-          totalLectures: c.total_lectures,
-          instructor: c.instructor || "Expert Instructor",
-          progress: c.progress || 0,
-          doneLessons: c.completed_lectures || 0,
-          totalLessons: c.total_lectures || 0,
-          thumbnail: `${c.thumbnail}`,
-          tag: c.progress === 100 ? "Completed" : "In Progress",
-          tagClass: c.progress === 100 ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700",
-        }));
-        setCourses(formatted);
-      } catch (error) {
-        console.error("Error fetching my courses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMyCourses();
-  }, [user]);
+  const fetchMyCourses = async () => {
+    try {
+      setLoading(true);
+
+      // 1) Get enrolled courses
+      const res = await axiosInstance.get(`/course/mycourses/${user.id}`);
+      const coursesData = res.data.courses || [];
+
+      // 2) For each course, get progress from new API
+      const coursesWithProgress = await Promise.all(
+        coursesData.map(async (c) => {
+          try {
+            const progressRes = await axiosInstance.get(
+              `/course/check-course-progress/${c.id}`
+            );
+
+            // adjust these keys based on your backend response
+            const progressData = progressRes.data;
+
+            const progress = progressData.progress ?? 0;
+            const completedLectures =
+              progressData.completed_lectures ??
+              progressData.doneLessons ??
+              0;
+
+            return {
+              id: c.id,
+              title: c.title,
+              short_description: c.short_description,
+              level: c.level,
+              language: c.language,
+              duration: c.duration,
+              totalLectures: c.total_lectures,
+              instructor: c.instructor || "Expert Instructor",
+              progress,
+              doneLessons: completedLectures,
+              totalLessons: c.total_lectures || 0,
+              thumbnail: c.thumbnail,
+              tag: progress === 100 ? "Completed" : "In Progress",
+              tagClass:
+                progress === 100
+                  ? "bg-green-100 text-green-700"
+                  : "bg-yellow-100 text-yellow-700",
+            };
+          } catch (err) {
+            console.error(`Error fetching progress for course ${c.id}:`, err);
+
+            return {
+              id: c.id,
+              title: c.title,
+              short_description: c.short_description,
+              level: c.level,
+              language: c.language,
+              duration: c.duration,
+              totalLectures: c.total_lectures,
+              instructor: c.instructor || "Expert Instructor",
+              progress: 0,
+              doneLessons: 0,
+              totalLessons: c.total_lectures || 0,
+              thumbnail: c.thumbnail,
+              tag: "In Progress",
+              tagClass: "bg-yellow-100 text-yellow-700",
+            };
+          }
+        })
+      );
+
+      setCourses(coursesWithProgress);
+    } catch (error) {
+      console.error("Error fetching my courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchMyCourses();
+}, [user]);
 
   const visibleCourses = courses.slice(0, limit || courses.length);
 
