@@ -73,11 +73,11 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
  
-      // Refresh parent list
+ 
       onAddCourse(res.data.course || res.data);
       onClose();
      
-      // Reset Form
+     
       setFormData({
         title: "", description: "", short_description: "",
         price: "", level: "", language: "English",

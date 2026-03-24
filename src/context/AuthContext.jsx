@@ -8,10 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // AUTH STATES
+  
   const isAuthenticated = !!token;
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-  const isUser = user?.role === "user"; // Helpful for your user routes
+  const isUser = user?.role === "user"; 
 
   useEffect(() => {
     if (token) {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        token, // Unified name
+        token, 
         isAuthenticated,
         isAdmin,
         isUser,

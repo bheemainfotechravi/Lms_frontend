@@ -26,13 +26,13 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
-  // Check if the user's role is allowed
+  
   if (
     allowedRoles &&
     allowedRoles.length > 0 &&
     !allowedRoles.includes(user?.role)
   ) {
-    // If an admin tries to go to a user page or vice versa
+    
     return <Navigate to="/unauthorized" replace />;
   }
 

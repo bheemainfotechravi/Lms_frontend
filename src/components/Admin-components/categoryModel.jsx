@@ -17,7 +17,7 @@ function CategoryModal({ isOpen, onClose, onAddCategory }) {
     // console.log("imageFile:", imageFile);
     
     try {
-      // 1. Prepare FormData for the backend
+      
       const formData = new FormData();
       console.log("Submitting category with name:",typeof data);
       console.log("Submitting category with image file:", typeof imageFile);

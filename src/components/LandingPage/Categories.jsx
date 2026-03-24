@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
- 
 import { useNavigate } from "react-router-dom";
- 
-/* ---------------- Section Header ---------------- */
+
+
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -21,7 +20,8 @@ function SectionHeader({ tag, title, highlight, desc }) {
     </div>
   );
 }
- 
+
+
 function CategoryCard({ cat }) {
  
   const navigate = useNavigate();
@@ -68,8 +68,8 @@ function CategoryCard({ cat }) {
     </button>
   );
 }
- 
-/* ---------------- Main Categories Section ---------------- */
+
+
 const Categories = () => {
   const [categories, setCategories] = useState([]);
  
