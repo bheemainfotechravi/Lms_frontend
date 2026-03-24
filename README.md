@@ -30,3 +30,9 @@ add - /api/std_material/new - post { title, material_type, link, course_title , 
 get - /api/std_material/courseId
 patch - /api/std_material/update/material_id
 delete - /api/std_material/remove/material_id
+
+
+questions
+options array
+correct options array
+duration_second

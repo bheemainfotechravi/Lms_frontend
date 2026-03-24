@@ -19,6 +19,8 @@ import MyCourses from "./components/User-components/MyCourses";
 import AllCourses from "./components/User-components/Allcourses";
 import Home from './components/LandingPage/Home';
 import UserProfile from './components/User-components/UserProfile';
+import QuizSystem from './components/User-components/AssessmentQuiz';
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -40,6 +42,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/qs" element={<QuizSystem />} />
 
             {/* Roles */}
             <Route path="/user/dashboard" element={<ProtectedRoute allowedRoles={"user"}><UserDashboard /></ProtectedRoute>} />
