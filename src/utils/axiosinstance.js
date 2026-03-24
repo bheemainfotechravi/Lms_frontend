@@ -2,10 +2,9 @@
 import axios from "axios";
 // export const image_URL = "http://192.168.1.14:5000"
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://10.225.113.145:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://10.85.158.145:5000/api",
   withCredentials: true,
 });
-
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -17,7 +16,6 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -46,5 +44,4 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 export default axiosInstance;
