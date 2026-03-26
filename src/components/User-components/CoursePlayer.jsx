@@ -137,36 +137,33 @@ export default function CoursePlayer() {
     }
   }, [id]);
 
-  const fetchProgress = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get(`/course/check-course-progress/${id}`);
+const fetchProgress = useCallback(async () => {
+  try {
+    const res = await axiosInstance.get(`/course/check-course-progress/${id}`);
+    const progressArray = res.data?.progress || [];
 
-      const progressArray = res.data?.progress || [];
-      const progressItem = progressArray[0];
+    // FIX: Hamesha array ka LATEST element uthayein (Last Index)
+    const progressItem = progressArray[progressArray.length - 1];
 
-      if (!progressItem) {
-        setCompletedLessons([]);
-        setApiProgress(0);
-        setApiRemainingLessons(0);
-        setApiStatus("");
-        return;
-      }
-
-      setCompletedLessons(
-        (progressItem.completed_lessons || []).map((item) => String(item))
-      );
-
-      setApiRemainingLessons(Number(progressItem.remaining_lessons) || 0);
-      setApiProgress(parseFloat(progressItem.progress_percent) || 0);
-      setApiStatus(progressItem.status || "");
-    } catch (error) {
-      console.error("Error fetching progress:", error);
+    if (!progressItem) {
       setCompletedLessons([]);
       setApiProgress(0);
-      setApiRemainingLessons(0);
-      setApiStatus("");
+      return;
     }
-  }, [id]);
+
+    const completedIds = (progressItem.completed_lessons || []).map((item) => String(item));
+    setCompletedLessons(completedIds);
+
+    // Safeguard: Progress 100 se upar na dikhaye
+    const rawProgress = parseFloat(progressItem.progress_percent) || 0;
+    setApiProgress(rawProgress > 100 ? 100 : rawProgress);
+    
+    setApiRemainingLessons(Math.max(0, Number(progressItem.remaining_lessons)));
+    setApiStatus(progressItem.status || "");
+  } catch (error) {
+    console.error("Error fetching progress:", error);
+  }
+}, [id]);
 
   const loadData = useCallback(async () => {
     try {
@@ -183,53 +180,33 @@ export default function CoursePlayer() {
     loadData();
   }, [loadData]);
 
-  const markLessonComplete = useCallback(
-    async (lessonId) => {
-      const normalizedLessonId = String(lessonId);
+ const markLessonComplete = useCallback(async (lessonId) => {
+  const normalizedId = String(lessonId);
+  if (!normalizedId || completedLessons.includes(normalizedId)) return;
 
-      if (!normalizedLessonId) return;
-      if (completedLessons.includes(normalizedLessonId)) return;
-      if (pendingLessonIds.includes(normalizedLessonId)) return;
+  // Step 1: Frontend state update (Immediate Green Tick)
+  const updatedList = [...completedLessons, normalizedId];
+  setCompletedLessons(updatedList);
 
-      const updatedCompletedLessons = [
-        ...completedLessons,
-        normalizedLessonId,
-      ];
+  try {
+    // Step 2: Backend update
+    await axiosInstance.patch(`/course/update-course-progress/${id}`, {
+      completed_lessons_ids: updatedList,
+    });
 
-      setPendingLessonIds((prev) => [...prev, normalizedLessonId]);
-      setCompletedLessons(updatedCompletedLessons);
+    // Step 3: Latest stats fetch karein
+    fetchProgress();
 
-      // optimistic UI update
-      const newTotalDone = updatedCompletedLessons.length;
-      const newRemaining = Math.max(totalLessons - newTotalDone, 0);
-      const newProgress =
-        totalLessons > 0 ? Math.round((newTotalDone / totalLessons) * 100) : 0;
-
-      setApiRemainingLessons(newRemaining);
-      setApiProgress(newProgress);
-      setApiStatus(newRemaining === 0 ? "Completed" : "In Progress");
-
-      try {
-        await axiosInstance.patch(`/course/update-course-progress/${id}`, {
-          completed_lessons_ids: updatedCompletedLessons,
-        });
-
-        await fetchProgress();
-
-        if (updatedCompletedLessons.length === totalLessons && !reviewSubmitted) {
-          setShowReviewModal(true);
-        }
-      } catch (error) {
-        console.error("Error updating progress:", error);
-        setCompletedLessons((prev) =>
-          prev.filter((item) => item !== normalizedLessonId)
-        );
-        await fetchProgress();
-      }
-    },
-    [completedLessons, pendingLessonIds, id, totalLessons, fetchProgress]
-  );
-
+    // Step 4: Check if Course is finished
+    if (updatedList.length >= totalLessons && !reviewSubmitted) {
+      setShowReviewModal(true);
+    }
+  } catch (error) {
+    console.error("API Update Failed:", error);
+    // Rollback agar API fail ho jaye
+    fetchProgress(); 
+  }
+}, [completedLessons, id, totalLessons, fetchProgress, reviewSubmitted]);
   const toggleSection = (sectionId) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -393,10 +370,8 @@ export default function CoursePlayer() {
                   {expandedSections[section.id] && (
                     <div className="bg-[#FDFAF5]">
                       {section.lessons?.map((lesson, index) => {
-                        const isActive =
-                          String(activeLesson?.id) === String(lesson.id);
-                        const isDone = completedLessonSet.has(String(lesson.id));
-
+                      const isActive = activeLesson && String(activeLesson.id) === String(lesson.id);
+                      const isDone = completedLessons.includes(String(lesson.id));
                         return (
                           <button
                             key={lesson.id || index}
@@ -451,7 +426,7 @@ export default function CoursePlayer() {
                   )}
                   {/* Assignment */}
                   <button
-                    onClick={() => progress === 100 && navigate(`/quiz`)}
+                    onClick={() => progress === 100 && navigate(`/quiz/${id}`)}
                     disabled={progress !== 100}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left border-t border-[#EAD7B1] transition ${progress === 100
                         ? "hover:bg-[#F6F1E7]"

@@ -56,7 +56,6 @@ export default function AllCourses() {
         }
     };
 
-    // Filter Logic
     let displayCourses = courses;
 
     if (activeFilter !== "All") {

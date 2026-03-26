@@ -29,16 +29,17 @@ function CategoryCard({ cat }) {
   const handleClick = () => {
     navigate(`/category/${cat.id}`);
   };
- 
+
   return (
     <button
       onClick={handleClick}
-      className={[
-        "group w-full rounded-2xl p-6 text-center",
-        "bg-[#D68D06] text-black",
-        "shadow-md transition-all duration-200",
-        "hover:-translate-y-1 hover:shadow-xl",
-      ].join(" ")}
+   className={[
+  "group w-full rounded-2xl p-6 text-center",
+"bg-gradient-to-b from-[#f3c97c] to-white-400", 
+  "text-black",
+  "shadow-md transition-all duration-200",
+  "hover:-translate-y-1 hover:shadow-xl",
+].join(" ")}
     >
       {/* Icon */}
       <div className="flex justify-center mb-4">
@@ -61,7 +62,7 @@ function CategoryCard({ cat }) {
         {cat.count} Courses
       </p>
  
-      <div className="mt-4 flex items-center justify-center gap-1 text-lg font-bold text-white">
+      <div className="mt-4 flex items-center justify-center gap-1 text-lg font-bold text-black">
         Explore
       </div>
  

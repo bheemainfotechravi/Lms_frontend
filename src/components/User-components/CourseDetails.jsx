@@ -22,50 +22,105 @@ export default function CourseDetails() {
 
   useEffect(() => { fetchCourse(); }, [id]);
 
-  const fetchCourse = async () => {
-    try {
-      setLoading(true);
-      const res = await axiosInstance.get(`/course/get/${id}`);
-      const c = res.data.data;
+const mapCourseData = (c) => ({
+  id: c.id,
+  title: c.title,
+  description: c.description,
+  short_description: c.short_description,
+  price: parseInt(c.price) || 0,
+  level: c.level,
+  language: c.language,
+  duration: c.duration,
+  total_lectures: c.total_lectures,
+  category_id: c.category_id,
+  is_published: c.is_published,
+  thumbnail: c.thumbnail,
+  instructor: c.instructor_name || "Expert Instructor",
+  students: c.students || 0,
+  last_updated: c.updated_at
+    ? new Date(c.updated_at).toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      })
+    : "Recently",
+  requirements: Array.isArray(c.requirements) ? c.requirements : [],
+  curriculum: Array.isArray(c.curriculum) ? c.curriculum : [],
+  category: c.category_name || "Development",
+  what_you_learn: c.material_titles
+    ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
+    : Array.isArray(c.what_you_learn) ? c.what_you_learn : [],
+});
+
+const fetchCourse = async () => {
+  try {
+    setLoading(true);
+    const res = await axiosInstance.get(`/course/get/${id}`);
+    
+    // CASE 1: Standard Success
+    const c = res.data.data;
+    setCourse({
+      ...mapCourseData(c),
+      rating: Number(res.data?.avgRating || 0),
+      total_ratings: Number(res.data?.totalReviews || 0),
+      reviews: Array.isArray(res.data?.reviews) ? res.data.reviews : [],
+    });
+
+  } catch (error) {
+    const errorData = error.response?.data;
+    
+    if (error.response?.status === 404 && errorData?.data) {
+      console.log("Bypass: Mapping course data despite 404 review error.");
+      const c = errorData.data;
 
       setCourse({
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        short_description: c.short_description,
-        price: parseInt(c.price),
-        level: c.level,
-        language: c.language,
-        duration: c.duration,
-        total_lectures: c.total_lectures,
-        category_id: c.category_id,
-        is_published: c.is_published,
-        thumbnail: c.thumbnail,
-        instructor: c.instructor_name || "Expert Instructor",
-        students: c.students || 0,
-        last_updated: c.updated_at
-          ? new Date(c.updated_at).toLocaleDateString("en-US", {
+        ...mapCourseData(c),
+        rating: 0,       
+        total_ratings: 0, 
+        reviews: [],      
+      });
+    } else {
+      console.error("Critical Fetch Error:", error);
+      setCourse(null);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+  // Helper function to bypass and map data consistently
+  const handleCourseData = (c, rootData) => {
+    setCourse({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      short_description: c.short_description,
+      price: parseInt(c.price) || 0,
+      level: c.level,
+      language: c.language,
+      duration: c.duration,
+      total_lectures: c.total_lectures,
+      category_id: c.category_id,
+      is_published: c.is_published,
+      thumbnail: c.thumbnail,
+      instructor: c.instructor_name || "Expert Instructor",
+      students: c.students || 0,
+      last_updated: c.updated_at
+        ? new Date(c.updated_at).toLocaleDateString("en-US", {
             month: "long",
             year: "numeric",
           })
-          : "Recently",
-        requirements: c.requirements || [],
-        curriculum: c.curriculum || [],
-        category: c.category_name || "Development",
-        what_you_learn: c.material_titles
-          ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
-          : c.what_you_learn || [],
+        : "Recently",
+      requirements: Array.isArray(c.requirements) ? c.requirements : [],
+      curriculum: Array.isArray(c.curriculum) ? c.curriculum : [],
+      category: c.category_name || "Development",
+      what_you_learn: c.material_titles
+        ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
+        : Array.isArray(c.what_you_learn) ? c.what_you_learn : [],
 
-        // reviews data
-        rating: Number(res.data.avgRating || 0),
-        total_ratings: Number(res.data.totalReviews || 0),
-        reviews: res.data.reviews || [],
-      });
-    } catch (error) {
-      console.error("Error fetching course:", error);
-    } finally {
-      setLoading(false);
-    }
+      // Reviews Bypassed: Fallback to defaults if missing
+      rating: Number(rootData?.avgRating || 0),
+      total_ratings: Number(rootData?.totalReviews || 0),
+      reviews: Array.isArray(rootData?.reviews) ? rootData.reviews : [],
+    });
   };
 
   const handleEnroll = async () => {

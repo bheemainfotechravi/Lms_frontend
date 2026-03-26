@@ -20,6 +20,9 @@ import AllCourses from "./components/User-components/Allcourses";
 import Home from './components/LandingPage/Home';
 import UserProfile from './components/User-components/UserProfile';
 import QuizSystem from './components/User-components/AssessmentQuiz';
+import CoursePlayer from './components/User-components/CoursePlayer';
+import CoursesbyCat from './components/LandingPage/CoursesbyCat';
+import Certificate from './components/User-components/Certificate';
 
 
 function ScrollToTop() {
@@ -42,13 +45,18 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/qs" element={<QuizSystem />} />
+            <Route path="/cr" element={<Certificate />} />
+            
 
             {/* Roles */}
             <Route path="/user/dashboard" element={<ProtectedRoute allowedRoles={"user"}><UserDashboard /></ProtectedRoute>} />
             <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={"user"}><MyCourses /></ProtectedRoute>} /> 
             <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={"user"}><AllCourses /></ProtectedRoute>} /> 
+            <Route path="/category/:id" element={<CoursesbyCat />} /> 
             <Route path="/user/user-profile/:id" element={<ProtectedRoute allowedRoles={"user"}><UserProfile /></ProtectedRoute>} /> 
+            <Route path="/learning/:id"  element={<ProtectedRoute allowedRoles={"user"}> <CoursePlayer /></ProtectedRoute>} />
+            <Route path="/quiz/:id"  element={<ProtectedRoute allowedRoles={"user"}> <QuizSystem /></ProtectedRoute>} />
+
             
             <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin", "superadmin"]}><Admindashboard /></ProtectedRoute>} />
 
