@@ -36,7 +36,6 @@ export default function CoursePlayer() {
   const [activeTab, setActiveTab] = useState("overview");
   const [notes, setNotes] = useState("");
   const [completedLessons, setCompletedLessons] = useState([]);
-  const [pendingLessonIds, setPendingLessonIds] = useState([]);
   const [apiProgress, setApiProgress] = useState(0);
   const [apiRemainingLessons, setApiRemainingLessons] = useState(0);
   const [apiStatus, setApiStatus] = useState("");
@@ -58,174 +57,9 @@ export default function CoursePlayer() {
   const currentIndex = allLessons.findIndex(
     (lesson) => String(lesson.id) === String(activeLesson?.id)
   );
+   
 
-  const totalLessons = allLessons.length;
-  const totalDone = completedLessonSet.size;
-
-  // fallback values if api values are not available
-  const calculatedRemainingLessons = Math.max(totalLessons - totalDone, 0);
-  const calculatedProgress =
-    totalLessons > 0 ? Math.round((totalDone / totalLessons) * 100) : 0;
-
-  const remainingLessons =
-    typeof apiRemainingLessons === "number"
-      ? apiRemainingLessons
-      : calculatedRemainingLessons;
-
-  const progress =
-    typeof apiProgress === "number" && !Number.isNaN(apiProgress)
-      ? Math.round(apiProgress)
-      : calculatedProgress;
-
-  function getYoutubeEmbed(url) {
-    if (!url) return null;
-    const reg =
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^?&/]+)/;
-    const match = url.match(reg);
-    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
-  }
-
-  const fetchCourse = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get(`/std_material/${id}`);
-      const materials = res.data?.material || [];
-
-      if (!materials.length) {
-        setCurriculum([]);
-        setCourse(null);
-        setActiveLesson(null);
-        return;
-      }
-
-      const materialLessons = materials.map((m, index) => ({
-        id: String(m.id || m.material_id || index + 1),
-        title: m.title || `Lesson ${index + 1}`,
-        duration: m.duration || "5 min",
-        video_url: getYoutubeEmbed(m.youtube_url) || m.video_url || null,
-        resources: m.resources || [],
-        material_file: m.file_url || null,
-        sectionTitle: "Course Lessons",
-      }));
-
-      setCurriculum([
-        {
-          id: 1,
-          title: "Course Lessons",
-          lectures: materialLessons.length,
-          lessons: materialLessons,
-        },
-      ]);
-
-      setCourse({
-        id: String(id),
-        title: res.data?.course?.title || "Course Player",
-        description:
-          res.data?.course?.description || "Course materials and lessons",
-        instructor: res.data?.course?.instructor || "Expert Instructor",
-        rating: res.data?.course?.rating || 4.8,
-        duration: `${materialLessons.length} lessons`,
-        what_you_learn: res.data?.course?.what_you_learn || [],
-      });
-
-      setExpandedSections({ 1: true });
-      setActiveLesson(null);
-    } catch (error) {
-      console.error("Error loading course materials:", error);
-      setCourse(null);
-      setCurriculum([]);
-      setActiveLesson(null);
-    }
-  }, [id]);
-
-const fetchProgress = useCallback(async () => {
-  try {
-    const res = await axiosInstance.get(`/course/check-course-progress/${id}`);
-    const progressArray = res.data?.progress || [];
-
-    // FIX: Hamesha array ka LATEST element uthayein (Last Index)
-    const progressItem = progressArray[progressArray.length - 1];
-
-    if (!progressItem) {
-      setCompletedLessons([]);
-      setApiProgress(0);
-      return;
-    }
-
-    const completedIds = (progressItem.completed_lessons || []).map((item) => String(item));
-    setCompletedLessons(completedIds);
-
-    // Safeguard: Progress 100 se upar na dikhaye
-    const rawProgress = parseFloat(progressItem.progress_percent) || 0;
-    setApiProgress(rawProgress > 100 ? 100 : rawProgress);
-    
-    setApiRemainingLessons(Math.max(0, Number(progressItem.remaining_lessons)));
-    setApiStatus(progressItem.status || "");
-  } catch (error) {
-    console.error("Error fetching progress:", error);
-  }
-}, [id]);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      await Promise.all([fetchCourse(), fetchProgress()]);
-    } catch (error) {
-      console.error("Error loading course player:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchCourse, fetchProgress]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
- const markLessonComplete = useCallback(async (lessonId) => {
-  const normalizedId = String(lessonId);
-  if (!normalizedId || completedLessons.includes(normalizedId)) return;
-
-  // Step 1: Frontend state update (Immediate Green Tick)
-  const updatedList = [...completedLessons, normalizedId];
-  setCompletedLessons(updatedList);
-
-  try {
-    // Step 2: Backend update
-    await axiosInstance.patch(`/course/update-course-progress/${id}`, {
-      completed_lessons_ids: updatedList,
-    });
-
-    // Step 3: Latest stats fetch karein
-    fetchProgress();
-
-    // Step 4: Check if Course is finished
-    if (updatedList.length >= totalLessons && !reviewSubmitted) {
-      setShowReviewModal(true);
-    }
-  } catch (error) {
-    console.error("API Update Failed:", error);
-    // Rollback agar API fail ho jaye
-    fetchProgress(); 
-  }
-}, [completedLessons, id, totalLessons, fetchProgress, reviewSubmitted]);
-  const toggleSection = (sectionId) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
-  };
-
-  const selectLesson = async (lesson, sectionTitle) => {
-    const lessonWithSection = {
-      ...lesson,
-      id: String(lesson.id),
-      sectionTitle,
-    };
-
-    setActiveLesson(lessonWithSection);
-    setActiveTab("overview");
-    await markLessonComplete(lessonWithSection.id);
-  };
-
+  // selectLesson function ke thoda niche ye add karein
   const goNext = () => {
     if (!activeLesson) return;
     if (currentIndex < allLessons.length - 1) {
@@ -242,466 +76,229 @@ const fetchProgress = useCallback(async () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin" />
-          <p className="text-[#0F172A] font-bold text-sm">Loading course...</p>
-        </div>
-      </div>
-    );
+
+  const totalLessons = allLessons.length;
+  const totalDone = completedLessonSet.size;
+
+  const calculatedProgress = totalLessons > 0 ? Math.round((totalDone / totalLessons) * 100) : 0;
+
+  // Final progress logic with Math.round to ensure strict 100% comparison
+  const progress = typeof apiProgress === "number" && !Number.isNaN(apiProgress)
+      ? Math.round(apiProgress)
+      : calculatedProgress;
+
+  const remainingLessons = typeof apiRemainingLessons === "number"
+      ? apiRemainingLessons
+      : Math.max(totalLessons - totalDone, 0);
+
+  function getYoutubeEmbed(url) {
+    if (!url) return null;
+    const reg = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^?&/]+)/;
+    const match = url.match(reg);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
   }
 
-  if (!course) {
-    return (
-      <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center text-center">
-        <div>
-          <FaBookOpen className="text-4xl text-[#EAD7B1] mx-auto mb-3" />
-          <p className="text-[#0F172A] font-black text-lg">Course not found</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 bg-[#E3A83C] text-[#0F172A] text-sm font-bold px-5 py-2 rounded-xl hover:bg-[#cf962c] transition"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const fetchCourse = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get(`/std_material/${id}`);
+      const materials = res.data?.material || [];
+      if (!materials.length) return;
+
+      const materialLessons = materials.map((m, index) => ({
+        id: String(m.id || m.material_id || index + 1),
+        title: m.title || `Lesson ${index + 1}`,
+        duration: m.duration || "5 min",
+        video_url: getYoutubeEmbed(m.youtube_url) || m.video_url || null,
+        resources: m.resources || [],
+        material_file: m.file_url || null,
+      }));
+
+      setCurriculum([{ id: 1, title: "Course Lessons", lectures: materialLessons.length, lessons: materialLessons }]);
+      setCourse({
+        id: String(id),
+        title: res.data?.course?.title || "Course Player",
+        description: res.data?.course?.description || "Course materials",
+        instructor: res.data?.course?.instructor || "Expert Instructor",
+        rating: res.data?.course?.rating || 4.8,
+        what_you_learn: res.data?.course?.what_you_learn || [],
+      });
+      setExpandedSections({ 1: true });
+    } catch (error) {
+      console.error("Error loading course:", error);
+    }
+  }, [id]);
+
+  const fetchProgress = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get(`/course/check-course-progress/${id}`);
+      const progressArray = res.data?.progress || [];
+      const progressItem = progressArray[progressArray.length - 1];
+
+      if (!progressItem) {
+        setCompletedLessons([]);
+        setApiProgress(0);
+        return;
+      }
+
+      setCompletedLessons((progressItem.completed_lessons || []).map(String));
+      setApiProgress(Math.min(100, Math.round(parseFloat(progressItem.progress_percent) || 0)));
+      setApiRemainingLessons(Math.max(0, Number(progressItem.remaining_lessons)));
+      setApiStatus(progressItem.status || "");
+    } catch (error) {
+      console.error("Error fetching progress:", error);
+    }
+  }, [id]);
+
+  const markLessonComplete = useCallback(async (lessonId) => {
+    const normalizedId = String(lessonId);
+    if (!normalizedId || completedLessons.includes(normalizedId)) return;
+
+    const updatedList = [...completedLessons, normalizedId];
+    setCompletedLessons(updatedList);
+
+    try {
+      await axiosInstance.patch(`/course/update-course-progress/${id}`, { completed_lessons_ids: updatedList });
+      fetchProgress();
+      if (updatedList.length >= totalLessons && !reviewSubmitted) setShowReviewModal(true);
+    } catch (error) {
+      fetchProgress();
+    }
+  }, [completedLessons, id, totalLessons, fetchProgress, reviewSubmitted]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchCourse(), fetchProgress()]);
+      setLoading(false);
+    };
+    loadData();
+  }, [fetchCourse, fetchProgress]);
+
+  const selectLesson = async (lesson, sectionTitle) => {
+    setActiveLesson({ ...lesson, sectionTitle });
+    setActiveTab("overview");
+    await markLessonComplete(lesson.id);
+  };
+
+  if (loading) return <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center animate-pulse text-sm font-bold">Loading course...</div>;
+  if (!course) return <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center font-black">Course not found</div>;
 
   return (
     <>
       <DashboardNavbar user={user} />
-
       <div className="bg-[#F6F1E7]" style={{ minHeight: "100vh" }}>
-        <div className="bg-white border-b border-[#EAD7B1] sticky top-0 z-40 shadow-sm">
-          <div className="px-4 py-3 flex items-center gap-3">
-            <button
-              onClick={() => navigate("/user/mycourses")}
-              className="text-[#E3A83C] hover:text-[#cf962c]"
-            >
-              <FaChevronLeft />
-            </button>
-
-            <p className="text-[#0F172A] font-black text-sm truncate">
-              {course.title}
-            </p>
-          </div>
+        <div className="bg-white border-b border-[#EAD7B1] sticky top-0 z-40 shadow-sm px-4 py-3 flex items-center gap-3">
+          <button onClick={() => navigate("/user/mycourses")} className="text-[#E3A83C]"><FaChevronLeft /></button>
+          <p className="text-[#0F172A] font-black text-sm truncate">{course.title}</p>
         </div>
 
         <div className="flex" style={{ minHeight: "calc(100vh - 57px)" }}>
-          <div
-            className="bg-white border-r border-[#EAD7B1] w-[320px] min-w-[320px] overflow-y-auto sticky top-[57px]"
-            style={{ height: "calc(100vh - 57px)" }}
-          >
+          {/* Sidebar */}
+          <div className="bg-white border-r border-[#EAD7B1] w-[320px] min-w-[320px] overflow-y-auto sticky top-[57px]" style={{ height: "calc(100vh - 57px)" }}>
             <div className="px-4 py-4 border-b border-[#EAD7B1] bg-white sticky top-0 z-10">
-              <h3 className="text-[#0F172A] font-black text-sm">
-                {course.title}
-              </h3>
-
-              <p className="text-gray-400 text-xs mt-1">
-                {activeLesson?.sectionTitle || "Select a lesson to begin"}
-              </p>
-
+              <h3 className="text-[#0F172A] font-black text-sm">{course.title}</h3>
               <div className="mt-3">
                 <div className="flex justify-between text-xs font-bold text-[#0F172A]">
                   <span>Progress</span>
                   <span>{progress}%</span>
                 </div>
-
                 <div className="w-full h-2 bg-[#EAD7B1] rounded-full mt-1 overflow-hidden">
-                  <div
-                    className="h-full bg-[#E3A83C] rounded-full transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
+                  <div className="h-full bg-[#E3A83C] rounded-full transition-all" style={{ width: `${progress}%` }} />
                 </div>
-
-                <p className="text-gray-400 text-xs mt-1">
-                  {totalDone}/{totalLessons} lessons completed
-                </p>
-
-                <p className="text-gray-400 text-xs mt-1">
-                  {remainingLessons} remaining
-                </p>
-
-                {apiStatus && (
-                  <p className="text-[#E3A83C] text-xs mt-1 font-semibold">
-                    {apiStatus}
-                  </p>
-                )}
+                <p className="text-gray-400 text-[10px] mt-1 uppercase font-bold">{totalDone}/{totalLessons} lessons done • {remainingLessons} left</p>
               </div>
             </div>
 
-            {curriculum.length > 0 ? (
-              curriculum.map((section) => (
-                <div key={section.id} className="border-b border-[#EAD7B1]">
-                  <button
-                    onClick={() => toggleSection(section.id)}
-                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#F6F1E7] transition text-left"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div
-                        className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${expandedSections[section.id]
-                          ? "bg-[#E3A83C] text-white"
-                          : "bg-[#F6F1E7] text-[#0F172A] border border-[#EAD7B1]"
-                          }`}
-                      >
-                        {section.id}
-                      </div>
+            {curriculum.map((section) => (
+              <div key={section.id} className="border-b border-[#EAD7B1]">
+                <button onClick={() => setExpandedSections(p => ({...p, [section.id]: !p[section.id]}))} className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#F6F1E7]">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black ${expandedSections[section.id] ? "bg-[#E3A83C] text-white" : "bg-slate-100"}`}>{section.id}</div>
+                    <p className="text-[#0F172A] font-bold text-xs">{section.title}</p>
+                  </div>
+                  {expandedSections[section.id] ? <FaChevronUp className="text-[#E3A83C] text-xs" /> : <FaChevronDown className="text-gray-400 text-xs" />}
+                </button>
 
-                      <div className="min-w-0">
-                        <p className="text-[#0F172A] font-bold text-xs truncate">
-                          {section.title}
-                        </p>
-                        <p className="text-gray-400 text-xs">
-                          {section.lectures} lectures
-                        </p>
-                      </div>
-                    </div>
-
-                    {expandedSections[section.id] ? (
-                      <FaChevronUp className="text-[#E3A83C] text-xs ml-2 flex-shrink-0" />
-                    ) : (
-                      <FaChevronDown className="text-gray-400 text-xs ml-2 flex-shrink-0" />
-                    )}
-                  </button>
-
-                  {expandedSections[section.id] && (
-                    <div className="bg-[#FDFAF5]">
-                      {section.lessons?.map((lesson, index) => {
+                {expandedSections[section.id] && (
+                  <div className="bg-[#FDFAF5]">
+                    {section.lessons?.map((lesson) => {
                       const isActive = activeLesson && String(activeLesson.id) === String(lesson.id);
                       const isDone = completedLessons.includes(String(lesson.id));
-                        return (
-                          <button
-                            key={lesson.id || index}
-                            onClick={() => selectLesson(lesson, section.title)}
-                            className={`w-full flex items-start gap-3 px-4 py-3 text-left transition border-b border-[#EAD7B1] last:border-0 ${isActive
-                              ? "bg-[#E3A83C]/10 border-l-2 border-l-[#E3A83C]"
-                              : "hover:bg-[#F6F1E7]"
-                              }`}
-                          >
-                            <div className="flex-shrink-0 mt-0.5">
-                              {isDone ? (
-                                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                                  <FaCheck className="text-white text-xs" />
-                                </div>
-                              ) : isActive ? (
-                                <div className="w-5 h-5 rounded-full bg-[#E3A83C] flex items-center justify-center">
-                                  <FaPlayCircle className="text-white text-xs" />
-                                </div>
-                              ) : (
-                                <div className="w-5 h-5 rounded-full border-2 border-[#EAD7B1]" />
-                              )}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <p
-                                className={`text-xs font-semibold truncate ${isActive
-                                  ? "text-[#E3A83C]"
-                                  : isDone
-                                    ? "text-gray-400 line-through"
-                                    : "text-[#0F172A]"
-                                  }`}
-                              >
-                                {lesson.title}
-                              </p>
-
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                <FaVideo className="text-gray-300 text-xs" />
-                                <span className="text-gray-400 text-xs">
-                                  {lesson.duration || "—"}
-                                </span>
-                              </div>
-
-                            </div>
-                          </button>
-                          
-                        );
-                        
-                      })}
-
-                    </div>
-                    
-                  )}
-                  {/* Assignment */}
-                  <button
-                    onClick={() => progress === 100 && navigate(`/quiz/${id}`)}
-                    disabled={progress !== 100}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left border-t border-[#EAD7B1] transition ${progress === 100
-                        ? "hover:bg-[#F6F1E7]"
-                        : "opacity-60 cursor-not-allowed bg-gray-50"
-                      }`}
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      {progress === 100 ? (
-                        <FaClipboardList className="text-[#E3A83C] text-sm" />
-                      ) : (
-                        <FaLock className="text-gray-400 text-sm" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#0F172A]">Assignment</p>
-                      <p className="text-[11px] text-gray-400">
-                        {progress === 100 ? "Unlocked" : "Complete all lessons to unlock"}
-                      </p>
-                    </div>
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="py-12 text-center">
-                <FaBookOpen className="text-2xl text-[#EAD7B1] mx-auto mb-2" />
-                <p className="text-gray-400 text-xs">No curriculum available</p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
-              <div
-                className="relative bg-[#0F172A] w-full rounded-xl overflow-hidden"
-                style={{ aspectRatio: "16/9" }}
-              >
-                {activeLesson ? (
-                  activeLesson.video_url ? (
-                    <iframe
-                      src={activeLesson.video_url}
-                      title={activeLesson?.title}
-                      className="w-full h-full"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <p>No video available</p>
-                  )
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <FaPlayCircle className="text-[#E3A83C] text-3xl" />
-                    <p className="text-white font-bold text-sm">
-                      Please select a lesson to start
-                    </p>
+                      return (
+                        <button key={lesson.id} onClick={() => selectLesson(lesson, section.title)} className={`w-full flex items-start gap-3 px-4 py-3 text-left transition border-b border-[#EAD7B1] last:border-0 ${isActive ? "bg-[#E3A83C]/10 border-l-2 border-l-[#E3A83C]" : ""}`}>
+                          <div className="mt-0.5">{isDone ? <FaCheckCircle className="text-green-500 text-sm" /> : isActive ? <FaPlayCircle className="text-[#E3A83C] text-sm" /> : <div className="w-3.5 h-3.5 rounded-full border border-[#EAD7B1]" />}</div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-xs font-semibold truncate ${isActive ? "text-[#E3A83C]" : isDone ? "text-gray-400" : "text-[#0F172A]"}`}>{lesson.title}</p>
+                            <div className="flex items-center gap-1 mt-0.5 text-[10px] text-gray-400"><FaVideo /><span>{lesson.duration}</span></div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
+                
+                {/* STRICT 100% PROGRESS CHECK FOR ASSIGNMENT */}
+                <button
+                  onClick={() => progress >= 100 && navigate(`/quiz/${id}`)}
+                  disabled={progress < 100}
+                  className={`w-full flex items-center gap-3 px-4 py-4 text-left border-t border-[#EAD7B1] transition ${progress >= 100 ? "hover:bg-[#F6F1E7]" : "opacity-60 cursor-not-allowed bg-gray-50"}`}
+                >
+                  <div className="w-5 h-5 flex items-center justify-center">
+                    {progress >= 100 ? <FaClipboardList className="text-[#E3A83C] text-sm" /> : <FaLock className="text-gray-400 text-sm" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-black text-[#0F172A]">Final Assignment</p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold">{progress >= 100 ? "Unlocked • Start Now" : "Locked • Finish all lessons"}</p>
+                  </div>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="bg-[#0F172A] w-full rounded-2xl overflow-hidden shadow-2xl" style={{ aspectRatio: "16/9" }}>
+                {activeLesson?.video_url ? <iframe src={activeLesson.video_url} className="w-full h-full" allowFullScreen title="video" /> : 
+                  <div className="h-full flex flex-col items-center justify-center text-white gap-2 opacity-50"><FaPlayCircle size={40} /><p>Select a lesson to begin</p></div>
+                }
               </div>
 
               <div className="flex justify-between gap-3">
-                <button
-                  onClick={goPrev}
-                  disabled={!activeLesson || currentIndex <= 0}
-                  className="bg-white border border-[#EAD7B1] text-[#0F172A] text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-50"
-                >
-                  Previous
-                </button>
-
-                <button
-                  onClick={goNext}
-                  disabled={
-                    !activeLesson || currentIndex === -1
-                  }
-                  className="bg-[#E3A83C] text-[#0F172A] text-sm font-bold px-4 py-2 rounded-xl hover:bg-[#cf962c] disabled:opacity-50"
-                >
-                  Next
-                </button>
+                <button onClick={goPrev} disabled={!activeLesson || currentIndex <= 0} className="bg-white border border-[#EAD7B1] text-sm font-bold px-6 py-2.5 rounded-xl disabled:opacity-30">Previous</button>
+                <button onClick={goNext} disabled={!activeLesson || currentIndex >= allLessons.length - 1} className="bg-[#E3A83C] text-[#0F172A] text-sm font-bold px-6 py-2.5 rounded-xl disabled:opacity-30">Next Lesson</button>
               </div>
 
-              <div className="flex gap-1 bg-white rounded-xl border border-[#EAD7B1] p-1 shadow-sm overflow-x-auto">
-                {["overview", "notes", "resources", "q&a"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold capitalize transition whitespace-nowrap ${activeTab === tab
-                      ? "bg-[#0F172A] text-white shadow"
-                      : "text-gray-400 hover:text-[#0F172A] hover:bg-[#F6F1E7]"
-                      }`}
-                  >
-                    {tab === "q&a"
-                      ? "Q&A"
-                      : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
+              <div className="flex gap-2 bg-white rounded-xl border border-[#EAD7B1] p-1 shadow-sm overflow-x-auto">
+                {["overview", "notes", "resources"].map((t) => (
+                  <button key={t} onClick={() => setActiveTab(t)} className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-black uppercase transition ${activeTab === t ? "bg-[#0F172A] text-white" : "text-gray-400 hover:bg-[#F6F1E7]"}`}>{t}</button>
                 ))}
               </div>
 
-              {activeTab === "overview" && (
-                <div className="space-y-4">
-                  <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                    <h3 className="text-[#0F172A] font-black text-sm mb-3 flex items-center gap-2">
-                      <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                      About This Course
-                    </h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">
-                      {course.description || "No description available."}
-                    </p>
+              <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm min-h-[200px]">
+                {activeTab === "overview" && (
+                  <div>
+                    <h3 className="font-black text-slate-900 mb-2 uppercase text-xs tracking-widest text-[#E3A83C]">Description</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{course.description}</p>
                   </div>
-
-                  {course.what_you_learn?.length > 0 && (
-                    <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                      <h3 className="text-[#0F172A] font-black text-sm mb-3 flex items-center gap-2">
-                        <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                        What You'll Learn
-                      </h3>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {course.what_you_learn.map((item, index) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <FaCheckCircle className="text-[#E3A83C] text-xs mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-600 text-sm">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                    <h3 className="text-[#0F172A] font-black text-sm mb-4 flex items-center gap-2">
-                      <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                      Your Instructor
-                    </h3>
-
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#E3A83C] to-[#0F172A] flex items-center justify-center text-white font-black text-xl flex-shrink-0">
-                        {course.instructor?.charAt(0) || "I"}
-                      </div>
-
-                      <div>
-                        <p className="text-[#0F172A] font-black text-sm">
-                          {course.instructor}
-                        </p>
-                        <p className="text-[#E3A83C] text-xs font-semibold">
-                          Course Instructor
-                        </p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <FaStar className="text-[#E3A83C] text-xs" />
-                          <span className="text-gray-500 text-xs">
-                            {course.rating} Rating
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                )}
+                {activeTab === "notes" && (
+                   <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Lesson specific notes..." rows={6} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:outline-none" />
+                )}
+                {activeTab === "resources" && (
+                  <div className="space-y-3">
+                    {activeLesson?.resources?.length > 0 ? activeLesson.resources.map((r, i) => (
+                      <a key={i} href={r.url} className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs"><FaDownload /> {r.name}</a>
+                    )) : <p className="text-gray-400 text-center py-10 italic">No resources available for this lesson.</p>}
                   </div>
-                </div>
-              )}
-
-              {activeTab === "notes" && (
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                  <h3 className="text-[#0F172A] font-black text-sm mb-3 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                    My Notes
-                    {activeLesson && (
-                      <span className="text-gray-400 font-normal text-xs">
-                        — {activeLesson.title}
-                      </span>
-                    )}
-                  </h3>
-
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Write your notes for this lesson here..."
-                    rows={8}
-                    className="w-full bg-[#F6F1E7] border border-[#EAD7B1] rounded-xl px-4 py-3 text-sm text-[#0F172A] placeholder-gray-400 resize-none focus:outline-none focus:border-[#E3A83C] transition"
-                  />
-
-                  <div className="flex justify-end mt-3">
-                    <button className="bg-[#E3A83C] text-[#0F172A] font-black text-xs px-5 py-2 rounded-xl hover:bg-[#cf962c] transition">
-                      Save Notes
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "resources" && (
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                  <h3 className="text-[#0F172A] font-black text-sm mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                    Lesson Resources
-                  </h3>
-
-                  {activeLesson?.resources?.length > 0 ? (
-                    <div className="space-y-2">
-                      {activeLesson.resources.map((resource, index) => (
-                        <a
-                          key={index}
-                          href={resource.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 bg-[#F6F1E7] border border-[#EAD7B1] rounded-xl hover:border-[#E3A83C] transition group"
-                        >
-                          <FaDownload className="text-[#E3A83C] text-sm" />
-                          <span className="text-[#0F172A] text-sm font-semibold group-hover:text-[#E3A83C] transition">
-                            {resource.name}
-                          </span>
-                        </a>
-                      ))}
-                    </div>
-                  ) : activeLesson?.material_file ? (
-                    <div className="space-y-2">
-                      <a
-                        href={activeLesson.material_file}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-[#F6F1E7] border border-[#EAD7B1] rounded-xl hover:border-[#E3A83C] transition group"
-                      >
-                        <FaDownload className="text-[#E3A83C] text-sm" />
-                        <span className="text-[#0F172A] text-sm font-semibold group-hover:text-[#E3A83C] transition">
-                          Download lesson file
-                        </span>
-                      </a>
-                    </div>
-                  ) : (
-                    <div className="py-8 text-center">
-                      <FaDownload className="text-2xl text-[#EAD7B1] mx-auto mb-2" />
-                      <p className="text-gray-400 text-sm">
-                        No resources for this lesson
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "q&a" && (
-                <div className="bg-white rounded-2xl border border-[#EAD7B1] p-5 shadow-sm">
-                  <h3 className="text-[#0F172A] font-black text-sm mb-4 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-[#E3A83C] rounded-full" />
-                    Questions & Answers
-                  </h3>
-
-                  <textarea
-                    placeholder="Ask a question about this lesson..."
-                    rows={4}
-                    className="w-full bg-[#F6F1E7] border border-[#EAD7B1] rounded-xl px-4 py-3 text-sm text-[#0F172A] placeholder-gray-400 resize-none focus:outline-none focus:border-[#E3A83C] transition mb-3"
-                  />
-
-                  <div className="flex justify-end mb-6">
-                    <button className="bg-[#E3A83C] text-[#0F172A] font-black text-xs px-5 py-2 rounded-xl hover:bg-[#cf962c] transition">
-                      Post Question
-                    </button>
-                  </div>
-
-                  <div className="py-6 text-center border-t border-[#EAD7B1]">
-                    <FaQuestionCircle className="text-2xl text-[#EAD7B1] mx-auto mb-2" />
-                    <p className="text-gray-400 text-sm">
-                      No questions yet. Be the first to ask!
-                    </p>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
       <Footer />
-
-      <CourseReviewModal
-        isOpen={showReviewModal}
-        courseId={id}
-        onClose={() => setShowReviewModal(false)}
-        onSubmitted={() => {
-          setShowReviewModal(false);
-          setReviewSubmitted(true);
-        }}
-      />
+      <CourseReviewModal isOpen={showReviewModal} courseId={id} onClose={() => setShowReviewModal(false)} onSubmitted={() => { setShowReviewModal(false); setReviewSubmitted(true); }} />
     </>
   );
 }

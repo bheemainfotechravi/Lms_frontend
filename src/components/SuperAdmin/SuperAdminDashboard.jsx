@@ -1,0 +1,97 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+
+import WelcomeBanner from "../../components/Admin-components/WelcomeBenner";
+import StatsGrid from "../../components/Admin-components/StateGrids";
+import { ShieldCheck, Building2, LayoutDashboard } from "lucide-react";
+import HandleCompany from "./Company";
+import HandleAdmin from "./HandleAdmin";
+import TopNavbar from "./Navbar";
+import SCards from "./SCards";
+
+
+export default function SuperAdminDashboard() {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 500);
+  }, []);
+
+  const today = new Date().toLocaleDateString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
+      {/* Existing Top Navbar */}
+      <TopNavbar user={user} today={today} />
+
+      <main className="p-8 max-w-[1600px] mx-auto">
+        {isLoading ? (
+          <div className="space-y-8">
+            <div className="h-40 bg-slate-200 rounded-[40px] animate-pulse" />
+            <div className="grid grid-cols-4 gap-6 animate-pulse">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-32 bg-slate-200 rounded-2xl" />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            
+            {/* Super Admin Control Navigation - Aapke design se match karta hua */}
+            <div className="flex flex-wrap gap-4 items-center bg-white p-2 rounded-[25px] border border-slate-200 w-fit shadow-sm">
+                <button 
+                    onClick={() => setActiveTab("overview")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-[20px] font-black text-sm transition-all ${activeTab === 'overview' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                >
+                    <LayoutDashboard size={18} /> Overview
+                </button>
+                <button 
+                    onClick={() => setActiveTab("admin")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-[20px] font-black text-sm transition-all ${activeTab === 'admin' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                >
+                    <ShieldCheck size={18} /> Handle Admin
+                </button>
+                <button 
+                    onClick={() => setActiveTab("company")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-[20px] font-black text-sm transition-all ${activeTab === 'company' ? 'bg-amber-500 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                >
+                    <Building2 size={18} /> Handle Company
+                </button>
+            </div>
+
+            {/* Dynamic Content Loading */}
+            <div className="transition-all duration-300">
+                {activeTab === "overview" && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                      <SCards/>
+                        <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm text-center">
+                            <p className="text-slate-400 font-bold">Select a module from above to manage the system.</p>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "admin" && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4">
+                        <HandleAdmin />
+                    </div>
+                )}
+
+                {activeTab === "company" && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4">
+                        <HandleCompany />
+                    </div>
+                )}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

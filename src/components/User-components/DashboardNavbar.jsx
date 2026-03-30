@@ -20,7 +20,7 @@ import {
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome, path: "/user/dashboard" },
   { key: "my-courses", label: "My Courses", icon: FiBook, path: "/user/mycourses" },
-  { key: "learn", label: "Continue", icon: FiPlayCircle, path: `/learning` },
+  // { key: "learn", label: "Continue", icon: FiPlayCircle, path: `/learning/${course_id}` },
   { key: "certificates", label: "Certificates", icon: FiAward, path: "/user/certificates" },
 ];
 
@@ -55,7 +55,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("/user/logout");
+      await axiosInstance.post("/student/student_logout");
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
@@ -153,16 +153,19 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
 
                     <div className="p-2 border-b border-[#F0E3C7]">
                       {/* NEW: MY PROFILE NAVIGATION */}
-                      <button
-                        onClick={() => {
-                          navigate("/user/user-profile/:id");
-                          setProfileOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
-                      >
-                        <FiUser className="text-lg text-[#E3A83C]" />
-                        My Profile
-                      </button>
+                      {/* PROFILE DROPDOWN ITEM */}
+<button
+  onClick={() => {
+    // 1. User ki ID nikal rahe hain
+  const userSlug = user?.slug; 
+  navigate(`/user/user-profile/${userSlug}`);
+  setProfileOpen(false);
+  }}
+  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
+>
+  <FiUser className="text-lg text-[#E3A83C]" />
+  My Profile
+</button>
                     </div>
 
                     {/* MOBILE NAV */}

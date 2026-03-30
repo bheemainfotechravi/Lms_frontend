@@ -191,7 +191,7 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      await axiosInstance.post("/user/signup", {
+      await axiosInstance.post("/student/student_signup", {
         first_name: cleanedData.first_name,
         last_name: cleanedData.last_name,
         email: cleanedData.email,
@@ -199,7 +199,7 @@ export default function Register() {
         password: cleanedData.password,
       });
 
-      navigate("/");
+      navigate("/user/dashboard");
     } catch (err) {
       setServerError(
         err?.response?.data?.message || "Registration failed. Please try again."

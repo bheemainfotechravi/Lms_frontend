@@ -5,22 +5,45 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("authToken") || null);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
+  
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("userData");
+    if (savedUser && savedUser !== "undefined") {
+      try {
+        return JSON.parse(savedUser);
+      } catch (e) {
+        console.error("AuthContext: Error parsing userData", e);
+        return null;
+      }
+    }
+    return null;
+  });
+
   const [isLoading, setIsLoading] = useState(true);
 
-  
+  // --- FIX STARTS HERE ---
+  // Pehle role ko nikal kar clean karo (lowercase aur trim)
+  const role = user?.role?.toLowerCase().trim() || "";
+
   const isAuthenticated = !!token;
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-  const isUser = user?.role === "user"; 
+  const isAdmin = role === "admin";
+  const isSuperAdmin = role === "super admin" || role === "superadmin";
+  // Ab 'role' variable defined hai, toh error nahi aayega
+  const isUser = role === "student" || role === "user"; 
+  // --- FIX ENDS HERE ---
 
   useEffect(() => {
     if (token) {
       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete axiosInstance.defaults.headers.common["Authorization"];
     }
     setIsLoading(false);
   }, [token]);
 
   const login = (userData, token) => {
+    if (!userData || !token) return;
+
     setUser(userData);
     setToken(token);
 
@@ -45,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         token, 
         isAuthenticated,
         isAdmin,
+        isSuperAdmin,
         isUser,
         isLoading,
         login,

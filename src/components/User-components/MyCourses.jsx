@@ -62,23 +62,18 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
           let rawProgress = 0;
           let rawDone = 0;
 
-          // --- FIXED LOGIC ---
-          // Based on your response, 'progress' is an array. 
-          // We must take the LAST element to get the most recent update.
           if (progressData.progress && Array.isArray(progressData.progress) && progressData.progress.length > 0) {
             const latest = progressData.progress[progressData.progress.length - 1];
             rawProgress = latest.progress_percent;
             rawDone = latest.completed_lessons?.length || 0;
           } else if (progressData.progress && typeof progressData.progress === 'object') {
-            // Fallback if it's a single object instead of an array
+           
             rawProgress = progressData.progress.progress_percent || 0;
             rawDone = progressData.progress.completed_lessons?.length || 0;
           }
 
-          // 1. Convert to Number and Cap at 100% (Fixes the 120% bug)
           const cleanProgress = Math.min(parseFloat(rawProgress) || 0, 100);
-          
-          // 2. Ensure doneLessons is a valid integer
+ 
           const cleanDone = parseInt(rawDone) || 0;
 
           return {
