@@ -22,7 +22,11 @@ import UserProfile from './components/User-components/UserProfile';
 import QuizSystem from './components/User-components/AssessmentQuiz';
 import CoursePlayer from './components/User-components/CoursePlayer';
 import CoursesbyCat from './components/LandingPage/CoursesbyCat';
-import Certificate from './components/User-components/Certificate';
+import CertificateView from './components/User-components/CertificateView';
+import MyCertificates from './components/User-components/MyCertifications';
+import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard';
+import SuperAdminLogin from './components/SuperAdmin/SuperAdminLogin';
+// import Certificate from './components/User-components/Certificate';
 
 
 function ScrollToTop() {
@@ -41,22 +45,36 @@ export default function App() {
           <ScrollToTop /> 
           
           <Routes>
+          {/* SuperAdmin */}
+    
+          <Route 
+  path="/superadmin/dashboard" 
+  element={
+    <ProtectedRoute allowedRoles={["super admin", "superadmin"]}>
+      <SuperAdminDashboard />
+    </ProtectedRoute>
+  } 
+/>
+
+
+<Route path="/superadmin/login" element={<SuperAdminLogin />} />
+
+
             {/* Home */}
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/cr" element={<Certificate />} />
             
 
-            {/* Roles */}
-            <Route path="/user/dashboard" element={<ProtectedRoute allowedRoles={"user"}><UserDashboard /></ProtectedRoute>} />
-            <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={"user"}><MyCourses /></ProtectedRoute>} /> 
-            <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={"user"}><AllCourses /></ProtectedRoute>} /> 
-            <Route path="/category/:id" element={<CoursesbyCat />} /> 
-            <Route path="/user/user-profile/:id" element={<ProtectedRoute allowedRoles={"user"}><UserProfile /></ProtectedRoute>} /> 
-            <Route path="/learning/:id"  element={<ProtectedRoute allowedRoles={"user"}> <CoursePlayer /></ProtectedRoute>} />
-            <Route path="/quiz/:id"  element={<ProtectedRoute allowedRoles={"user"}> <QuizSystem /></ProtectedRoute>} />
-
+            {/* Student Roles */}
+            <Route path="/user/dashboard"element={<ProtectedRoute allowedRoles={["student", "user"]}><UserDashboard /></ProtectedRoute>}/>
+            <Route path="/user/mycourses" element={<ProtectedRoute allowedRoles={["student", "user"]}><MyCourses /></ProtectedRoute>} /> 
+            <Route path="/user/allcourse" element={<ProtectedRoute allowedRoles={["student", "user"]}><AllCourses /></ProtectedRoute>} /> 
+            <Route path="/user/user-profile/:slug" element={<ProtectedRoute allowedRoles={["student", "user"]}><UserProfile /></ProtectedRoute>} /> 
+            <Route path="/learning/:id"  element={<ProtectedRoute allowedRoles={["student", "user"]}> <CoursePlayer /></ProtectedRoute>} />
+            <Route path="/quiz/:id"  element={<ProtectedRoute allowedRoles={["student", "user"]}> <QuizSystem /></ProtectedRoute>} />
+            <Route path="/certificate/:id" element={<ProtectedRoute allowedRoles={["student", "user"]}><CertificateView /></ProtectedRoute>} />
+            <Route path="/user/certificates" element={<ProtectedRoute allowedRoles={["student", "user"]}><MyCertificates /></ProtectedRoute>} />
             
             <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin", "superadmin"]}><Admindashboard /></ProtectedRoute>} />
 
@@ -65,6 +83,7 @@ export default function App() {
             <Route path="/admin/category" element={<CategoryPage />} />
             <Route path="/admin/courses" element={<Coursepage />} />
             <Route path="/course/:id" element={<CourseDetails/>} />
+             <Route path="/category/:id" element={<CoursesbyCat />} /> 
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/admin/reviewcourses" element={<ReviewCourses />} />
             <Route path="/admin/get-users" element={<GetUser />} />

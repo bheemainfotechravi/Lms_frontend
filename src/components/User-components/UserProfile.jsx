@@ -3,8 +3,10 @@ import { User, Mail, Phone, Save, Loader2, AlertCircle, Briefcase, FileText } fr
 import axiosInstance from "../../utils/axiosinstance";
 import { useAuth } from "../../context/AuthContext";
 import DashboardNavbar from "./DashboardNavbar";
+import { useParams } from "react-router-dom";
 
 const UserProfile = () => {
+  const {slug } = useParams();
   const { user: authUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -22,31 +24,36 @@ const UserProfile = () => {
   const userId = authUser?.id;
 
   useEffect(() => {
-    if (userId) {
+    if (slug) {
       fetchUserData();
     } else {
       setLoading(false);
     }
-  }, [userId]);
+  }, [slug]);
 
-  const fetchUserData = async () => {
+ const fetchUserData = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(`/user/user-profile/${userId}`);
-      const userData = res.data.user && res.data.user.length > 0 
-                       ? res.data.user[0] 
-                       : res.data;
+      const res = await axiosInstance.get(`/student/student-profile/${slug}`);
+      
+      // DEBUG: console.log(res.data) karke structure confirm karein
+      // Aapka backend data 'res.data.user' mein bhej raha hai
+      const userData = res.data.user; 
 
-      setFormData({
-        firstName: userData.first_name || "",
-        lastName: userData.last_name || "",
-        email: userData.email || authUser?.email || "",
-        mobile: userData.mobile || "",
-        domain: userData.domain || "tech",
-        pdf: userData.pdf_url || null, 
-      });
+      if (userData) {
+        setFormData({
+          firstName: userData.first_name || "",
+          lastName: userData.last_name || "",
+          email: userData.email || authUser?.email || "",
+          mobile: userData.mobile || "",
+          domain: userData.domain || "tech",
+          // FIX: Backend 'resume' bhej raha hai, 'pdf_url' nahi
+          pdf: userData.resume || null, 
+        });
+      }
     } catch (error) {
       console.error("Fetch error:", error);
+      // Fallback to Auth data if API fails
       setFormData(prev => ({
         ...prev,
         firstName: authUser?.first_name || "",
@@ -86,7 +93,7 @@ const UserProfile = () => {
       }
 
       // Headers set karein multipart/form-data ke liye
-      await axiosInstance.patch(`/user/update-profile/${userId}`, data, {
+      await axiosInstance.patch(`/student/update-student-profile/${slug}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }

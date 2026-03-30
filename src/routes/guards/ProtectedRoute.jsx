@@ -13,27 +13,44 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
+  // 1. Authentication Check
   if (!isAuthenticated) {
+    const isSuperAdminRoute = location.pathname.startsWith("/superadmin");
     const isAdminRoute = location.pathname.startsWith("/admin");
-    const fallbackPath = isAdminRoute ? "/admin/login" : "/login";
+    
+    // Yahan student/user ke liye default "/login" rakha hai
+    const fallbackPath = isSuperAdminRoute 
+      ? "/superadmin/login" 
+      : (isAdminRoute ? "/admin/login" : "/login");
 
-    return (
-      <Navigate
-        to={fallbackPath}
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
-  
-  if (
-    allowedRoles &&
-    allowedRoles.length > 0 &&
-    !allowedRoles.includes(user?.role)
-  ) {
+  // 2. Authorization (Role) Check
+  if (allowedRoles) {
+    const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+    const currentUserRole = user?.role?.toLowerCase().trim();
     
-    return <Navigate to="/unauthorized" replace />;
+    
+    const hasAccess = rolesArray.some(role => {
+      const normalizedRole = role.toLowerCase().trim();
+      
+      // Direct Match
+      if (normalizedRole === currentUserRole) return true;
+      
+      
+      if (normalizedRole.replace(/\s/g, "") === currentUserRole?.replace(/\s/g, "")) return true;
+ 
+      if ((normalizedRole === "student" || normalizedRole === "user") && 
+          (currentUserRole === "student" || currentUserRole === "user")) return true;
+
+      return false;
+    });
+
+    if (!hasAccess) {
+      console.warn(`Access Denied for ${currentUserRole}. Allowed:`, rolesArray);
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return children;

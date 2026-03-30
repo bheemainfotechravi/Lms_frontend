@@ -112,7 +112,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const res = await axiosInstance.post("/user/login", {
+      const res = await axiosInstance.post("/student/student_login", {
         email,
         password,
       });
