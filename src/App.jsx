@@ -26,6 +26,7 @@ import CertificateView from './components/User-components/CertificateView';
 import MyCertificates from './components/User-components/MyCertifications';
 import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard';
 import SuperAdminLogin from './components/SuperAdmin/SuperAdminLogin';
+
 // import Certificate from './components/User-components/Certificate';
 
 

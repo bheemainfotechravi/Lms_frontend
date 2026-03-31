@@ -10,10 +10,10 @@ import {
   FiSettings,
   FiSearch
 } from "react-icons/fi";
-import { RiShieldFlashLine } from "react-icons/ri"; // Super Admin icon
+import { RiShieldFlashLine } from "react-icons/ri"; 
 import axiosInstance from "../../utils/axiosinstance";
 
-// Example activity data (can be moved to dashboardData.js)
+
 const ACTIVITY = [
   { text: "New trainer registration request", time: "5 min ago", icon: FiUser },
   { text: "System backup completed", time: "1 hour ago", icon: FiSettings },

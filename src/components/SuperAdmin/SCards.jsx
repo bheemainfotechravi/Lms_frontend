@@ -15,7 +15,7 @@ function SCards() {
       try {
         setLoading(true);
 
-        // API calls for all data points
+        
         const [userRes, courseRes, adminRes, companyRes] = await Promise.all([
           axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
           axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } })),
@@ -30,11 +30,11 @@ function SCards() {
 
         const superStats = [
           {
-            label: "Total Students",
+            label: "Total Admin",
             value: userCount,
-            change: "Across Platform",
+            change: "System Level"  ,
             up: true,
-            icon: FiUsers,
+            icon: FiShield,
             color: "text-indigo-600",
             bg: "bg-indigo-50",
             border: "border-indigo-100",
@@ -42,11 +42,11 @@ function SCards() {
             path: "/admin/get-users"
           },
           {
-            label: "Total Admins",
+            label: "Total Students",
             value: adminCount,
-            change: "System Level",
+            change:"Across Platform",
             up: true,
-            icon: FiShield,
+            icon: FiUsers,
             color: "text-rose-600",
             bg: "bg-rose-50",
             border: "border-rose-100",

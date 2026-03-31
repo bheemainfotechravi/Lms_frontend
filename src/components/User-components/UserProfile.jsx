@@ -17,8 +17,8 @@ const UserProfile = () => {
     lastName: "",
     email: "",
     mobile: "",
-    domain: "tech", // String domain
-    pdf: null,   // File object
+    domain: "tech", 
+    pdf: null,   
   });
 
   const userId = authUser?.id;
@@ -36,8 +36,8 @@ const UserProfile = () => {
       setLoading(true);
       const res = await axiosInstance.get(`/student/student-profile/${slug}`);
       
-      // DEBUG: console.log(res.data) karke structure confirm karein
-      // Aapka backend data 'res.data.user' mein bhej raha hai
+      
+      
       const userData = res.data.user; 
 
       if (userData) {
@@ -47,13 +47,13 @@ const UserProfile = () => {
           email: userData.email || authUser?.email || "",
           mobile: userData.mobile || "",
           domain: userData.domain || "tech",
-          // FIX: Backend 'resume' bhej raha hai, 'pdf_url' nahi
+          
           pdf: userData.resume || null, 
         });
       }
     } catch (error) {
       console.error("Fetch error:", error);
-      // Fallback to Auth data if API fails
+      
       setFormData(prev => ({
         ...prev,
         firstName: authUser?.first_name || "",
@@ -81,7 +81,7 @@ const UserProfile = () => {
     setMessage({ type: "", text: "" });
 
     try {
-      // File upload ke liye FormData hi use karna hoga
+  
       const data = new FormData();
       data.append("first_name", formData.firstName);
       data.append("last_name", formData.lastName);
@@ -89,10 +89,9 @@ const UserProfile = () => {
       data.append("domain", formData.domain);
       
       if (formData.pdf instanceof File) {
-        data.append("pdf", formData.pdf); // Nayi file append karein
+        data.append("pdf", formData.pdf); 
       }
 
-      // Headers set karein multipart/form-data ke liye
       await axiosInstance.patch(`/student/update-student-profile/${slug}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
