@@ -4,10 +4,11 @@ import { useAuth } from "../../context/AuthContext";
 import WelcomeBanner from "../../components/Admin-components/WelcomeBenner";
 import StatsGrid from "../../components/Admin-components/StateGrids";
 import { ShieldCheck, Building2, LayoutDashboard } from "lucide-react";
-import HandleCompany from "./Company";
+import HandleCompany from "./Handlecategories";
 import HandleAdmin from "./HandleAdmin";
 import TopNavbar from "./Navbar";
 import SCards from "./SCards";
+import HandleCategory from "./Handlecategories";
 
 
 export default function SuperAdminDashboard() {
@@ -44,7 +45,6 @@ export default function SuperAdminDashboard() {
         ) : (
           <div className="space-y-8">
             
-            {/* Super Admin Control Navigation - Aapke design se match karta hua */}
             <div className="flex flex-wrap gap-4 items-center bg-white p-2 rounded-[25px] border border-slate-200 w-fit shadow-sm">
                 <button 
                     onClick={() => setActiveTab("overview")}
@@ -62,7 +62,7 @@ export default function SuperAdminDashboard() {
                     onClick={() => setActiveTab("company")}
                     className={`flex items-center gap-2 px-6 py-3 rounded-[20px] font-black text-sm transition-all ${activeTab === 'company' ? 'bg-amber-500 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
                 >
-                    <Building2 size={18} /> Handle Company
+                    <Building2 size={18} /> Handle Category
                 </button>
             </div>
 
@@ -85,7 +85,7 @@ export default function SuperAdminDashboard() {
 
                 {activeTab === "company" && (
                     <div className="animate-in fade-in slide-in-from-bottom-4">
-                        <HandleCompany />
+                        <HandleCategory />
                     </div>
                 )}
             </div>

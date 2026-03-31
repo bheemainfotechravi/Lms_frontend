@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CategoryModal from "../../components/Admin-components/categoryModel";
+import CategoryModal from "../../components/SuperAdmin/categoryModel";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
 import UpdateCategoryModal from "../../components/Admin-components/UpdateCategoryModal";

@@ -14,7 +14,7 @@ export default function SuperAdminLogin() {
   const [error, setError] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
 
-  // 1. Agar user pehle se logged in hai aur superadmin hai, toh direct dashboard bhejo
+  
   useEffect(() => {
     if (isAuthenticated && user?.role === "super admin") {
       navigate("/superadmin/dashboard", { replace: true });
@@ -34,7 +34,7 @@ const handleSubmit = async (e) => {
   try {
     const res = await axiosInstance.post("/admin/login", formData);
     
-    // Console log check karne ke liye (Optional)
+    
     console.log("Response Data:", res.data);
 
     if (res.data.success) {
@@ -50,7 +50,7 @@ const handleSubmit = async (e) => {
 
       if (userRole === "super admin" || userRole === "superadmin") {
         login(userData, token);
-        // Direct navigate
+        
         navigate("/superadmin/dashboard", { replace: true });
       } else {
         setError("Access Denied: Super Admin privileges required.");
