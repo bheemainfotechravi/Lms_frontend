@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosinstance";
-import { Plus, Trash2, Clock, HelpCircle } from "lucide-react"; // 'Clock' sahi hai
+import { Plus, Trash2, Clock, HelpCircle } from "lucide-react"; 
 
 export default function MaterialDashboard({ isOpen, onClose, course }) {
   const [materials, setMaterials] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("materials"); // "materials" or "assessment"
+  const [activeTab, setActiveTab] = useState("materials"); 
 
-  // Assessment State
-  const [quizDuration, setQuizDuration] = useState(300); // default 5 mins
+  
+  const [quizDuration, setQuizDuration] = useState(300); 
   const [quizQuestions, setQuizQuestions] = useState([
     { questions: "", options: ["", "", "", ""], correct: 0 }
   ]);
@@ -35,7 +35,7 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     }
   };
 
-  // --- Assessment Handlers ---
+  
   const addQuizQuestion = () => {
     setQuizQuestions([...quizQuestions, { questions: "", options: ["", "", "", ""], correct: 0 }]);
   };
@@ -64,7 +64,7 @@ const submitAssessment = async (e) => {
   try {
     console.log(course.id)
     const payload = {
-      // 1. Try 'course_id' again but ensure it's a Number
+      
       course_id: Number(course.id), 
       duration_second: Number(quizDuration),
       assessment_data: quizQuestions.map(q => ({
@@ -89,7 +89,7 @@ const submitAssessment = async (e) => {
     setIsLoading(false);
   }
 };
-  // --- Material Handlers ---
+  
   const addMoreItems = () => {
     setStagedItems([...stagedItems, { title: "", material_type: "pdf", link: "", file: null }]);
   };
