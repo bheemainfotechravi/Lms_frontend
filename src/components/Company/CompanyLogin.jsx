@@ -2,9 +2,9 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axiosInstance from "../../utils/axiosinstance";
-import { Eye, EyeOff, AlertCircle, Lock, Loader2, GraduationCap } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Lock, Loader2, Building2 } from "lucide-react";
 
-export default function TeacherLogin() {
+export default function CompanyLogin() {
   const navigate = useNavigate();
   const { login } = useAuth();
   
@@ -14,11 +14,11 @@ export default function TeacherLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  // --- Professional Validation Logic ---
+  
   const validations = useMemo(() => {
-    // Sirf @gmail.com allow karega
+    
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    // Min 8 char, 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Char
+    
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     return {
@@ -38,7 +38,7 @@ export default function TeacherLogin() {
     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
 
@@ -46,22 +46,11 @@ const handleSubmit = async (e) => {
     setServerError("");
 
     try {
-      const res = await axiosInstance.post("/user/admin_login", formData);
-      
-      // 1. Pehle user object mein role merge karo
-      const adminUser = { 
-        ...res.data.user, 
-        role: res.data.user?.role || "admin" 
-      };
-
-      // 2. IMPORTANT: Yahan res.data.user ki jagah adminUser pass karein
-      login(adminUser, res.data.token, "admin"); 
-
-      // 3. Navigation
-      navigate("/admin/dashboard");
-      
+      const res = await axiosInstance.post("/company/login", formData);
+      login(res.data.user, res.data.token, "admin");
+      navigate("/company/dashboard");
     } catch (err) {
-      setServerError(err.response?.data?.message || "Invalid Teacher Credentials");
+      setServerError(err.response?.data?.message || "Invalid Company Credentials");
     } finally {
       setIsLoading(false);
     }
@@ -72,10 +61,10 @@ const handleSubmit = async (e) => {
       <div className="w-full max-w-[400px] space-y-8">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-100">
-            <GraduationCap size={28} className="text-white" />
+            <Building2  size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Staff Portal</h1>
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1 text-center">Academic Administration</p>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Company Portal</h1>
+          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1 text-center">Company Administration</p>
         </div>
 
         <div className="bg-white rounded-[40px] p-10 shadow-2xl shadow-slate-200/60 border border-slate-100">

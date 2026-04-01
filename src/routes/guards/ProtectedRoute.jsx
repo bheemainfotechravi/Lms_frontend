@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   // 2. Authorization (Role) Check
   if (allowedRoles) {
     const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
-    const currentUserRole = user?.role?.toLowerCase().trim();
+   const currentUserRole = (user?.role || user?.user_type || "").toLowerCase().trim();
     
     
     const hasAccess = rolesArray.some(role => {

@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FiUsers, FiBookOpen, FiShield, FiBriefcase } from "react-icons/fi";
 import axiosInstance from "../../utils/axiosinstance";
-
-import { useNavigate } from "react-router-dom";
 import StatCard from "../Admin-components/StatCard";
 
-function SCards() {
+function SCards({ onTabChange }) { 
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSuperAdminStats = async () => {
       try {
         setLoading(true);
-
-        
         const [userRes, courseRes, adminRes, companyRes] = await Promise.all([
           axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
           axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } })),
@@ -32,14 +27,14 @@ function SCards() {
           {
             label: "Total Admin",
             value: userCount,
-            change: "System Level"  ,
+            change: "System Level",
             up: true,
             icon: FiShield,
             color: "text-indigo-600",
             bg: "bg-indigo-50",
             border: "border-indigo-100",
             shadow: "hover:shadow-indigo-200",
-            path: "/admin/get-users"
+            tabName: "admin" 
           },
           {
             label: "Total Students",
@@ -51,7 +46,7 @@ function SCards() {
             bg: "bg-rose-50",
             border: "border-rose-100",
             shadow: "hover:shadow-rose-200",
-            path: "/superadmin/manage-admins"
+            tabName: "overview" 
           },
           {
             label: "Registered Companies",
@@ -63,7 +58,7 @@ function SCards() {
             bg: "bg-amber-50",
             border: "border-amber-100",
             shadow: "hover:shadow-amber-200",
-            path: "/superadmin/manage-companies"
+            tabName: "company" 
           },
           {
             label: "Live Courses",
@@ -75,7 +70,7 @@ function SCards() {
             bg: "bg-emerald-50",
             border: "border-emerald-100",
             shadow: "hover:shadow-emerald-200",
-            path: "/admin/reviewcourses"
+            tabName: "overview" 
           }
         ];
 
@@ -106,7 +101,8 @@ function SCards() {
         <StatCard 
           key={i} 
           stat={stat} 
-          onClick={() => navigate(stat.path)} 
+          
+          onClick={() => onTabChange(stat.tabName)} 
         />
       ))}
     </section>
