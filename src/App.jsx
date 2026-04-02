@@ -34,6 +34,7 @@ import GetUser from "./components/Admin-components/getUsers";
 import SuperAdminLogin from './components/SuperAdmin/SuperAdminLogin';
 import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard';
 import CompanyLogin from './components/Company/CompanyLogin';
+import CompanyDashboard from './components/Company/CompanyDashboard';
 
  // Testing
 // import TestPage from './components/Test';
@@ -91,6 +92,7 @@ export default function App() {
 
             {/* Corporate / Company Routes */}
             <Route path="/company/login" element={<CompanyLogin />} />
+            <Route path="/company/dashboard" element={<CompanyDashboard />} />
            
 
             {/* Super Admin Routes */}
