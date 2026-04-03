@@ -2,17 +2,16 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosinstance.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate, useParams } from "react-router-dom";
-import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx"
-import Footer from "../LandingPage/Footer.jsx"
+import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx";
+import Footer from "../LandingPage/Footer.jsx";
 import {
   FaClock, FaBookOpen, FaGlobe, FaSignal,
-  FaCheckCircle,
-  FaInfinity, FaMobile, FaImage,
+  FaCheckCircle, FaInfinity, FaMobile, FaImage,
   FaStar, FaUsers
 } from "react-icons/fa";
 
 export default function CourseDetails() {
-  const { id } = useParams();
+  const { id: slug } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -20,140 +19,71 @@ export default function CourseDetails() {
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
 
-  useEffect(() => { fetchCourse(); }, [id]);
+  useEffect(() => {
+    if (slug) fetchCourse(slug);
+  }, [slug]);
 
-const mapCourseData = (c) => ({
-  id: c.id,
-  title: c.title,
-  description: c.description,
-  short_description: c.short_description,
-  price: parseInt(c.price) || 0,
-  level: c.level,
-  language: c.language,
-  duration: c.duration,
-  total_lectures: c.total_lectures,
-  category_id: c.category_id,
-  is_published: c.is_published,
-  thumbnail: c.thumbnail,
-  instructor: c.instructor_name || "Expert Instructor",
-  students: c.students || 0,
-  last_updated: c.updated_at
-    ? new Date(c.updated_at).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      })
-    : "Recently",
-  requirements: Array.isArray(c.requirements) ? c.requirements : [],
-  curriculum: Array.isArray(c.curriculum) ? c.curriculum : [],
-  category: c.category_name || "Development",
-  what_you_learn: c.material_titles
-    ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
-    : Array.isArray(c.what_you_learn) ? c.what_you_learn : [],
-});
+  const mapCourseData = (c, extra = {}) => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+    description: c.description,
+    short_description: c.short_description,
+    price: parseInt(c.price) || 0,
+    level: c.level,
+    language: c.language,
+    duration: c.duration,
+    total_lectures: c.total_lectures,
+    thumbnail: c.thumbnail,
+    instructor: c.instructor_name || "Expert Instructor",
+    students: c.students || 0,
+    last_updated: c.updated_at
+      ? new Date(c.updated_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+      : "Recently",
+    requirements: Array.isArray(c.requirements) ? c.requirements : [],
+    category: c.category_name || "Development",
+    what_you_learn: c.material_titles
+      ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
+      : Array.isArray(c.what_you_learn) ? c.what_you_learn : [],
+    rating: Number(extra?.avgRating || 0),
+    total_ratings: Number(extra?.totalReviews || 0),
+    reviews: Array.isArray(extra?.reviews) ? extra.reviews : [],
+  });
 
-const fetchCourse = async () => {
-  try {
-    setLoading(true);
-    const res = await axiosInstance.get(`/course/get/${id}`);
-    
-    // CASE 1: Standard Success
-    const c = res.data.data;
-    setCourse({
-      ...mapCourseData(c),
-      rating: Number(res.data?.avgRating || 0),
-      total_ratings: Number(res.data?.totalReviews || 0),
-      reviews: Array.isArray(res.data?.reviews) ? res.data.reviews : [],
-    });
-
-  } catch (error) {
-    const errorData = error.response?.data;
-    
-    if (error.response?.status === 404 && errorData?.data) {
-      console.log("Bypass: Mapping course data despite 404 review error.");
-      const c = errorData.data;
-
-      setCourse({
-        ...mapCourseData(c),
-        rating: 0,       
-        total_ratings: 0, 
-        reviews: [],      
-      });
-    } else {
-      console.error("Critical Fetch Error:", error);
-      setCourse(null);
+  const fetchCourse = async (targetSlug) => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.get(`/course/get/${targetSlug}`);
+      const c = res.data.data;
+      setCourse(mapCourseData(c, res.data));
+    } catch (error) {
+      const errorData = error.response?.data;
+      if (error.response?.status === 404 && errorData?.data) {
+        setCourse(mapCourseData(errorData.data));
+      } else {
+        console.error("Fetch Error:", error);
+        setCourse(null);
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
-  // Helper function to bypass and map data consistently
-  const handleCourseData = (c, rootData) => {
-    setCourse({
-      id: c.id,
-      title: c.title,
-      description: c.description,
-      short_description: c.short_description,
-      price: parseInt(c.price) || 0,
-      level: c.level,
-      language: c.language,
-      duration: c.duration,
-      total_lectures: c.total_lectures,
-      category_id: c.category_id,
-      is_published: c.is_published,
-      thumbnail: c.thumbnail,
-      instructor: c.instructor_name || "Expert Instructor",
-      students: c.students || 0,
-      last_updated: c.updated_at
-        ? new Date(c.updated_at).toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })
-        : "Recently",
-      requirements: Array.isArray(c.requirements) ? c.requirements : [],
-      curriculum: Array.isArray(c.curriculum) ? c.curriculum : [],
-      category: c.category_name || "Development",
-      what_you_learn: c.material_titles
-        ? c.material_titles.split(",").map((t) => t.trim()).filter(Boolean)
-        : Array.isArray(c.what_you_learn) ? c.what_you_learn : [],
-
-      // Reviews Bypassed: Fallback to defaults if missing
-      rating: Number(rootData?.avgRating || 0),
-      total_ratings: Number(rootData?.totalReviews || 0),
-      reviews: Array.isArray(rootData?.reviews) ? rootData.reviews : [],
-    });
   };
 
   const handleEnroll = async () => {
-    if (!user || !user.id) {
-      alert("Please login to enroll in this course");
-
-      navigate("/login", {
-        state: { redirectTo: `/course/${id}` }
-      });
-
+    if (!user?.id) {
+      alert("Please login to enroll");
+      navigate("/login", { state: { redirectTo: `/course/${slug}` } });
       return;
     }
 
     try {
       setEnrolling(true);
-
-      const payload = {
-        user_id: user.id,
-        course_id: course.id,
-        amount: course.price
-      };
-
-      const res = await axiosInstance.post("/course/enroll", payload);
-
-      console.log("Course enrolled:", res.data);
-
+      const payload = { user_id: user.id, course_id: course.id, amount: course.price };
+      await axiosInstance.post("/course/enroll", payload);
       alert("Course added to My Courses 🎉");
-
-    navigate("/user/mycourses");
-
+      navigate("/user/mycourses");
     } catch (error) {
-      console.error("Error buying course:", error.response?.data || error);
-      alert("Failed to purchase course");
+      alert(error.response?.data?.message || "Enrollment failed");
     } finally {
       setEnrolling(false);
     }
@@ -161,35 +91,29 @@ const fetchCourse = async () => {
 
   if (loading) return (
     <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin" />
-        <p className="text-[#0F172A] font-bold text-sm">Loading course...</p>
-      </div>
+      <div className="w-10 h-10 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin" />
     </div>
   );
 
   if (!course) return (
-    <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center">
-      <div className="text-center">
+    <div className="min-h-screen bg-[#F6F1E7] flex items-center justify-center text-center">
+      <div>
         <FaBookOpen className="text-4xl text-[#EAD7B1] mx-auto mb-3" />
-        <p className="text-[#0F172A] font-black text-lg">Course not found</p>
-        <button onClick={() => navigate(-1)} className="mt-4 bg-[#E3A83C] text-[#0F172A] text-sm font-bold px-5 py-2 rounded-xl hover:bg-[#cf962c] transition">
-          Go Back
-        </button>
+        <p className="font-black">Course not found</p>
+        <button onClick={() => navigate(-1)} className="mt-4 bg-[#E3A83C] px-5 py-2 rounded-xl font-bold">Go Back</button>
       </div>
     </div>
   );
-  const filledStars = Math.round(course?.rating || 0);
+
+  const filledStars = Math.round(course.rating || 0);
+
   return (
     <>
       <DashboardNavbar />
-
-      <div className="min-h-screen bg-[#F6F1E7]">
-
-        {/* ── Breadcrumb ── */}
+      <div className="min-h-screen bg-[#F6F1E7] pb-20 lg:pb-0">
         <div className="bg-white border-b border-[#EAD7B1]">
           <div className="max-w-6xl mx-auto px-6 py-3 flex items-center gap-2 text-xs text-gray-400">
-            <button onClick={() => navigate("/user/dashboard")} className="hover:text-[#E3A83C] transition font-semibold">Courses</button>
+            <button onClick={() => navigate("/user/dashboard")} className="hover:text-[#E3A83C] font-semibold transition">Courses</button>
             <span>/</span>
             <span className="text-[#E3A83C] font-semibold">{course.category}</span>
             <span>/</span>
@@ -197,42 +121,29 @@ const fetchCourse = async () => {
           </div>
         </div>
 
-        {/* ── Single Main Layout: Info Left + Card Right ── */}
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8 items-start">
-
-          {/* ── LEFT: All content ── */}
           <div className="flex-1 min-w-0 space-y-5">
-
-            {/* Course Header */}
             <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-              <span className="inline-block bg-[#E3A83C]/10 text-[#E3A83C] border border-[#EAD7B1] text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-4">
+              <span className="inline-block bg-[#E3A83C]/10 text-[#E3A83C] border border-[#EAD7B1] text-[10px] font-black px-3 py-1 rounded-full uppercase mb-4 tracking-widest">
                 {course.category}
               </span>
-
-              <h1 className="text-[#0F172A] font-black text-2xl leading-tight mb-3">
-                {course.title}
-              </h1>
-
-              <p className="text-gray-500 text-sm leading-relaxed mb-5">
-                {course.short_description}
-              </p>
-
-              {/* Rating */}
+              <h1 className="text-[#0F172A] font-black text-2xl lg:text-3xl mb-3 leading-tight">{course.title}</h1>
+              <p className="text-gray-500 text-sm mb-5 leading-relaxed">{course.short_description}</p>
+              
               <div className="flex flex-wrap items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className={`text-xs ${i < filledStars ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
                   ))}
-                  <span className="text-[#E3A83C] text-sm font-bold ml-1">{course.rating}</span>
-                  <span className="text-gray-400 text-xs ml-1">({course.total_ratings.toLocaleString()} ratings)</span>
+                  <span className="text-[#E3A83C] text-sm font-bold ml-1">{course.rating.toFixed(1)}</span>
+                  <span className="text-gray-400 text-xs ml-1">({course.total_ratings} ratings)</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-gray-400 text-xs">
                   <FaUsers className="text-[#E3A83C]" />
-                  <span>{course.students.toLocaleString()} students enrolled</span>
+                  <span>{course.students} students</span>
                 </div>
               </div>
 
-              {/* Meta Pills */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {[
                   { icon: <FaClock />, text: course.duration },
@@ -240,263 +151,106 @@ const fetchCourse = async () => {
                   { icon: <FaSignal />, text: course.level },
                   { icon: <FaGlobe />, text: course.language },
                 ].map((m, i) => (
-                  <div key={i} className="flex items-center gap-1.5 bg-[#F6F1E7] border border-[#EAD7B1] px-3 py-1.5 rounded-full text-xs text-gray-600">
+                  <div key={i} className="flex items-center gap-1.5 bg-[#F6F1E7] border border-[#EAD7B1] px-3 py-1.5 rounded-full text-[11px] font-bold text-gray-600">
                     <span className="text-[#E3A83C]">{m.icon}</span>
-                    <span className="font-semibold">{m.text}</span>
+                    {m.text}
                   </div>
                 ))}
               </div>
-
-              <p className="text-gray-400 text-xs">
-                By <span className="text-[#E3A83C] font-bold">{course.instructor}</span>
-                <span className="mx-2 text-gray-300">·</span>
-                Last updated <span className="text-[#0F172A] font-semibold">{course.last_updated}</span>
+              <p className="text-gray-400 text-[11px]">
+                By <span className="text-[#E3A83C] font-black uppercase">{course.instructor}</span> · Updated <span className="text-[#0F172A] font-bold">{course.last_updated}</span>
               </p>
             </div>
 
-            {/* What You'll Learn */}
             <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                What You'll Learn
+              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2 uppercase tracking-tight">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" /> What You'll Learn
               </h2>
-              {course.what_you_learn.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {course.what_you_learn.map((item, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <FaCheckCircle className="text-[#E3A83C] text-sm mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-600 text-sm">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-400 text-sm">Details coming soon.</p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-              <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
-                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                Course Description
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">{course.description}</p>
-            </div>
-
-            {/* Requirements */}
-            {course.requirements.length > 0 && (
-              <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-                <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2">
-                  <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                  Requirements
-                </h2>
-                <ul className="space-y-2">
-                  {course.requirements.map((r, i) => (
-                    <li key={i} className="flex items-center gap-2 text-gray-600 text-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#E3A83C] flex-shrink-0" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Course Details */}
-            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                Course Details
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[
-                  { icon: <FaClock />, label: "Duration", value: course.duration },
-                  { icon: <FaBookOpen />, label: "Lectures", value: course.total_lectures },
-                  { icon: <FaSignal />, label: "Level", value: course.level },
-                  { icon: <FaGlobe />, label: "Language", value: course.language },
-                  { icon: <FaInfinity />, label: "Access", value: "Full Lifetime" },
-                  { icon: <FaMobile />, label: "Devices", value: "Mobile & Desktop" },
-                ].map((d, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-[#F6F1E7] rounded-xl border border-[#EAD7B1]">
-                    <div className="text-[#E3A83C] text-sm">{d.icon}</div>
-                    <div>
-                      <p className="text-gray-400 text-xs">{d.label}</p>
-                      <p className="text-[#0F172A] text-xs font-bold">{d.value}</p>
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {course.what_you_learn.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <FaCheckCircle className="text-[#E3A83C] text-sm mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 text-sm">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
-                <div>
-                  <h2 className="text-[#0F172A] font-black text-base flex items-center gap-2">
-                    <span className="w-1 h-5 bg-[#E3A83C] rounded-full" />
-                    Ratings & Reviews
-                  </h2>
-                  <p className="text-gray-400 text-sm mt-1">
-                    Feedback from enrolled learners
-                  </p>
-                </div>
+              <h2 className="text-[#0F172A] font-black text-base mb-3 flex items-center gap-2 uppercase tracking-tight">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" /> Description
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{course.description}</p>
+            </div>
 
-                <div className="bg-[#F6F1E7] border border-[#EAD7B1] rounded-2xl px-4 py-3 min-w-[180px]">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#0F172A] font-black text-2xl">
-                      {course.rating?.toFixed(1) || "0.0"}
-                    </span>
-                    <div>
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={`text-xs ${i < Math.round(course.rating || 0)
-                                ? "text-[#E3A83C]"
-                                : "text-[#EAD7B1]"
-                              }`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-gray-400 text-xs mt-1">
-                        {course.total_ratings || 0} review{course.total_ratings === 1 ? "" : "s"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {course.reviews && course.reviews.length > 0 ? (
+            <div className="bg-white rounded-2xl border border-[#EAD7B1] p-6 shadow-sm">
+              <h2 className="text-[#0F172A] font-black text-base mb-4 flex items-center gap-2 uppercase tracking-tight">
+                <span className="w-1 h-5 bg-[#E3A83C] rounded-full" /> Course Reviews
+              </h2>
+              {course.reviews.length > 0 ? (
                 <div className="space-y-4">
-                  {course.reviews.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-[#FDFAF5] border border-[#EAD7B1] rounded-2xl p-4"
-                    >
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div>
-                          <p className="text-[#0F172A] text-sm font-bold">
-                            Student Review
-                          </p>
-                          <p className="text-gray-400 text-xs">
-                            {item.created_at
-                              ? new Date(item.created_at).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })
-                              : "Recently"}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-1 bg-white border border-[#EAD7B1] rounded-full px-3 py-1">
-                          {[...Array(5)].map((_, i) => (
-                            <FaStar
-                              key={i}
-                              className={`text-[10px] ${i < item.rating ? "text-[#E3A83C]" : "text-[#EAD7B1]"
-                                }`}
-                            />
+                  {course.reviews.map((rev, i) => (
+                    <div key={i} className="bg-[#FDFAF5] border border-[#EAD7B1] rounded-2xl p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-xs font-black uppercase text-gray-400">Student Review</span>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, si) => (
+                            <FaStar key={si} className={`text-[10px] ${si < rev.rating ? "text-[#E3A83C]" : "text-[#EAD7B1]"}`} />
                           ))}
-                          <span className="text-[#0F172A] text-xs font-bold ml-1">
-                            {item.rating}/5
-                          </span>
                         </div>
                       </div>
-
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {item.review_text || "No written review provided."}
-                      </p>
+                      <p className="text-gray-600 text-sm">{rev.review_text || "No comments."}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="py-10 text-center">
-                  <FaStar className="text-2xl text-[#EAD7B1] mx-auto mb-2" />
-                  <p className="text-[#0F172A] font-bold text-sm">No reviews yet</p>
-                  <p className="text-gray-400 text-sm mt-1">
-                    Be the first to review this course after completing it.
-                  </p>
-                </div>
+                <p className="text-gray-400 text-sm italic">No reviews yet.</p>
               )}
             </div>
-
           </div>
 
-          {/* ── RIGHT: Sticky Purchase Card — shown once, desktop only ── */}
-          <div className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-24">
-              <PurchaseCard course={course} enrolling={enrolling} onEnroll={handleEnroll} />
-            </div>
+          <div className="hidden lg:block w-80 flex-shrink-0 sticky top-24">
+            <PurchaseCard course={course} enrolling={enrolling} onEnroll={handleEnroll} />
           </div>
         </div>
 
-        {/* ── Mobile Buy Bar ── */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#EAD7B1] px-5 py-3 flex items-center justify-between z-50 shadow-xl">
+        {/* Mobile Bar */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#EAD7B1] px-5 py-4 flex items-center justify-between z-50 shadow-2xl">
           <div>
             <p className="text-[#0F172A] font-black text-xl">₹{course.price.toLocaleString()}</p>
-            <p className="text-gray-400 text-xs">One-time payment</p>
+            <p className="text-gray-400 text-[10px] font-bold uppercase">Lifetime Access</p>
           </div>
-          <button onClick={handleEnroll} disabled={enrolling}
-            className="bg-[#E3A83C] text-[#0F172A] font-black text-sm px-6 py-3 rounded-xl hover:bg-[#cf962c] transition disabled:opacity-60">
-            {enrolling ? "Processing..." : "Enroll Now"}
+          <button onClick={handleEnroll} disabled={enrolling} className="bg-[#E3A83C] text-[#0F172A] font-black text-sm px-8 py-3 rounded-xl shadow-lg active:scale-95 transition disabled:opacity-50">
+            {enrolling ? "Wait..." : "Enroll Now"}
           </button>
         </div>
-
       </div>
-
       <Footer />
     </>
   );
 }
 
-// ── Purchase Card ──
 function PurchaseCard({ course, enrolling, onEnroll }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#EAD7B1] shadow-lg overflow-hidden">
-
-      {/* Thumbnail */}
-      <div className="h-44 bg-[#F6F1E7] flex items-center justify-center overflow-hidden relative group">
-        {course.thumbnail ? (
-          <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
-        ) : (
-          <FaImage className="text-4xl text-[#EAD7B1]" />
-        )}
-        <div className="absolute inset-0 bg-[#0F172A]/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-          <div className="w-12 h-12 rounded-full bg-[#E3A83C] flex items-center justify-center text-white text-lg shadow-lg">▶</div>
+    <div className="bg-white rounded-2xl border border-[#EAD7B1] shadow-xl overflow-hidden">
+      <div className="h-48 bg-slate-100 relative group">
+        <img src={course.thumbnail} alt="thumb" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+          <div className="w-12 h-12 rounded-full bg-[#E3A83C] flex items-center justify-center text-white shadow-xl">▶</div>
         </div>
       </div>
-
-      <div className="p-5">
-        {/* Price */}
-        <div className="flex items-end gap-2 mb-4">
+      <div className="p-6">
+        <div className="flex items-center gap-2 mb-4">
           <span className="text-[#0F172A] font-black text-3xl">₹{course.price.toLocaleString()}</span>
-          <span className="text-gray-300 text-sm line-through mb-1">₹{(course.price * 2).toLocaleString()}</span>
-          <span className="text-green-600 text-xs font-bold mb-1 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full">50% OFF</span>
+          <span className="text-gray-300 text-sm line-through">₹{course.price * 2}</span>
         </div>
-
-        <button onClick={onEnroll} disabled={enrolling}
-          className="w-full bg-[#E3A83C] text-[#0F172A] font-black text-sm py-3.5 rounded-xl hover:bg-[#cf962c] transition disabled:opacity-60 mb-2 shadow-md">
+        <button onClick={onEnroll} disabled={enrolling} className="w-full bg-[#E3A83C] text-[#0F172A] font-black py-4 rounded-xl shadow-lg hover:shadow-xl transition active:scale-[0.98] disabled:opacity-50">
           {enrolling ? "Processing..." : "Enroll Now →"}
         </button>
-
-        <p className="text-center text-gray-400 text-xs mb-4">30-Day Money-Back Guarantee</p>
-
-        <div className="space-y-2.5 border-t border-[#EAD7B1] pt-4">
-          <p className="text-[#0F172A] font-bold text-xs mb-3">This course includes:</p>
-          {[
-            { icon: <FaClock />, text: `${course.duration} of on-demand content` },
-            { icon: <FaBookOpen />, text: `${course.total_lectures} lectures` },
-            { icon: <FaInfinity />, text: "Full lifetime access" },
-            { icon: <FaMobile />, text: "Access on mobile & desktop" },
-            { icon: <FaGlobe />, text: `Language: ${course.language}` },
-            { icon: <FaSignal />, text: `Level: ${course.level}` },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-gray-500 text-xs">
-              <span className="text-[#E3A83C] w-3">{item.icon}</span>
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
+        <p className="text-center text-[10px] text-gray-400 font-bold uppercase mt-4 tracking-widest border-t border-[#F6F1E7] pt-4">
+          Full Lifetime Access Included
+        </p>
       </div>
     </div>
   );
 }
-

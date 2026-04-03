@@ -1,21 +1,6 @@
-// ── Add this to your fetchCourse() state mapping ──
-// avgRating: parseFloat(res.data.avgRating) || 0,
-// totalReviews: res.data.totalReviews || 0,
-// reviews: res.data.reviews || [],
+import React from "react";
 
-// ── Add these fields to your setCourse() call ──
-/*
-  avgRating: parseFloat(res.data.avgRating) || 0,
-  totalReviews: res.data.totalReviews || 0,
-  reviews: res.data.reviews || [],
-*/
-
-// ── Add this import at top of CourseDetails.jsx ──
-// import { FaStar, FaUserCircle } from "react-icons/fa";
-
-// ── Paste this entire ReviewsCard component at the bottom of CourseDetails.jsx ──
-
-function ReviewsCard({ avgRating, totalReviews, reviews }) {
+ export default function ReviewsCard({ avgRating, totalReviews, reviews }) {
   const filled = Math.floor(avgRating);
 
   // Calculate star distribution from actual reviews

@@ -9,7 +9,6 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("materials"); 
 
-  
   const [quizDuration, setQuizDuration] = useState(300); 
   const [quizQuestions, setQuizQuestions] = useState([
     { questions: "", options: ["", "", "", ""], correct: 0 }
@@ -19,13 +18,17 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     { title: "", material_type: "pdf", link: "", file: null }
   ]);
 
+  // FIX 1: Dependency array mein slug add kiya aur fetch call ko sahi kiya
   useEffect(() => {
-    if (isOpen && course?.id) fetchMaterials();
-  }, [isOpen, course]);
+    if (isOpen && course?.slug) {
+      fetchMaterials(course.slug);
+    }
+  }, [isOpen, course?.slug]);
 
-  const fetchMaterials = async () => {
+  // FIX 2: Function parameter aur API endpoint sync kiya
+  const fetchMaterials = async (targetSlug) => {
     try {
-      const res = await axiosInstance.get(`/std_material/${course.id}`);
+      const res = await axiosInstance.get(`/std_material/${targetSlug}`);
       if (res.data.success) {
         setMaterials(res.data.material || []);
       }
@@ -35,7 +38,6 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     }
   };
 
-  
   const addQuizQuestion = () => {
     setQuizQuestions([...quizQuestions, { questions: "", options: ["", "", "", ""], correct: 0 }]);
   };
@@ -56,39 +58,34 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
     setQuizQuestions(updated);
   };
 
-const submitAssessment = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError("");
+  const submitAssessment = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-  try {
-    console.log(course.id)
-    const payload = {
-      
-      course_id: Number(course.id), 
-      duration_second: Number(quizDuration),
-      assessment_data: quizQuestions.map(q => ({
-        question: q.questions, 
-        options: q.options,
-        correct_options:(q.correct)
-      }))
-    };
+    try {
+      const payload = {
+        course_id: Number(course.id), 
+        duration_second: Number(quizDuration),
+        assessment_data: quizQuestions.map(q => ({
+          question: q.questions, 
+          options: q.options,
+          correct_options: q.correct
+        }))
+      };
 
-    console.log("FINAL PAYLOAD ATTEMPT:", payload);
+      const res = await axiosInstance.post(`/assessment/add_assessment/${course.id}`, payload);
 
-    const res = await axiosInstance.post(`/assessment/add_assessment/${course.id}`, payload);
-
-    if (res.data.success) {
-      alert("Assessment saved successfully!");
-      setActiveTab("materials");
+      if (res.data.success) {
+        alert("Assessment saved successfully!");
+        setActiveTab("materials");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Assessment submission failed");
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error("Submission Error Details:", err.response?.data);
-    setError(err.response?.data?.message || "Check console for details");
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
   
   const addMoreItems = () => {
     setStagedItems([...stagedItems, { title: "", material_type: "pdf", link: "", file: null }]);
@@ -129,7 +126,7 @@ const submitAssessment = async (e) => {
       await Promise.all(uploadPromises);
       setStagedItems([{ title: "", material_type: "pdf", link: "", file: null }]);
       setShowForm(false);
-      fetchMaterials();
+      fetchMaterials(course.slug); // Re-fetch using slug
     } catch (err) {
       setError(err.response?.data?.message || err.message);
     } finally {
@@ -143,7 +140,6 @@ const submitAssessment = async (e) => {
     <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
       <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         
-        {/* Header */}
         <div className="p-6 border-b flex justify-between items-center bg-slate-50">
           <div>
             <h2 className="text-xl font-bold text-slate-800">Management Dashboard</h2>
@@ -172,7 +168,6 @@ const submitAssessment = async (e) => {
           </div>
         </div>
 
-        {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === "materials" ? (
             <table className="w-full text-left">
@@ -301,7 +296,6 @@ const submitAssessment = async (e) => {
           )}
         </div>
 
-        {/* Existing Material Form Overlay */}
         {showForm && (
           <div className="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4">
             <div className="bg-white p-8 rounded-3xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh]">

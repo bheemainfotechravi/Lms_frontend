@@ -41,34 +41,34 @@ export default function RecommendedCourses({ limit, onViewAll }) {
     }
   };
 
-  const fetchCourses = async () => {
-    try {
-      const res = await axiosInstance.get("/course/get");
+ const fetchCourses = async () => {
+  try {
+    const res = await axiosInstance.get("/course/get");
 
-      const formatted = res.data.courses.map((c) => ({
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        short_description: c.short_description,
-        price: parseInt(c.price),
-        level: c.level,
-        language: c.language,
-        duration: c.duration,
-        total_lectures: c.total_lectures,
-        category: c.category_name || "Development",
-        instructor: "Expert Instructor",
-        rating: 4.8,
-        students: 120,
-        thumbnail: c.thumbnail,
-        is_published: c.is_published
-      }));
+    const formatted = res.data.courses.map((c) => ({
+      id: c.id,
+      slug: c.slug, 
+      title: c.title,
+      description: c.description,
+      short_description: c.short_description,
+      price: parseInt(c.price),
+      level: c.level,
+      language: c.language,
+      duration: c.duration,
+      total_lectures: c.total_lectures,
+      category: c.category_name || "Development",
+      instructor: "Expert Instructor",
+      rating: 4.8,
+      students: 120,
+      thumbnail: c.thumbnail,
+      is_published: c.is_published
+    }));
 
-      setCourses(formatted);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
-    }
-  };
-
+    setCourses(formatted);
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+  }
+};
   const getOneCoursePerCategory = (courses) => {
     const map = new Map();
 
@@ -148,7 +148,7 @@ export default function RecommendedCourses({ limit, onViewAll }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {displayCourses.map((c) => (
-            <div key={c.id} onClick={() => navigate(`/course/${c.id}`)} className="group cursor-pointer [perspective:1000px]">
+            <div key={c.id} onClick={() => navigate(`/course/${c.slug}`)} className="group cursor-pointer [perspective:1000px]">
 
               <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
 
@@ -227,12 +227,15 @@ export default function RecommendedCourses({ limit, onViewAll }) {
                       {c.short_description}
                     </p>
                   </div>
-                  <button
-                    // onClick={() => handleBuyCourse(c)}
-                    className="mt-10 h-10 bg-[#E3A83C] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#cf962c] transition"
-                  >
-                    Enroll Course
-                  </button>
+               <button
+  onClick={(e) => {
+    e.stopPropagation(); 
+    navigate(`/course/${c.slug}`);
+  }}
+  className="mt-10 h-10 bg-[#E3A83C] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#cf962c] transition"
+>
+  Enroll Course
+</button>
 
                 </div>
 
