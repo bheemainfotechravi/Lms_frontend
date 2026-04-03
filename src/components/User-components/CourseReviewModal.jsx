@@ -47,7 +47,7 @@ export default function CourseReviewModal({
       <div className="w-full max-w-lg bg-white rounded-3xl border border-[#EAD7B1] shadow-2xl overflow-hidden">
         <div className="px-6 py-5 border-b border-[#EAD7B1] bg-[#FDFAF5]">
           <h2 className="text-[#0F172A] text-lg font-black">
-            Course Completed 🎉
+            Course Completed 
           </h2>
           <p className="text-gray-500 text-sm mt-1">
             You’ve completed all lessons. Rate this course and leave a review.

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext"; // user.id access karne ke liye
+import { useAuth } from "../../context/AuthContext"; 
 import { 
   Timer, ShieldAlert, Award, ChevronRight, 
   Lock, AlertCircle, RefreshCw, XCircle, Loader2, Clock, Ban 
@@ -10,7 +10,7 @@ import {
 const QuizSystem = ({ id: propCourseId, onBack }) => {
   const { id: urlId } = useParams(); 
   const navigate = useNavigate();
-  const { user } = useAuth(); // Logged in user data
+  const { user } = useAuth(); 
   const courseId = propCourseId || urlId; 
   
   const [quizQuestions, setQuizQuestions] = useState([]);
@@ -31,81 +31,96 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [isTerminated, setIsTerminated] = useState(false);
 
-  // --- 1. FETCH & CHECK STATUS ---
-  useEffect(() => {
-    const initializeQuiz = async () => {
-      try {
-        setLoading(true);
 
-        // API Check for attempts/block status
-        const attemptRes = await axiosInstance.get(`/assessment/check_attempts`);
-  
-        if (attemptRes.data.isBlocked) {
-          // AGAR BLOCKED HAI TO SEEDHA RESULT WALA UI SET KARO
-          setScore(attemptRes.data.maxScore || 0); 
-          setIsFinished(true); // Isse wo green result box trigger ho jayega
-          setLoading(false);
-          return;
-        }
+useEffect(() => {
+  const initializeQuiz = async (slug) => {
+    try {
+      setLoading(true);
 
-        // Baki fetch logic agar blocked nahi hai
-        const res = await axiosInstance.get(`/assessment/get_assessment/${courseId}`);
-        if (res.data.success && res.data.assessment && res.data.assessment[0]) {
-          const questionsArray = res.data.assessment[0];
-          if (Array.isArray(questionsArray) && questionsArray.length > 0) {
-            const formattedQuestions = questionsArray.map(q => ({
-              assessment_id: q.assessment_id,
-              questions: q.question, 
-              options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
-              correct: q.correct_option || 0 
-            }));
-            setQuizQuestions(formattedQuestions);
-            const duration = questionsArray[0].duration_seconds || 300;
-            setTimeLeft(duration);
-            setQuizDuration(duration);
-            setFetchError(null);
-          }
-        }
-      } catch (err) {
-        // Safe check for 403/Blocked from error response also
-        if (err.response?.data?.isBlocked) {
-            setScore(err.response.data.maxScore || 0);
-            setIsFinished(true);
-        } else {
-            setFetchError("Failed to initialize assessment.");
-        }
-      } finally {
+      
+      const attemptRes = await axiosInstance.get(`/assessment/check_attempts`);
+      if (attemptRes.data.isBlocked) {
+        setScore(attemptRes.data.maxScore || 0); 
+        setIsFinished(true);
         setLoading(false);
+        return;
       }
+
+      
+      const res = await axiosInstance.get(`/assessment/get_assessment/${slug}`);
+      
+      if (res.data.success && res.data.assessment && res.data.assessment[0]) {
+        const questionsArray = res.data.assessment[0];
+        if (Array.isArray(questionsArray) && questionsArray.length > 0) {
+          const formattedQuestions = questionsArray.map(q => ({
+            
+            assessment_id: q.assessment_id || q.id || q._id, 
+            questions: q.question, 
+            options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
+            correct: q.correct_option || 0 
+          }));
+          
+          setQuizQuestions(formattedQuestions);
+          const duration = questionsArray[0].duration_seconds || 300;
+          setTimeLeft(duration);
+          setQuizDuration(duration);
+          setFetchError(null);
+        }
+      }
+    } catch (err) {
+      if (err.response?.data?.isBlocked) {
+          setScore(err.response.data.maxScore || 0);
+          setIsFinished(true);
+      } else {
+          setFetchError("Failed to initialize assessment.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+  if (courseId && courseId !== ":id") {
+    initializeQuiz(courseId); 
+  }
+}, [courseId]);
+
+
+const handleFinalSubmit = useCallback(async () => {
+  if (submitting || quizQuestions.length === 0) return;
+  
+  try {
+    setSubmitting(true);
+    
+    
+    const payload = {
+      assessment_ids: quizQuestions.map(q => q.assessment_id),
+      answers: quizQuestions.map((_, index) => 
+        selectedAnswers[index] !== undefined ? selectedAnswers[index] : null
+      )
     };
 
-    if (courseId && courseId !== ":id") initializeQuiz();
-  }, [courseId]);
+    const response = await axiosInstance.post(`/assessment/submit_assessment/${courseId}`, payload);
+    
+    if (response.data.success) {
+      setScore(response.data.score || 0); 
+      setIsFinished(true);
+      setQuizStarted(false);
+      toggleFullScreen("exit");
+    }
+  } catch (err) { 
+    alert(err.response?.data?.message || "Failed to submit."); 
+  } finally { 
+    setSubmitting(false); 
+  }
+}, [selectedAnswers, quizQuestions, courseId, submitting]);
 
-  // --- SECURITY & TIMER LOGIC (Existing) ---
+  
   const toggleFullScreen = (action) => {
     const doc = document.documentElement;
     if (action === "enter") { if (doc.requestFullscreen) doc.requestFullscreen(); }
     else { if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen(); }
   };
-
-  const handleFinalSubmit = useCallback(async () => {
-    if (submitting) return;
-    try {
-      setSubmitting(true);
-      const response = await axiosInstance.post(`/assessment/submit_assessment/${courseId}`, {
-        assessment_ids: quizQuestions.map(q => q.assessment_id),
-        answers: quizQuestions.map((_, index) => selectedAnswers[index] !== undefined ? selectedAnswers[index] : null)
-      });
-      if (response.data.success) {
-        setScore(response.data.score || 0); 
-        setIsFinished(true);
-        setQuizStarted(false);
-        toggleFullScreen("exit");
-      }
-    } catch (err) { alert("Failed to submit."); }
-    finally { setSubmitting(false); }
-  }, [selectedAnswers, quizQuestions, courseId, submitting]);
 
   useEffect(() => {
     if (!quizStarted || isFinished || isTerminated || isTimeUp) return;
@@ -124,7 +139,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
   const startQuiz = () => { setQuizStarted(true); toggleFullScreen("enter"); };
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
-  // --- UI Renders ---
+  
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -133,7 +148,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
     </div>
   );
 
-  // Result / Finished State (Ye wahi block hai jo aapne manga tha)
+  
   if (isFinished) {
     const passed = score >= 75; 
     return (
@@ -159,7 +174,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
     );
   }
 
-  // Handle Terminated/Time Up
+  
   if (isTerminated || isTimeUp) return (
     <div className="fixed inset-0 bg-slate-900/90 flex items-center justify-center p-4 z-[10001] backdrop-blur-sm">
         <div className="bg-white p-10 rounded-[40px] max-w-md w-full text-center">
@@ -171,7 +186,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
     </div>
   );
 
-  // Error/Empty Screen
+  
   if (fetchError || quizQuestions.length === 0) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="text-center bg-white p-10 rounded-3xl shadow-xl max-w-sm border border-slate-100">
@@ -183,7 +198,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
     </div>
   );
 
-  // Intro Screen
+  
   if (!quizStarted) return (
     <div className="max-w-2xl mx-auto mt-20 p-8 bg-white rounded-[40px] border-2 border-slate-100 shadow-2xl text-center font-sans">
       <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6"><Lock className="text-indigo-600" size={40} /></div>
@@ -196,7 +211,7 @@ const QuizSystem = ({ id: propCourseId, onBack }) => {
     </div>
   );
 
-  // Active Quiz View
+  
   const currentQ = quizQuestions[currentStep];
   return (
     <div className="fixed inset-0 bg-white z-[9999] p-6 overflow-y-auto select-none font-sans">
