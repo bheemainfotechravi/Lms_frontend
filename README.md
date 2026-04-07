@@ -41,3 +41,11 @@ duration_second
 
 
 /assessment//check_attempts/:id 
+
+
+
+/api/user/login - post 
+/api/admin/company/register_company - post
+/api/admin/company/get_companyReqs - get
+/api/admin/company/update_req_status - patch
+/api/admin/company/approved_companies - get 

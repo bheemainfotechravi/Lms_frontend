@@ -16,12 +16,13 @@ import {
   FiUserPlus,
   FiLogIn
 } from "react-icons/fi";
+import { LuChartNoAxesColumnIncreasing } from "react-icons/lu";
 
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome, path: "/user/dashboard" },
   { key: "my-courses", label: "My Courses", icon: FiBook, path: "/user/mycourses" },
-  // { key: "learn", label: "Continue", icon: FiPlayCircle, path: `/learning/${course_id}` },
   { key: "certificates", label: "Certificates", icon: FiAward, path: "/user/certificates" },
+  { key: "career", label: "Career", icon: LuChartNoAxesColumnIncreasing, path: "/user/career" }
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
@@ -152,8 +153,6 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                     </div>
 
                     <div className="p-2 border-b border-[#F0E3C7]">
-                      {/* NEW: MY PROFILE NAVIGATION */}
-                      {/* PROFILE DROPDOWN ITEM */}
 <button
   onClick={() => {
     // 1. User ki ID nikal rahe hain
