@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance";
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
-
-// --- Section Header Component ---
 function SectionHeader({ title, highlight }) {
   return (
     <div>
@@ -27,9 +25,7 @@ const Courses = () => {
     const fetchLatestCourses = async () => {
       try {
         const res = await axiosInstance.get("/course/get");
-        
-        // Take only the latest 4 courses
-        const latestFour = res.data.courses.slice(0, 4).map((c) => ({
+        const latestFour = res.data?.message?.courses.slice(0, 4).map((c) => ({
           id: c.id,
           title: c.title,
           short_description: c.short_description,
@@ -41,6 +37,7 @@ const Courses = () => {
           rating: 4.8,
           students: 120,
           thumbnail: c.thumbnail,
+          slug: c.slug,
         }));
 
         setCourses(latestFour);
@@ -57,8 +54,6 @@ const Courses = () => {
   return (
     <section className="py-20 px-[5%] bg-gradient-to-b from-[#f3c97c] to-white/30">
       <div className="max-w-7xl mx-auto">
-        
-        {/* Header with Navigation */}
         <div className="flex items-end justify-between mb-10">
           <SectionHeader title="Most Popular" />
           <button 
@@ -68,18 +63,14 @@ const Courses = () => {
             View All Courses <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
-
-        {/* Course Grid with Original 3D Flip Style */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {courses.map((c) => (
             <div 
               key={c.id} 
-              onClick={() => navigate(`/course/${c.id}`)} 
+              onClick={() => navigate(`/course/${c.slug}`)} 
               className="group cursor-pointer [perspective:1000px]"
             >
               <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                
-                {/* FRONT SIDE (Restored Original Style) */}
                 <div className="absolute inset-0 bg-white rounded-2xl border border-[#EAD7B1] shadow-sm overflow-hidden flex flex-col [backface-visibility:hidden]">
                   <div className="h-40 w-full bg-[#F6F1E7] flex items-center justify-center overflow-hidden">
                     {c.thumbnail ? (
@@ -120,8 +111,6 @@ const Courses = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* BACK SIDE (Restored Original Style) */}
                 <div className="absolute inset-0 rounded-2xl bg-[#0F172A] text-white p-5 flex flex-col justify-center [transform:rotateY(180deg)] [backface-visibility:hidden]">
                   <h3 className="font-bold text-sm mb-4 text-center">Course Overview</h3>
                   <div className="space-y-3 text-xs">

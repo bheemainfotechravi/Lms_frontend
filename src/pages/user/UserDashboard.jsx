@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Hand, Search, PlayCircle, BarChart3, Award, User } from "lucide-react";
-
-
+import { useSelector } from "react-redux";
+import { Hand, Search, PlayCircle, Award} from "lucide-react";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar";
 import ContinueLearning from "../../components/User-components/ContinueLearning";
 import MyCourses from "../../components/User-components/MyCourses";
@@ -12,8 +10,6 @@ import Certificates from "../../components/User-components/Certificates";
 
 import {
   ENROLLED_COURSES,
-  LEADERBOARD,
-  PROGRESS_STATS,
   RECOMMENDED_COURSES,
   CERTIFICATES,
 } from "../../components/User-components/dashboardData.js";
@@ -31,7 +27,7 @@ function PageTitle({ children, icon: Icon }) {
 }
 
 export default function UserDashboard() {
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const greeting = useMemo(() => {

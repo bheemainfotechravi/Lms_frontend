@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosinstance";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../features/auth/authSlice";
 import {
   AlertTriangle,
   Eye,
@@ -21,7 +21,10 @@ const PASSWORD_RULES = {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
+
+  // Renamed to 'error' to match your Redux state and logic below
+  const { isLoading, error: serverError } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -34,8 +37,6 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
 
   const validateField = (name, value) => {
     const trimmedValue = typeof value === "string" ? value.trim() : value;
@@ -76,8 +77,6 @@ export default function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setServerError("");
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -92,48 +91,36 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setServerError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setTouched({
+    email: true,
+    password: true,
+  });
+  const emailError = validateField("email", formData.email);
+  const passwordError = validateField("password", formData.password);
+  if (emailError || passwordError) return;
+  const result = await dispatch(loginUser({ 
+    credentials: {
+      email: formData.email.trim(),
+      password: formData.password
+    }, 
+    role: 'student'
+  }));
 
-    setTouched({
-      email: true,
-      password: true,
-    });
-
-    const email = formData.email.trim();
-    const password = formData.password;
-
-    const emailError = validateField("email", email);
-    const passwordError = validateField("password", password);
-
-    if (emailError || passwordError) return;
-
-    setIsLoading(true);
-
-    try {
-      const res = await axiosInstance.post("/student/student_login", {
-        email,
-        password,
-      });
-
-      if (res?.data?.success) {
-        login(res.data.user, res.data.token);
-        navigate("/user/dashboard", { replace: true });
-      } else {
-        setServerError(res?.data?.message || "Login failed. Please try again.");
-      }
-    } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        "Invalid email or password. Please try again.";
-
-      setServerError(message);
-    } finally {
-      setIsLoading(false);
+  if (loginUser.fulfilled.match(result)) {
+    const role = result.payload.user?.role?.toLowerCase().replace(/\s+/g, "");
+    if (role === "student") {
+      navigate("/user/dashboard", { replace: true });
+    } else if (role === "superadmin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role === "teacher") {
+      navigate("/teacher/dashboard", { replace: true });
+    } else {
+      navigate("/", { replace: true });
     }
-  };
+  }
+};
 
   const baseInputClass =
     "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:ring-2";
@@ -158,25 +145,23 @@ export default function Login() {
       `}</style>
 
       <div className="min-h-screen flex relative overflow-hidden bg-[#F0D5A1]">
+        {/* Background Blobs */}
         <div
           className="absolute top-[5%] right-[10%] w-96 h-96 rounded-full pointer-events-none"
           style={{
-            background:
-              "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute bottom-[5%] left-[5%] w-72 h-72 rounded-full pointer-events-none"
           style={{
-            background:
-              "radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute inset-0 pointer-events-none opacity-25"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(15,23,42,0.18) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, rgba(15,23,42,0.18) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -197,15 +182,10 @@ export default function Login() {
             >
               <div className="flex items-center gap-3.5 mb-5">
                 <div className="text-left">
-                  <p className="text-gray-900 font-black text-md">
-                    Welcome Back!
-                  </p>
-                  <p className="text-gray-400 text-sm mt-0.5">
-                    Continue your learning journey
-                  </p>
+                  <p className="text-gray-900 font-black text-md">Welcome Back!</p>
+                  <p className="text-gray-400 text-sm mt-0.5">Continue your learning journey</p>
                 </div>
               </div>
-
               <img src={loginImg} alt="login illustration" />
             </div>
 
@@ -230,26 +210,15 @@ export default function Login() {
           style={{ boxShadow: "-20px 0 60px rgba(0,0,0,0.06)" }}
         >
           <div className="anim-fadeup">
-            <Link
-              to="/"
-              className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity"
-            >
-              <span className="text-2xl text-[#de950c] font-extrabold">
-                LearnX
-              </span>
+            <Link to="/" className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity">
+              <span className="text-2xl text-[#de950c] font-extrabold">LearnX</span>
             </Link>
 
-            <h1
-              className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2"
-              style={{ letterSpacing: "-0.5px" }}
-            >
-              Welcome back
-              <Sparkles className="w-5 h-5 text-amber-500" />
+            <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2" style={{ letterSpacing: "-0.5px" }}>
+              Welcome back <Sparkles className="w-5 h-5 text-amber-500" />
             </h1>
 
-            <p className="text-slate-500 text-sm mb-8">
-              Login to continue your learning journey.
-            </p>
+            <p className="text-slate-500 text-sm mb-8">Login to continue your learning journey.</p>
 
             {serverError && (
               <div
@@ -265,13 +234,9 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
               {/* Email */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-700 mb-1.5"
-                >
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Email Address
                 </label>
-
                 <input
                   id="email"
                   type="email"
@@ -283,7 +248,6 @@ export default function Login() {
                   autoComplete="email"
                   className={getInputStyles("email")}
                 />
-
                 {touched.email && errors.email && (
                   <p className="text-red-500 text-xs mt-1 ml-1">{errors.email}</p>
                 )}
@@ -291,13 +255,9 @@ export default function Login() {
 
               {/* Password */}
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-semibold text-gray-700 mb-1.5"
-                >
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Password
                 </label>
-
                 <div className="relative">
                   <input
                     id="password"
@@ -310,24 +270,16 @@ export default function Login() {
                     autoComplete="current-password"
                     className={`${getInputStyles("password")} pr-12`}
                   />
-
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-
                 {touched.password && errors.password && (
-                  <p className="text-red-500 text-xs mt-1 ml-1">
-                    {errors.password}
-                  </p>
+                  <p className="text-red-500 text-xs mt-1 ml-1">{errors.password}</p>
                 )}
               </div>
 

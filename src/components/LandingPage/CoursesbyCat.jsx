@@ -4,9 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import DashboardNavbar from "../User-components/DashboardNavbar.jsx";
 import Footer from "../LandingPage/Footer.jsx";
-
 export default function CoursesbyCat() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const [courses, setCourses] = useState([]);
     const [categoryName, setCategoryName] = useState("");
     const [loading, setLoading] = useState(true);
@@ -14,18 +13,16 @@ export default function CoursesbyCat() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (id) {
-            fetchCoursesByCategoryId();
+        if (slug) {
+            fetchCoursesByCategoryslug();
         }
-    }, [id]);
-
-
-    const fetchCoursesByCategoryId = async () => {
+    }, [slug]);
+    const fetchCoursesByCategoryslug = async () => {
         try {
             setLoading(true);
-            const res = await axiosInstance.get(`/course/courses/${id}`);
-
-            const formatted = res.data.courses.map((c) => ({
+            const res = await axiosInstance.get(`/course/courses/${slug}`);
+            const rawCourses = res.data?.message?.courses || res.data?.courses || [];
+            const formatted = rawCourses.map((c) => ({
                 id: c.id,
                 title: c.title,
                 short_description: c.short_description,
@@ -35,12 +32,10 @@ export default function CoursesbyCat() {
                 rating: 4.8, 
                 students: 120, 
                 instructor: "Expert Instructor",
-                thumbnail: c.thumbnail
+                thumbnail: c.thumbnail,
+                slug: c.slug
             }));
-
             setCourses(formatted);
-
-            // Set the category name from the first course found
             if (formatted.length > 0) {
                 setCategoryName(formatted[0].category);
             }
@@ -50,10 +45,9 @@ export default function CoursesbyCat() {
             setLoading(false);
         }
     };
-
     return (
         <>
-            <DashboardNavbar />
+         <DashboardNavbar />
             <div className="min-h-screen bg-[#fceed4]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
@@ -71,8 +65,6 @@ export default function CoursesbyCat() {
                             &larr; BACK
                         </button>
                     </div>
-
-                    {/* Content Section */}
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20">
                             <div className="w-12 h-12 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin mb-4" />
@@ -89,12 +81,11 @@ export default function CoursesbyCat() {
                             {courses.map((c) => (
                                 <div 
                                     key={c.id} 
-                                    onClick={() => navigate(`/course/${c.id}`)} 
+                                    onClick={() => navigate(`/course/${c.slug}`)} 
                                     className="group cursor-pointer [perspective:1000px] h-[400px]"
                                 >
-                                     <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                
-                {/* FRONT SIDE (Restored Original Style) */}
+                      <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+
                 <div className="absolute inset-0 bg-white rounded-2xl border border-[#EAD7B1] shadow-sm overflow-hidden flex flex-col [backface-visibility:hidden]">
                   <div className="h-40 w-full bg-[#F6F1E7] flex items-center justify-center overflow-hidden">
                     {c.thumbnail ? (
@@ -135,8 +126,6 @@ export default function CoursesbyCat() {
                     </div>
                   </div>
                 </div>
-
-                {/* BACK SIDE (Restored Original Style) */}
                 <div className="absolute inset-0 rounded-2xl bg-[#0F172A] text-white p-5 flex flex-col justify-center [transform:rotateY(180deg)] [backface-visibility:hidden]">
                   <h3 className="font-bold text-sm mb-4 text-center">Course Overview</h3>
                   <div className="space-y-3 text-xs">
@@ -162,9 +151,9 @@ export default function CoursesbyCat() {
                 </div>
 
               </div>
-                                </div>
-                            ))}
-                        </div>
+               </div>
+            ))}
+              </div>
                     )}
                 </div>
             </div>

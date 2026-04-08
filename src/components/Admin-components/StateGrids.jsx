@@ -3,26 +3,20 @@ import { FiUsers, FiBookOpen } from "react-icons/fi";
 import axiosInstance from "../../utils/axiosinstance";
 import StatCard from "./StatCard";
 import { useNavigate } from "react-router-dom"; 
-
 function StatsGrid() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); 
-
   useEffect(() => {
    const fetchDashboardStats = async () => {
   try {
     setLoading(true);
-
-    
     const [userRes, courseRes] = await Promise.all([
       axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
       axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } }))
     ]);
-
     const userCount = userRes.data?.users?.length || 0;
     const courseCount = courseRes.data?.activeCourses?.length || 0;
-
         const dynamicStats = [
           {
             label: "Total Users",
@@ -57,10 +51,8 @@ function StatsGrid() {
         setLoading(false);
       }
     };
-
     fetchDashboardStats();
   }, []);
-
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">

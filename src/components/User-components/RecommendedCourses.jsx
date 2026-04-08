@@ -8,14 +8,14 @@ import {
   FaImage
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosinstance.js";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useSelector } from "react-redux";
 
 
 
 export default function RecommendedCourses({ limit, onViewAll }) {
   const [courses, setCourses] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
@@ -45,7 +45,7 @@ export default function RecommendedCourses({ limit, onViewAll }) {
   try {
     const res = await axiosInstance.get("/course/get");
 
-    const formatted = res.data.courses.map((c) => ({
+    const formatted = res.data.message.courses.map((c) => ({
       id: c.id,
       slug: c.slug, 
       title: c.title,

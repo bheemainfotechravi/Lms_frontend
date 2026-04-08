@@ -15,9 +15,9 @@ const CategoryCourses = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const res = await axiosInstance.get(`/course/courses/${id}`);
+                const res = await axiosInstance.get(`/course/courses/${slug}`);
 
-                const formatted = res.data.courses.map((c) => ({
+                const formatted = res.data.message.courses.map((c) => ({
                     id: c.id,
                     title: c.title,
                     short_description: c.short_description,
@@ -27,7 +27,8 @@ const CategoryCourses = () => {
                     instructor: "Expert Instructor",
                     rating: 4.8,
                     students: 120,
-                    thumbnail: c.thumbnail
+                    thumbnail: c.thumbnail,
+                    slug: c.slug
                 }));
 
                 setCourses(formatted);

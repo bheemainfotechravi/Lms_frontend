@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosinstance";
+import { useDispatch, useSelector } from "react-redux"; 
+import { registerUser } from "../../features/auth/authSlice"; 
 import {
   Rocket,
   AlertTriangle,
@@ -13,11 +14,13 @@ import signupImg from "../../assets/login-images/singup.svg";
 
 export default function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Added
+
+  // Pulling state from Redux authSlice
+  const { isLoading, error: serverError } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -33,8 +36,7 @@ export default function Register() {
   const inputClass =
     "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
 
-  const errorInputClass =
-    "border-red-400 focus:border-red-500 focus:ring-red-100";
+  const errorInputClass = "border-red-400 focus:border-red-500 focus:ring-red-100";
 
   const normalizeName = (value) => value.replace(/\s+/g, " ").trim();
   const normalizeEmail = (value) => value.trim().toLowerCase();
@@ -48,87 +50,53 @@ export default function Register() {
         if (v.length < 2) return "First name must be at least 2 characters.";
         if (v.length > 30) return "First name must be less than 30 characters.";
         if (!/^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/.test(v)) {
-          return "First name can contain letters, spaces, apostrophes, and hyphens only.";
+          return "Letters, spaces, apostrophes, and hyphens only.";
         }
         return "";
       }
-
       case "last_name": {
         const v = normalizeName(value);
         if (!v) return "Last name is required.";
         if (v.length < 2) return "Last name must be at least 2 characters.";
         if (v.length > 30) return "Last name must be less than 30 characters.";
         if (!/^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/.test(v)) {
-          return "Last name can contain letters, spaces, apostrophes, and hyphens only.";
+          return "Letters, spaces, apostrophes, and hyphens only.";
         }
         return "";
       }
-
       case "email": {
         const v = normalizeEmail(value);
         if (!v) return "Email is required.";
-        if (v.length > 100) return "Email must be less than 100 characters.";
-        const emailRegex =
-          /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
         if (!emailRegex.test(v)) return "Enter a valid email address.";
         return "";
       }
-
       case "mobile": {
         const v = normalizeMobile(value);
         if (!v) return "Mobile number is required.";
-        if (!/^\d{10,15}$/.test(v)) {
-          return "Mobile number must contain 10 to 15 digits.";
-        }
-        if (/^0+$/.test(v)) return "Mobile number cannot be all zeros.";
+        if (!/^\d{10,15}$/.test(v)) return "Must be 10 to 15 digits.";
         return "";
       }
-
       case "password": {
-        const v = value;
-        if (!v) return "Password is required.";
-        if (v !== v.trim()) {
-          return "Password cannot start or end with spaces.";
+        if (!value) return "Password is required.";
+        if (value.length < 8) return "Min 8 characters required.";
+        if (!/[A-Z]/.test(value) || !/[a-z]/.test(value) || !/\d/.test(value) || !/[!@#$%^&*]/.test(value)) {
+          return "Needs uppercase, lowercase, number, and special char.";
         }
-        if (v.length < 8) return "Password must be at least 8 characters.";
-        if (v.length > 64) return "Password must be less than 64 characters.";
-        if (!/[A-Z]/.test(v)) return "Password must include at least one uppercase letter.";
-        if (!/[a-z]/.test(v)) return "Password must include at least one lowercase letter.";
-        if (!/\d/.test(v)) return "Password must include at least one number.";
-        if (!/[!@#$%^&*(),.?":{}|<>_\-\\/\[\];'`~+=]/.test(v)) {
-          return "Password must include at least one special character.";
-        }
-        if (/\s/.test(v)) return "Password cannot contain spaces.";
         return "";
       }
-
       case "confirm_password": {
-        if (!value) return "Please confirm your password.";
+        if (!value) return "Confirm your password.";
         if (value !== allValues.password) return "Passwords do not match.";
         return "";
       }
-
       default:
         return "";
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    Object.keys(formData).forEach((key) => {
-      const err = validateField(key, formData[key], formData);
-      if (err) newErrors[key] = err;
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setServerError("");
-
     let updatedValue = value;
 
     if (name === "mobile") {
@@ -137,21 +105,13 @@ export default function Register() {
 
     setFormData((prev) => {
       const updated = { ...prev, [name]: updatedValue };
-
       setErrors((prevErrors) => ({
         ...prevErrors,
         [name]: validateField(name, updatedValue, updated),
         ...(name === "password" && updated.confirm_password
-          ? {
-              confirm_password: validateField(
-                "confirm_password",
-                updated.confirm_password,
-                updated
-              ),
-            }
+          ? { confirm_password: validateField("confirm_password", updated.confirm_password, updated) }
           : {}),
       }));
-
       return updated;
     });
   };
@@ -166,46 +126,29 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError("");
 
-    const cleanedData = {
+    // Re-validate all fields
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      const err = validateField(key, formData[key], formData);
+      if (err) newErrors[key] = err;
+    });
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    // Use Redux Action
+    const result = await dispatch(registerUser({
       first_name: normalizeName(formData.first_name),
       last_name: normalizeName(formData.last_name),
       email: normalizeEmail(formData.email),
       mobile: normalizeMobile(formData.mobile),
       password: formData.password,
-      confirm_password: formData.confirm_password,
-    };
+    }));
 
-    setFormData(cleanedData);
-
-    const newErrors = {};
-    Object.keys(cleanedData).forEach((key) => {
-      const err = validateField(key, cleanedData[key], cleanedData);
-      if (err) newErrors[key] = err;
-    });
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) return;
-
-    setIsLoading(true);
-    try {
-      await axiosInstance.post("/student/student_signup", {
-        first_name: cleanedData.first_name,
-        last_name: cleanedData.last_name,
-        email: cleanedData.email,
-        mobile: cleanedData.mobile,
-        password: cleanedData.password,
-      });
-
-      navigate("/user/dashboard");
-    } catch (err) {
-      setServerError(
-        err?.response?.data?.message || "Registration failed. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
+    // If registration is successful, redirect to login
+    if (registerUser.fulfilled.match(result)) {
+      navigate("/login");
     }
   };
 
@@ -221,94 +164,42 @@ export default function Register() {
       `}</style>
 
       <div className="min-h-screen flex relative overflow-hidden bg-[#F0D5A1]">
-        <div
-          className="absolute top-[5%] right-[10%] w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
-          }}
-        />
+        {/* Background Decorative Elements */}
+        <div className="absolute top-[5%] right-[10%] w-96 h-96 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)" }} />
+        <div className="absolute inset-0 pointer-events-none opacity-25" style={{ backgroundImage: "radial-gradient(circle, rgba(15,23,42,0.18) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
-        <div
-          className="absolute bottom-[5%] left-[5%] w-72 h-72 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)",
-          }}
-        />
-
-        <div
-          className="absolute inset-0 pointer-events-none opacity-25"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(15,23,42,0.18) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-
+        {/* LEFT PANEL */}
         <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-16 py-20 relative">
           <div className="absolute top-8 left-10 flex items-center gap-2.5">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-900 font-black text-2xl bg-amber-500">
-              L
-            </div>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-900 font-black text-2xl bg-amber-500">L</div>
             <span className="text-xl font-black text-slate-900">LearnX</span>
           </div>
 
           <div className="max-w-sm w-full text-center">
-            <div
-              className="bg-white/30 rounded-2xl p-7 border border-violet-100 mb-6 anim-float"
-              style={{ boxShadow: "0 20px 60px rgba(124,58,237,0.12)" }}
-            >
+            <div className="bg-white/30 rounded-2xl p-7 border border-violet-100 mb-6 anim-float" style={{ boxShadow: "0 20px 60px rgba(124,58,237,0.12)" }}>
               <div className="text-left mb-4">
-                <p className="text-gray-900 font-black text-md">
-                  Start Your Journey
-                </p>
-                <p className="text-gray-400 text-sm mt-0.5">
-                  Join thousands of learners today
-                </p>
+                <p className="text-gray-900 font-black text-md">Start Your Journey</p>
+                <p className="text-gray-400 text-sm mt-0.5">Join thousands of learners today</p>
               </div>
-
               <img src={signupImg} alt="signup-image" />
-            </div>
-
-            <div className="flex justify-center gap-8 mt-7">
-              {[
-                ["50K+", "Students"],
-                ["1.2K+", "Courses"],
-                ["98%", "Satisfaction"],
-              ].map(([val, label], i) => (
-                <div key={i} className="text-center">
-                  <p className="text-xl font-black text-slate-900">{val}</p>
-                  <p className="text-slate-900 text-xs mt-0.5">{label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
 
-        <div
-          className="w-full lg:w-[768px] shrink-0 bg-white flex flex-col justify-center px-10 py-12 relative z-10 min-h-screen"
-          style={{ boxShadow: "-20px 0 60px rgba(0,0,0,0.06)" }}
-        >
+        {/* RIGHT PANEL */}
+        <div className="w-full lg:w-[768px] shrink-0 bg-white flex flex-col justify-center px-10 py-12 relative z-10 min-h-screen" style={{ boxShadow: "-20px 0 60px rgba(0,0,0,0.06)" }}>
           <div className="anim-fadeup">
-            <Link
-              to="/"
-              className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity"
-            >
-              <span className="text-2xl text-[#de950c] font-extrabold">
-                LearnX
-              </span>
+            <Link to="/" className="flex items-center gap-2 mb-9 hover:opacity-80 transition-opacity">
+              <span className="text-2xl text-[#de950c] font-extrabold">LearnX</span>
             </Link>
 
             <h1 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
-              Create your account
-              <Rocket className="w-5 h-5 text-amber-500" />
+              Create your account <Rocket className="w-5 h-5 text-amber-500" />
             </h1>
 
-            <p className="text-slate-500 text-sm mb-8">
-              Join LearnX and start learning today.
-            </p>
+            <p className="text-slate-500 text-sm mb-8">Join LearnX and start learning today.</p>
 
+            {/* Error Message from Redux */}
             {serverError && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-xl px-4 py-3 mb-5">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -317,146 +208,47 @@ export default function Register() {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div>
-                <input
-                  type="text"
-                  name="first_name"
-                  placeholder="First Name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`${inputClass} ${
-                    errors.first_name ? errorInputClass : "border-gray-200"
-                  }`}
-                />
-                {errors.first_name && (
-                  <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="text"
-                  name="last_name"
-                  placeholder="Last Name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`${inputClass} ${
-                    errors.last_name ? errorInputClass : "border-gray-200"
-                  }`}
-                />
-                {errors.last_name && (
-                  <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`${inputClass} ${
-                    errors.email ? errorInputClass : "border-gray-200"
-                  }`}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="tel"
-                  name="mobile"
-                  placeholder="Mobile Number"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`${inputClass} ${
-                    errors.mobile ? errorInputClass : "border-gray-200"
-                  }`}
-                />
-                {errors.mobile && (
-                  <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
-                )}
-              </div>
-
-              <div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={`${inputClass} pr-12 ${
-                      errors.password ? errorInputClass : "border-gray-200"
-                    }`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.first_name ? errorInputClass : "border-gray-200"}`} />
+                  {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
                 </div>
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-                )}
+                <div>
+                  <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.last_name ? errorInputClass : "border-gray-200"}`} />
+                  {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
+                </div>
               </div>
 
               <div>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirm_password"
-                    placeholder="Confirm Password"
-                    value={formData.confirm_password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={`${inputClass} pr-12 ${
-                      errors.confirm_password
-                        ? errorInputClass
-                        : "border-gray-200"
-                    }`}
-                  />
+                <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.email ? errorInputClass : "border-gray-200"}`} />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-                {errors.confirm_password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.confirm_password}
-                  </p>
-                )}
+              <div>
+                <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.mobile ? errorInputClass : "border-gray-200"}`} />
+                {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
+              </div>
+
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.password ? errorInputClass : "border-gray-200"}`} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+              </div>
+
+              <div className="relative">
+                <input type={showConfirmPassword ? "text" : "password"} name="confirm_password" placeholder="Confirm Password" value={formData.confirm_password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.confirm_password ? errorInputClass : "border-gray-200"}`} />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+                {errors.confirm_password && <p className="text-red-500 text-xs mt-1">{errors.confirm_password}</p>}
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#ffc65c] flex items-center justify-center gap-2 text-slate-800 font-bold text-sm py-3.5 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed hover:opacity-90 hover:-translate-y-0.5"
+                className="w-full bg-[#ffc65c] flex items-center justify-center gap-2 text-slate-800 font-bold text-sm py-3.5 rounded-xl transition-all disabled:opacity-70 hover:opacity-90 hover:-translate-y-0.5"
               >
                 {isLoading ? (
                   <>
@@ -473,10 +265,7 @@ export default function Register() {
 
             <p className="text-center text-gray-500 py-5 text-sm">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-[#fda707] font-bold hover:underline hover:text-[#ffc65c]"
-              >
+              <Link to="/login" className="text-[#fda707] font-bold hover:underline">
                 Sign in →
               </Link>
             </p>

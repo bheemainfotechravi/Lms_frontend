@@ -4,7 +4,6 @@ import { RECENT_USERS } from "./dashboardData.js";
 
 export default function RecentUsers() {
   const navigate = useNavigate();
-
   return (
     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
       <div className="flex justify-between items-center mb-6">
@@ -17,7 +16,6 @@ export default function RecentUsers() {
           <FiArrowRight />
         </button>
       </div>
-
       <div className="space-y-4">
         {RECENT_USERS.map((user, i) => (
           <div
@@ -35,7 +33,6 @@ export default function RecentUsers() {
                 <p className="text-[11px] text-slate-400">{user.email}</p>
               </div>
             </div>
-
             <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
               {user.joined}
             </span>

@@ -8,7 +8,6 @@ const NAV_LINKS = [
   { name: "Skills", id: "skills" },
   { name: "For Business", id: "business" },
 ];
-
 const Navbar = () => {
   const handleScroll = (id) => {
     const element = document.getElementById(id);
@@ -16,7 +15,6 @@ const Navbar = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-[5%] transition-all duration-300 bg-white/10 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto h-[70px] flex items-center relative">
@@ -28,8 +26,6 @@ const Navbar = () => {
     LearnX
   </span>
 </Link>
-
-        {/* Center Links */}
         <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
             <button
@@ -44,8 +40,6 @@ const Navbar = () => {
             </button>
           ))}
         </div>
-
-        {/* Auth buttons */}
         <div className="ml-auto flex items-center gap-3">
           <Link to="/login">
             <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">

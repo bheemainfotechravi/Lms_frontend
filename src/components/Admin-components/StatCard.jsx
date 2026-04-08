@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FiAlertCircle, FiTrendingUp } from "react-icons/fi";
 
 const StatCard = ({ stat, onClick }) => {
   const [displayValue, setDisplayValue] = useState(0);
   const Icon = stat.icon;
-
-  
   useEffect(() => {
     let start = 0;
     const end = parseInt(stat.value);
@@ -13,24 +10,18 @@ const StatCard = ({ stat, onClick }) => {
         setDisplayValue(end);
         return;
     }
-
     let totalMiliseconds = 1000;
     let incrementTime = (totalMiliseconds / end) > 10 ? (totalMiliseconds / end) : 10;
-
     let timer = setInterval(() => {
       start += 1;
       setDisplayValue(start);
       if (start === end) clearInterval(timer);
     }, incrementTime);
-
     return () => clearInterval(timer);
   }, [stat.value]);
-
-  
   const formatNumber = (num) => {
     return num < 10 ? `0${num}` : num.toLocaleString();
   };
-
   return (
     <div
       onClick={onClick}
@@ -55,5 +46,4 @@ const StatCard = ({ stat, onClick }) => {
     </div>
   );
 };
-
 export default StatCard;

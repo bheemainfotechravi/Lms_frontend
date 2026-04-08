@@ -1,13 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
-
-
+import { Provider } from 'react-redux';
+import { store } from './App/store';
 export default function App() {
   return (
-    <AuthProvider>
+    <Provider store={store} >
       <Toaster
         position="top-center"
         toastOptions={{
@@ -23,6 +22,6 @@ export default function App() {
       <Router>
         <AppRoutes />
       </Router>
-    </AuthProvider>
+    </Provider>
   );
 }

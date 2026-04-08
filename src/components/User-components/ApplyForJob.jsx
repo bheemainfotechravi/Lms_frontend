@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance.js";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useSelector } from "react-redux";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx";
 import Footer from "../LandingPage/Footer.jsx";
 import { FaArrowLeft, FaCloudUploadAlt, FaCheckCircle } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 export default function JobApply() {
-  const { slug } = useParams(); // URL se slug lega
-  const { user } = useAuth();
+  const { slug } = useParams(); 
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const [job, setJob] = useState(null);
@@ -59,7 +59,7 @@ const handleSubmit = async (e) => {
       formData.append("resume", resume);
       formData.append("application_type", job?.type || "Job"); 
 
-      await axiosInstance.post(`/company/apply_job/${slug}`, formData, {
+      await axiosInstance.post(`/student/apply_job/${slug}`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 

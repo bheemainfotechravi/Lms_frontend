@@ -7,19 +7,16 @@ import Categories from "../LandingPage/Categories";
 import CareerReadyPlan from "./CareerReadyPlan";
 import SkillPills from "../LandingPage/SkillPills";
 import CareerCTASection from "./CareerCTASection";
-
 import IBM from '../../assets/home/IBM.jpg';
 import Google from '../../assets/home/Google.webp';
 import MIT from "../../assets/home/MIT.png";
 import MS from "../../assets/home/Ms.avif";
-
 const HeroToggle = ({ active, setActive }) => {
   const tabs = [
     { key: "cert", label: "Learn & Get Certificates" },
     { key: "career", label: "Build Your Career" },
     { key: "earn", label: "Earn on LearnX" },
   ];
-
   return (
     <div className="w-full flex justify-center">
       <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full p-1 shadow-sm inline-flex gap-1">
@@ -44,11 +41,9 @@ const HeroToggle = ({ active, setActive }) => {
     </div>
   );
 };
-
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("cert");
-
   const heroCopy = {
     cert: {
       title: "Free Online Courses With Certificates & Diplomas",
@@ -69,9 +64,7 @@ export default function Home() {
       cta: "Learn More",
     },
   };
-
   const current = heroCopy[activeTab];
-
   return (
     <div className="min-h-screen overflow-x-hidden">
       <style>{`
@@ -82,11 +75,7 @@ export default function Home() {
         .anim-float2 { animation: float2 3.5s ease-in-out infinite }
         .anim-pulse  { animation: pulse-dot 2s infinite }
       `}</style>
-
-      {/* Render Navbar Component */}
       <Navbar />
-
-      {/* HERO SECTION */}
       <section className="pt-28 pb-0 px-[5%] bg-[#F0D5A1] border-gray-100">
         <div className="max-w-7xl mx-auto">
           <HeroToggle active={activeTab} setActive={setActiveTab} />
@@ -130,8 +119,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Stats strip */}
         <div className="mt-12 bg-[#e9b75c] rounded-2xl my-2 ">
           <div className="max-w-7xl mx-auto px-[5%] py-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-slate-800">
@@ -177,11 +164,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Content Sections */}
         <section id="categories"><Categories /></section>
         <section id="courses"><Courses /></section>
-        {/* <section id="courses"><RecommendedCourses /></section> */}
         <section id="career"><CareerReadyPlan /></section>
         <section id="skills"><SkillPills /></section>
         <section id="business"><CareerCTASection /></section>

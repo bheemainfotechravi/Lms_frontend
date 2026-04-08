@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LayoutGrid, Plus, Loader2, Trash2, Calendar, Link2, AlertCircle } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
-import CategoryModal from "./categoryModel";
+import CategoryModal from "./CategoryModel";
 import toast from "react-hot-toast";
 
 export default function HandleCategory() {

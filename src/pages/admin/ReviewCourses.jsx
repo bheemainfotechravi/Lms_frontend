@@ -5,7 +5,6 @@ import {
   FiLayers, 
   FiFilter, 
   FiEye, 
-  FiSearch 
 } from "react-icons/fi";
 import TopNavbar from "../../components/Admin-components/TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
@@ -19,19 +18,15 @@ const ReviewCourses = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch both courses and categories simultaneously
         const [courseRes, catRes] = await Promise.all([
           axiosInstance.get("/admin/course/active-courses"),
           axiosInstance.get("/category/get")
         ]);
 
-        if (courseRes.data?.activeCourses) {
-          setCourses(courseRes.data.activeCourses);
+        if (courseRes.data?.message?.activeCourses) {
+          setCourses(courseRes.data.message.activeCourses);
         }
-
-        // Assuming category API returns { success: true, categories: [...] } 
-        // or a direct array. Adjust based on your actual response.
-        const catData = catRes.data?.categories || catRes.data;
+        const catData = catRes.data?.message?.categories || catRes.data?.message || catRes.data || [];
         setCategories(Array.isArray(catData) ? catData : []);
       } catch (error) {
         console.error("Data Fetch Error:", error);
@@ -41,13 +36,11 @@ const ReviewCourses = () => {
     fetchData();
   }, []);
 
-  // Helper function to get Category Name by ID
   const getCategoryName = (id) => {
     const category = categories.find(cat => String(cat.id) === String(id));
     return category ? category.name : "Unknown Category";
   };
 
-  // Logic: Filter by Dropdown AND Search Bar (matching against Category Name)
   const filteredCourses = courses.filter((course) => {
     const categoryName = getCategoryName(course.category_id).toLowerCase();
     const matchesSearch = categoryName.includes(searchQuery.toLowerCase());

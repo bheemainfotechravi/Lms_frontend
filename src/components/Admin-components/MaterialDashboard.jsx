@@ -17,52 +17,42 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
   const [stagedItems, setStagedItems] = useState([
     { title: "", material_type: "pdf", link: "", file: null }
   ]);
-
-  // FIX 1: Dependency array mein slug add kiya aur fetch call ko sahi kiya
   useEffect(() => {
     if (isOpen && course?.slug) {
       fetchMaterials(course.slug);
     }
   }, [isOpen, course?.slug]);
-
-  // FIX 2: Function parameter aur API endpoint sync kiya
   const fetchMaterials = async (targetSlug) => {
     try {
       const res = await axiosInstance.get(`/std_material/${targetSlug}`);
       if (res.data.success) {
-        setMaterials(res.data.material || []);
+        setMaterials(res.data.message.material || []);
       }
     } catch (err) {
       console.error("Fetch error:", err);
       setMaterials([]);
     }
   };
-
   const addQuizQuestion = () => {
     setQuizQuestions([...quizQuestions, { questions: "", options: ["", "", "", ""], correct: 0 }]);
   };
-
   const removeQuizQuestion = (index) => {
     setQuizQuestions(quizQuestions.filter((_, i) => i !== index));
   };
-
   const handleQuizInputChange = (qIndex, field, value) => {
     const updated = [...quizQuestions];
     updated[qIndex][field] = value;
     setQuizQuestions(updated);
   };
-
   const handleOptionChange = (qIndex, optIndex, value) => {
     const updated = [...quizQuestions];
     updated[qIndex].options[optIndex] = value;
     setQuizQuestions(updated);
   };
-
   const submitAssessment = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
       const payload = {
         course_id: Number(course.id), 
@@ -73,9 +63,7 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
           correct_options: q.correct
         }))
       };
-
       const res = await axiosInstance.post(`/assessment/add_assessment/${course.id}`, payload);
-
       if (res.data.success) {
         alert("Assessment saved successfully!");
         setActiveTab("materials");
@@ -86,34 +74,28 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
       setIsLoading(false);
     }
   };
-  
   const addMoreItems = () => {
     setStagedItems([...stagedItems, { title: "", material_type: "pdf", link: "", file: null }]);
   };
-
   const removeItem = (index) => {
     setStagedItems(stagedItems.filter((_, i) => i !== index));
   };
-
   const handleInputChange = (index, field, value) => {
     const updated = [...stagedItems];
     updated[index][field] = value;
     setStagedItems(updated);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    try {
+ try {
       const uploadPromises = stagedItems.map(async (item) => {
         const payload = new FormData();
         payload.append("course_title", course.title);
         payload.append("course_id", course.id);
         payload.append("title", item.title);
         payload.append("material_type", item.material_type);
-
         if (item.material_type === "link") {
           payload.append("link", item.link);
         } else {
@@ -122,24 +104,20 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
         }
         return axiosInstance.post("/std_material/new", payload);
       });
-
       await Promise.all(uploadPromises);
       setStagedItems([{ title: "", material_type: "pdf", link: "", file: null }]);
       setShowForm(false);
-      fetchMaterials(course.slug); // Re-fetch using slug
+      fetchMaterials(course.slug); 
     } catch (err) {
       setError(err.response?.data?.message || err.message);
     } finally {
       setIsLoading(false);
     }
   };
-
   if (!isOpen) return null;
-
-  return (
+return (
     <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
       <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-        
         <div className="p-6 border-b flex justify-between items-center bg-slate-50">
           <div>
             <h2 className="text-xl font-bold text-slate-800">Management Dashboard</h2>
@@ -147,8 +125,7 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
                 <button 
                     onClick={() => setActiveTab("materials")}
                     className={`text-xs font-bold uppercase tracking-widest pb-1 border-b-2 transition-all ${activeTab === "materials" ? "text-indigo-600 border-indigo-600" : "text-slate-400 border-transparent"}`}
-                >
-                    Course Content
+                >Course Content
                 </button>
                 <button 
                     onClick={() => setActiveTab("assessment")}
@@ -167,7 +144,6 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
             <button onClick={onClose} className="text-slate-400 text-3xl hover:text-slate-600">&times;</button>
           </div>
         </div>
-
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === "materials" ? (
             <table className="w-full text-left">
@@ -274,7 +250,6 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
                         </div>
                     </div>
                   ))}
-
                   <div className="flex gap-4">
                     <button 
                         type="button" 
@@ -300,8 +275,7 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
           <div className="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4">
             <div className="bg-white p-8 rounded-3xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh]">
               <h3 className="text-xl font-bold text-slate-800 mb-4">Add Materials</h3>
-              {error && <p className="bg-red-50 text-red-500 p-3 mb-4 text-xs rounded-lg">{error}</p>}
-              
+              {error && <p className="bg-red-50 text-red-500 p-3 mb-4 text-xs rounded-lg">{error}</p>}             
               <form onSubmit={handleSubmit} className="overflow-y-auto pr-2 space-y-6">
                 {stagedItems.map((item, index) => (
                   <div key={index} className="p-4 border border-slate-100 rounded-2xl relative bg-slate-50/50">
@@ -345,14 +319,12 @@ export default function MaterialDashboard({ isOpen, onClose, course }) {
                     </div>
                   </div>
                 ))}
-
                 <button 
                   type="button" onClick={addMoreItems}
                   className="w-full py-3 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold hover:bg-slate-50 transition-colors"
                 >
                   + Add Another Row
                 </button>
-
                 <div className="flex gap-3 pt-4 sticky bottom-0 bg-white">
                   <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3 text-slate-500 font-bold">Cancel</button>
                   <button type="submit" disabled={isLoading} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 disabled:bg-slate-300">

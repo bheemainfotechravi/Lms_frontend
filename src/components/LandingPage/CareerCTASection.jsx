@@ -6,8 +6,6 @@ export default function CareerCTASection() {
   return (
     <section className="relative overflow-hidden pb-5 rounded-md">
       <div className="grid md:grid-cols-2">
-
-        {/* LEFT SIDE */}
         <div className="bg-[#f8d184] px-[8%] py-10  md:py-20 relative">
           <div className="max-w-lg">
             <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-4">
@@ -22,16 +20,12 @@ export default function CareerCTASection() {
               Take The Free Personality Assessment
             </button>
           </div>
-
-          {/* Illustration */}
           <img
             src={edu}
             alt="Personality Assessment"
             className="hidden md:block absolute right-10 bottom-0 h-52 object-contain"
           />
         </div>
-
-        {/* RIGHT SIDE */}
         <div className="bg-[#f8d184] px-[8%] py-16 md:py-20 relative">
           <div className="max-w-lg">
             <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-4">
@@ -46,8 +40,6 @@ export default function CareerCTASection() {
               Create My Professional Resumé
             </button>
           </div>
-
-          {/* Illustration */}
           <img
             src={hiring}
             alt="Resume Builder"
@@ -55,8 +47,6 @@ export default function CareerCTASection() {
           />
         </div>
       </div>
-
-      {/* Diagonal divider overlay */}
       <div className="hidden md:block absolute inset-0 pointer-events-none">
         <div className="absolute left-1/2 top-0 h-full w-[120px] bg-[#fdfdfc]/20 transform -skew-x-12" />
       </div>

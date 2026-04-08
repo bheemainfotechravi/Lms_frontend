@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useSelector } from "react-redux";
 import axiosInstance from "../../utils/axiosinstance.js";
 import CourseReviewModal from "./CourseReviewModal.jsx";
 import DashboardNavbar from "./DashboardNavbar.jsx";
@@ -13,7 +13,7 @@ import { FaClipboardList, FaLock } from "react-icons/fa6";
 
 export default function CoursePlayer() {
   const { id: slug } = useParams();
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const [showReviewModal, setShowReviewModal] = useState(false);

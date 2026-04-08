@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector, useDispatch } from "react-redux"; 
+import { logout } from "../../features/auth/authSlice"; 
 import axiosInstance from "../../utils/axiosinstance";
 
 import {
@@ -10,11 +11,8 @@ import {
   FiLogOut,
   FiHome,
   FiBook,
-  FiPlayCircle,
   FiAward,
-  FiUser, // Added for the new Profile link
-  FiUserPlus,
-  FiLogIn
+  FiUser,
 } from "react-icons/fi";
 import { LuChartNoAxesColumnIncreasing } from "react-icons/lu";
 
@@ -26,8 +24,12 @@ const NAV_TABS = [
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
-  const { user, logout, isAuthenticated } = useAuth(); 
   const navigate = useNavigate();
+  const dispatch = useDispatch(); 
+
+  
+  const { user, token } = useSelector((state) => state.auth);
+  const isAuthenticated = !!token; 
 
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -60,8 +62,9 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
-      logout();
-      navigate("/login",{replace:true})
+      
+      dispatch(logout()); 
+      navigate("/login", { replace: true });
       setProfileOpen(false);
     }
   };
@@ -75,12 +78,8 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
           onClick={() => navigate(isAuthenticated ? "/user/dashboard" : "/")}
           className="flex items-center gap-3 cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-[#E3A83C] flex items-center justify-center text-white font-bold text-lg">
-            L
-          </div>
-          <span className="text-[#0F172A] font-bold text-xl tracking-tight hidden sm:inline">
-            LearnX
-          </span>
+          <div className="w-9 h-9 rounded-lg bg-[#E3A83C] flex items-center justify-center text-white font-bold text-lg">L</div>
+          <span className="text-[#0F172A] font-bold text-xl tracking-tight hidden sm:inline">LearnX</span>
         </div>
 
         {/* CENTER NAV */}
@@ -121,9 +120,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                     <div className="px-4 py-3 border-b border-[#F0E3C7]">
                       <span className="font-bold text-sm text-[#0F172A]">Notifications</span>
                     </div>
-                    <div className="p-3 hover:bg-[#F6F1E7] rounded-xl text-sm text-gray-500">
-                      No new notifications
-                    </div>
+                    <div className="p-3 hover:bg-[#F6F1E7] rounded-xl text-sm text-gray-500">No new notifications</div>
                   </div>
                 )}
               </div>
@@ -135,10 +132,10 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                   className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-white border border-[#EAD7B1] hover:bg-[#F6F1E7] transition-colors"
                 >
                   <div className="w-10 h-10 rounded-xl bg-[#E3A83C] flex items-center justify-center text-white font-bold uppercase">
-                    {user?.name?.charAt(0) || "U"}
+                    {user?.first_name?.charAt(0) || user?.name?.charAt(0) || "U"}
                   </div>
                   <span className="hidden sm:block text-sm font-bold text-[#0F172A]">
-                    {user?.name?.split(' ')[0] || "Profile"}
+                    {user?.first_name || user?.name?.split(' ')[0] || "Profile"}
                   </span>
                   <span className="text-xs text-gray-500">
                     {profileOpen ? <FiChevronUp /> : <FiChevronDown />}
@@ -148,41 +145,37 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                 {profileOpen && (
                   <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-lg border border-[#EAD7B1] z-50 overflow-hidden">
                     <div className="px-4 py-4 border-b border-[#F0E3C7] bg-[#F6F1E7]">
-                      <p className="text-sm font-bold text-[#0F172A]">{user?.name || "Student"}</p>
+                      <p className="text-sm font-bold text-[#0F172A]">{user?.first_name} {user?.last_name || ""}</p>
                       <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                     </div>
 
                     <div className="p-2 border-b border-[#F0E3C7]">
-<button
-  onClick={() => {
-    // 1. User ki ID nikal rahe hain
-  const userSlug = user?.slug; 
-  navigate(`/user/user-profile/${userSlug}`);
-  setProfileOpen(false);
-  }}
-  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
->
-  <FiUser className="text-lg text-[#E3A83C]" />
-  My Profile
-</button>
+                      <button
+                        onClick={() => {
+                          const userSlug = user?.slug || user?.id; 
+                          navigate(`/user/user-profile/${userSlug}`);
+                          setProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
+                      >
+                        <FiUser className="text-lg text-[#E3A83C]" />
+                        My Profile
+                      </button>
                     </div>
 
-                    {/* MOBILE NAV */}
+                    {/* MOBILE NAV (Visible on mobile within dropdown) */}
                     <div className="p-2 md:hidden border-b border-[#F0E3C7]">
                       <p className="text-[10px] font-bold text-gray-500 px-3 mb-1 uppercase tracking-wider">Navigation</p>
-                      {NAV_TABS.map((tab) => {
-                        const Icon = tab.icon;
-                        return (
-                          <button
-                            key={tab.key}
-                            onClick={() => handleTabClick(tab)}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
-                          >
-                            <Icon className="text-lg" />
-                            {tab.label}
-                          </button>
-                        );
-                      })}
+                      {NAV_TABS.map((tab) => (
+                        <button
+                          key={tab.key}
+                          onClick={() => handleTabClick(tab)}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#0F172A] hover:bg-[#F6F1E7] transition-colors"
+                        >
+                          <tab.icon className="text-lg" />
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
 
                     <div className="p-2">
@@ -199,14 +192,15 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
               </div>
             </>
           ) : (
+           
             <div className="ml-auto flex items-center gap-3">
               <Link to="/login">
-                <button className="border border-[#d68d06] text-gray-700 text-sm font-semibold px-5 py-2 rounded-xl hover:border-primary hover:text-primary transition-all">
+                <button className="border border-[#E3A83C] text-[#0F172A] text-sm font-semibold px-5 py-2 rounded-xl hover:bg-[#E3A83C] hover:text-white transition-all">
                   Log In
                 </button>
               </Link>
               <Link to="/register">
-                <button className="border border-[#d68d06] text-gray-700 text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 hover:-translate-y-px transition-all">
+                <button className="bg-[#E3A83C] text-white text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 transition-all">
                   Register
                 </button>
               </Link>
