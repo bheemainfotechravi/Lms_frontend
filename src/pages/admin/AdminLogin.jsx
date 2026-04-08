@@ -39,33 +39,36 @@ export default function TeacherLogin() {
   };
 
 const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid) return;
+  if (e) e.preventDefault(); 
+  if (!isFormValid || isLoading) return;
 
-    setIsLoading(true);
-    setServerError("");
+  setIsLoading(true);
+  setServerError("");
 
-    try {
-      const res = await axiosInstance.post("/user/admin_login", formData);
-      
-      // 1. Pehle user object mein role merge karo
-      const adminUser = { 
-        ...res.data.user, 
-        role: res.data.user?.role || "admin" 
-      };
+  try {
+    const res = await axiosInstance.post("/user/admin_login", formData);
+    
+    // Safety check for response data
+    const responseData = res.data?.data || res.data;
 
-      // 2. IMPORTANT: Yahan res.data.user ki jagah adminUser pass karein
-      login(adminUser, res.data.token, "admin"); 
-
-      // 3. Navigation
+    if (res.data.success && responseData?.user && responseData?.token) {
+      login(responseData.user, responseData.token);
       navigate("/admin/dashboard");
-      
-    } catch (err) {
-      setServerError(err.response?.data?.message || "Invalid Teacher Credentials");
-    } finally {
-      setIsLoading(false);
+    } else {
+      // Agar success true hai par data nahi aaya
+      setServerError("Unexpected response from server.");
     }
-  };
+  } catch (err) {
+    // YAHAN STOP KARO REFRESH
+    console.error("Login Error Details:", err.response?.data);
+    
+    // Agar API error message bhej rahi hai toh wo dikhao, varna default
+    const errorMsg = err.response?.data?.message || "Invalid Email or Password";
+    setServerError(errorMsg);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">

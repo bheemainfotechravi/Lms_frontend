@@ -20,9 +20,6 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-
-  // --- FIX STARTS HERE ---
-  // Pehle role ko nikal kar clean karo (lowercase aur trim)
   const role = user?.role?.toLowerCase().trim() || "";
 
   const isAuthenticated = !!token;

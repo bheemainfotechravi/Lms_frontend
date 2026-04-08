@@ -38,23 +38,38 @@ export default function CompanyLogin() {
     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid) return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!isFormValid) return;
 
-    setIsLoading(true);
-    setServerError("");
+  setIsLoading(true);
+  setServerError("");
 
-    try {
-      const res = await axiosInstance.post("/company/login", formData);
-      login(res.data.user, res.data.token, "admin");
+  try {
+    const res = await axiosInstance.post("/user/admin_login", formData);
+    
+    // FIX: Backend structure ke hisaab se data nikalo
+    if (res.data.success && res.data.data) {
+      const userData = res.data.data.user;
+      const userToken = res.data.data.token;
+
+      // SAFETY FIX: Agar backend role nahi bhej raha, toh manually add karo
+      const finalUser = { 
+        ...userData, 
+        role: userData.role || "company" 
+      };
+
+      // FIX: Sirf 2 arguments bhejo (Context yahi accept karta hai)
+      login(finalUser, userToken);
+      
       navigate("/company/dashboard");
-    } catch (err) {
-      setServerError(err.response?.data?.message || "Invalid Company Credentials");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err) {
+    setServerError(err.response?.data?.message || "Invalid Credentials");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
@@ -139,5 +154,5 @@ export default function CompanyLogin() {
         </div>
       </div>
     </div>
-  );
+  ); 
 }

@@ -13,18 +13,17 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
-  // 1. Authentication Check
-  if (!isAuthenticated) {
-    const isSuperAdminRoute = location.pathname.startsWith("/superadmin");
-    const isAdminRoute = location.pathname.startsWith("/admin");
-    
-    // Yahan student/user ke liye default "/login" rakha hai
-    const fallbackPath = isSuperAdminRoute 
-      ? "/superadmin/login" 
-      : (isAdminRoute ? "/admin/login" : "/login");
 
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
-  }
+if (!isAuthenticated) {
+  const path = location.pathname;
+  let fallbackPath = "/login";
+
+  if (path.startsWith("/superadmin")) fallbackPath = "/superadmin/login";
+  else if (path.startsWith("/admin")) fallbackPath = "/admin/login";
+  else if (path.startsWith("/company")) fallbackPath = "/company/login"; // Ye missing tha
+
+  return <Navigate to={fallbackPath} state={{ from: location }} replace />;
+}
 
   // 2. Authorization (Role) Check
   if (allowedRoles) {
