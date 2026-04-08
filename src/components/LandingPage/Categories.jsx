@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
 import { useNavigate } from "react-router-dom";
-
-
 function SectionHeader({ tag, title, highlight, desc }) {
   return (
     <div>
@@ -12,7 +10,7 @@ function SectionHeader({ tag, title, highlight, desc }) {
       </p>
       <h2 className="text-4xl font-black tracking-tight mb-3 text-slate-900">
         {title}{" "}
-        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text ">
           {highlight}
         </span>
       </h2>
@@ -20,16 +18,11 @@ function SectionHeader({ tag, title, highlight, desc }) {
     </div>
   );
 }
-
-
 function CategoryCard({ cat }) {
- 
   const navigate = useNavigate();
- 
   const handleClick = () => {
-    navigate(`/category/${cat.id}`);
+    navigate(`/category/${cat.slug}`);
   };
-
   return (
     <button
       onClick={handleClick}
@@ -41,7 +34,6 @@ function CategoryCard({ cat }) {
   "hover:-translate-y-1 hover:shadow-xl",
 ].join(" ")}
     >
-      {/* Icon */}
       <div className="flex justify-center mb-4">
         <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow">
           <img
@@ -51,13 +43,9 @@ function CategoryCard({ cat }) {
           />
         </div>
       </div>
- 
-      {/* Category Name */}
       <p className="font-bold text-xl leading-tight">
         {cat.name}
       </p>
- 
-      {/* Course Count */}
       <p className="font-bold text-lg opacity-90 mt-1">
         {cat.count} Courses
       </p>
@@ -69,26 +57,21 @@ function CategoryCard({ cat }) {
     </button>
   );
 }
-
-
 const Categories = () => {
   const [categories, setCategories] = useState([]);
- 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axiosInstance.get("/category/get");
- 
- 
- 
-        const formatted = res.data.categories.map((cat) => ({
-          id: cat.id,
-          name: cat.name,
-          count: cat.course_count || 0,
-          icon: cat.icon,
-        }));
- 
- 
+        const categoriesData = res.data?.message?.categories || []; 
+
+    const formatted = categoriesData.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      count: cat.course_count || 0,
+      icon: cat.icon,
+      slug: cat.slug,
+    }));
         setCategories(formatted);
       } catch (error) {
         console.error("Error fetching categories:", error);

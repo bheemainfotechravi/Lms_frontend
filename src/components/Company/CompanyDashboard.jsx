@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { 
   Plus, Briefcase, GraduationCap, LayoutDashboard, 
-  Loader2, Clock, CheckCircle, XCircle, AlertCircle,
-  ChevronRight, ShieldCheck, Trash2
-} from "lucide-react";
+  Loader2, AlertCircle,Trash2 } from "lucide-react";
 import PostModal from "./PostModal";
 import axiosInstance from "../../utils/axiosinstance";
 import CompanyNavbar from "./CompanyNavbar";
 import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext"; 
+import { useSelector } from "react-redux";
 
 export default function CompanyDashboard() {
-    const { user } = useAuth();
+    const { user } = useSelector((state) => state.auth);
     const [activeTab, setActiveTab] = useState("overview");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // Backend key: companySlug (Jo admin_login se aa rahi hai)
     const companySlug = user?.companySlug
 
 
@@ -27,9 +23,7 @@ export default function CompanyDashboard() {
     try {
         setLoading(true);
         const res = await axiosInstance.get(`/company/get_jobs/${companySlug}`);
-        
         const allJobs = res.data?.message?.jobs || []; 
-
         if (Array.isArray(allJobs)) {
             if (activeTab === "jobs") {
                 setData(allJobs.filter(p => p.type?.toLowerCase() === "job"));
@@ -50,8 +44,7 @@ export default function CompanyDashboard() {
     }
 };
 
-  // Function definition
-const handleDelete = (jobSlug) => { // Yahan 'jobSlug' receive ho raha hai
+const handleDelete = (jobSlug) => { 
     toast((t) => (
         <div className="flex flex-col gap-3 p-1">
             <p className="text-xs font-black uppercase tracking-tight text-slate-800 text-left">
@@ -61,7 +54,7 @@ const handleDelete = (jobSlug) => { // Yahan 'jobSlug' receive ho raha hai
                 <button
                     onClick={async () => {
                         toast.dismiss(t.id);
-                        await executeDelete(jobSlug); // Wahi variable yahan pass karo
+                        await executeDelete(jobSlug); 
                     }}
                     className="bg-rose-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase"
                 >
@@ -77,19 +70,15 @@ const handleDelete = (jobSlug) => { // Yahan 'jobSlug' receive ho raha hai
         </div>
     ), { duration: 5000, position: 'top-center' });
 };
-
-// 2. Asli Delete Function jo API hit karega
 const executeDelete = async (jobSlug) => {
     const loadingToast = toast.loading("Processing request...");
     
     try {
-        // API Route: /api/company/remove_post/:slug
-        // Yahan 'jobSlug' path parameter mein ja raha hai
         const res = await axiosInstance.delete(`/company/remove_post/${jobSlug}`);
         
         if (res.data.success || res.status === 200) {
             toast.success("Position removed successfully!", { id: loadingToast });
-            fetchData(); // List refresh karo
+            fetchData(); 
         }
     } catch (error) {
         console.error("Delete Error:", error);
@@ -97,7 +86,6 @@ const executeDelete = async (jobSlug) => {
         toast.error(errorMsg, { id: loadingToast });
     }
 };
-
     useEffect(() => {
         fetchData();
     }, [activeTab, companySlug]);
@@ -124,8 +112,6 @@ const executeDelete = async (jobSlug) => {
                         <Plus size={18} /> Create New Post
                     </button>
                 </div>
-
-                {/* Tabs Section */}
                 <div className="flex overflow-x-auto pb-2 mb-8">
                     <div className="flex gap-3 bg-white p-2 rounded-[25px] border border-slate-200 w-fit shadow-sm">
                         <button onClick={() => setActiveTab("overview")} className={`px-6 py-3 rounded-[20px] font-black text-xs uppercase tracking-tight flex items-center gap-2 ${activeTab === 'overview' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500'}`}><LayoutDashboard size={16} /> Overview</button>
@@ -134,11 +120,9 @@ const executeDelete = async (jobSlug) => {
                     </div>
                 </div>
 
-                {/* Table / Overview Content */}
                 <div className="transition-all">
                     {activeTab === "overview" ? (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4">
-                            {/* ... Overview Cards ... */}
                             <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm text-center">
                                 <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-4"><Briefcase size={32} /></div>
                                 <h3 className="text-sm font-black uppercase">Postings Management</h3>

@@ -1,7 +1,9 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function SkillPills() {
+  const navigate = useNavigate()
   const pills = [
     "Information Systems",
     "Human Resources",
@@ -16,7 +18,6 @@ export default function SkillPills() {
     "Supply Chain Management",
     "Business Analytics"
   ];
-
   return (
     <section className="py-16 md:py-20 px-[5%] bg-[#F0D5A1]">
       <div className="max-w-6xl mx-auto">
@@ -30,10 +31,7 @@ export default function SkillPills() {
             management and more.
           </p>
         </div>
-
-        {/* Pills + Right Arrow */}
         <div className="mt-10 flex items-center justify-center gap-6">
-          {/* Pills grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {pills.map((label) => (
               <button
@@ -49,8 +47,6 @@ export default function SkillPills() {
               </button>
             ))}
           </div>
-
-          {/* Right arrow button */}
           <button
             className={[
               "w-12 h-12 rounded-full border-2 border-[#f4b033]",
@@ -60,13 +56,13 @@ export default function SkillPills() {
             ].join(" ")}
             aria-label="Next"
           >
-            <ChevronRight className="w-6 h-6 text-slate-900 hover:text-white" />
+  <ChevronRight className="w-6 h-6 text-slate-900 hover:text-white" />
           </button>
         </div>
-
-        {/* View more */}
         <div className="mt-8 text-center">
-          <button className="inline-flex items-center gap-2 text-slate-900 font-bold hover:underline">
+          <button onClick = {()=> navigate("/login")}
+          className="inline-flex items-center gap-2 text-slate-900 font-bold hover:underline"
+          >
             View More Skills <ChevronRight className="w-5 h-5" />
           </button>
         </div>

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, Save, Loader2, AlertCircle, Briefcase, FileText } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import DashboardNavbar from "./DashboardNavbar";
 import { useParams } from "react-router-dom";
 
 const UserProfile = () => {
   const {slug } = useParams();
-  const { user: authUser } = useAuth();
+  const { user: authUser } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });

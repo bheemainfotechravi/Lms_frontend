@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import { FaBookOpen, FaClock, FaGlobe, FaSignal, FaCheckCircle } from "react-icons/fa";
 import DashboardNavbar from "./DashboardNavbar";
 import Footer from "../LandingPage/Footer";
@@ -30,7 +30,7 @@ function ProgressRing({ percent, size = 40, stroke = 3.5 }) {
 }
 
 export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
-  const { user } = useAuth(); // Assuming user object has slug or id
+  const { user } = useSelector((state) => state.auth); 
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,7 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
     setLoading(true);
 
     const res = await axiosInstance.get(`/course/mycourses/${userSlug}`);
-    const coursesData = res.data.courses || [];
+    const coursesData = res.data.message.courses || [];
 
     const coursesWithProgress = await Promise.all(
       coursesData.map(async (c) => {

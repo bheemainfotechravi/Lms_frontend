@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import { Award, Download, Eye, Loader2, Trophy, Calendar, Hash } from "lucide-react";
 import DashboardNavbar from "./DashboardNavbar";
 import Footer from "../LandingPage/Footer";
 
 export default function MyCertificates() {
-    const { user } = useAuth();
+    const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const [certificates, setCertificates] = useState([]);
     const [loading, setLoading] = useState(true);

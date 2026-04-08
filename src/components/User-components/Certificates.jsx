@@ -1,15 +1,12 @@
-// Certificates.jsx
-// Props:
-//   certificates — array from CERTIFICATES in dashboardData.js
-
+import React from "react";
 export default function Certificates({ certificates = [] }) {
   const handleDownload = (cert) => {
-    // 🔌 Replace with real download: GET /api/certificates/:id/download
+
     alert(`Downloading: ${cert.title}`);
   };
 
   const handleShare = (cert) => {
-    // 🔌 Replace with real share logic
+   
     navigator.clipboard?.writeText(`Credential ID: ${cert.credentialId}`);
     alert(`Credential ID copied: ${cert.credentialId}`);
   };

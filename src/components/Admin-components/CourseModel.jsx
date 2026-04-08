@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosinstance";
 import toast from "react-hot-toast"; 
-
 export default function CourseModal({ isOpen, onClose, onAddCourse }) {
   const [formData, setFormData] = useState({
     title: "",
@@ -15,17 +14,15 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
     category_id: "",
     is_published: false,
   });
-
   const [categories, setCategories] = useState([]);
   const [thumbnail, setThumbnail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     if (isOpen) {
       const fetchCategories = async () => {
         try {
           const response = await axiosInstance.get("/category/get");
-          const data = response.data?.categories || response.data;
+          const data = response.data?.message?.categories || response.data?.message || response.data || [];
           setCategories(Array.isArray(data) ? data : []);
         } catch (err) {
           console.error("Failed to load categories:", err);
@@ -35,9 +32,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       fetchCategories();
     }
   }, [isOpen]);
-
   if (!isOpen) return null;
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -45,20 +40,13 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    
     if (!formData.title.trim() || !formData.category_id) {
       return toast.error("Title and Category are required!");
     }
-
     setIsLoading(true);
-    
-    
     const loadingToast = toast.loading("Creating your course...");
-
     try {
       const payload = new FormData();
       Object.keys(formData).forEach((key) => {
@@ -68,22 +56,15 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
           payload.append(key, formData[key]);
         }
       });
-
       if (thumbnail) {
         payload.append("thumbnail", thumbnail);
       }
-
       const res = await axiosInstance.post("/admin/course/add", payload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      
       toast.success("Course added successfully!", { id: loadingToast });
-      
       onAddCourse(res.data.course || res.data);
       onClose();
-      
-      
       setFormData({
         title: "", description: "", short_description: "",
         price: "", level: "", language: "English",
@@ -92,27 +73,20 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
       });
       setThumbnail(null);
     } catch (err) {
-      
       const message = err.response?.data?.message || "Failed to create Course.";
       toast.error(message, { id: loadingToast });
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h3 className="text-xl font-semibold text-gray-800">Add New Course</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl font-light">×</button>
         </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* REMOVED: Manual Error Div - Toasts handle this now */}
-
-          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Course Title</label>
             <input
@@ -125,9 +99,7 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
             />
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
               <select
@@ -143,8 +115,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 ))}
               </select>
             </div>
-
-            {/* Level */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
               <select
@@ -159,8 +129,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 <option value="Advanced">Advanced</option>
               </select>
             </div>
-
-            {/* Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
               <input
@@ -172,8 +140,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
-            {/* Language */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
               <input
@@ -185,8 +151,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
-            {/* Duration */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Duration (Hours)</label>
               <input
@@ -198,8 +162,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none"
               />
             </div>
-
-            {/* Total Lectures */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Total Lectures</label>
               <input
@@ -212,8 +174,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               />
             </div>
           </div>
-
-          {/* Descriptions */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
@@ -236,8 +196,6 @@ export default function CourseModal({ isOpen, onClose, onAddCourse }) {
               />
             </div>
           </div>
-
-          {/* Thumbnail & Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-end">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail Image</label>

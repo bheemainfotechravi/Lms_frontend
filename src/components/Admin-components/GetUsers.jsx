@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { 
   FiUsers, 
   FiMail, 
@@ -9,20 +9,15 @@ import {
 } from "react-icons/fi";
 import TopNavbar from "./TopNavbar";
 import axiosInstance from "../../utils/axiosinstance";
-
 const GetUser = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get("/admin/user/all-users");
-        
- 
         if (response.data && response.data.users) {
           setUsers(response.data.users);
         }
@@ -32,19 +27,14 @@ const GetUser = () => {
         setLoading(false);
       }
     };
-
     fetchUsers();
   }, []);
-
- 
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
     const email = user.email.toLowerCase();
     const search = searchQuery.toLowerCase();
     return fullName.includes(search) || email.includes(search);
   });
-
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -62,8 +52,6 @@ const GetUser = () => {
           <h1 className="text-3xl font-bold text-black">User Management</h1>
           <p className="text-sm text-slate-500">View and manage all registered platform users.</p>
         </div>
-
-        {/* STATS SUMMARY (Optional but looks good) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-[#1E293B] border border-[#334155] p-6 rounded-2xl shadow-sm">
             <div className="flex items-center gap-4">
@@ -77,8 +65,6 @@ const GetUser = () => {
             </div>
           </div>
         </div>
-
-        {/* SEARCH & TABLE SECTION */}
         <div className="border border-[#334155]/30 rounded-2xl overflow-hidden bg-white/5">
           <div className="p-4 border-b border-[#334155]/30">
             <div className="relative w-full sm:w-80">
@@ -94,7 +80,6 @@ const GetUser = () => {
               />
             </div>
           </div>
-
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -154,7 +139,6 @@ const GetUser = () => {
                 ))}
               </tbody>
             </table>
-            
             {!loading && filteredUsers.length === 0 && (
               <div className="p-10 text-center text-slate-500">
                 No users found matching your search.

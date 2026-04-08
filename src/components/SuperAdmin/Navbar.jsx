@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import {
   FiBell,
   FiChevronDown,
@@ -23,7 +23,7 @@ const ACTIVITY = [
 export default function TopNavbar({ user = null }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout } = useSelector((state) => state.auth);
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);

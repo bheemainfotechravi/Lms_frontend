@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import {
   FiBell,
   FiChevronDown,
@@ -9,32 +9,26 @@ import {
 } from "react-icons/fi";
 import { NAV_ITEMS } from "./dashboardData.js";
 import axiosInstance from "../../utils/axiosinstance";
-
 export default function TopNavbar({ user = null }) {
   const notifRef = useRef(null);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout } = useSelector((state) => state.auth);
   const location = useLocation();
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-
  useEffect(() => {
   const handleOutsideClick = (event) => {
-    
     if (profileRef.current && !profileRef.current.contains(event.target)) {
       setProfileOpen(false);
     }
-    
     if (notifRef.current && !notifRef.current.contains(event.target)) {
       setNotifOpen(false);
     }
   };
-
   document.addEventListener("mousedown", handleOutsideClick);
   return () => document.removeEventListener("mousedown", handleOutsideClick);
 }, []);
-
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/admin/logout");
@@ -56,9 +50,7 @@ export default function TopNavbar({ user = null }) {
           backgroundSize: "12px 12px",
         }}
       />
-
       <div className="relative h-16 px-4 md:px-6 flex items-center justify-between">
-        {/* LEFT - LOGO */}
         <div
           onClick={() => navigate("/admin/dashboard")}
           className="flex items-center gap-3 shrink-0 cursor-pointer" 
@@ -78,13 +70,10 @@ Admin
 
 </span>
         </div>
-
-        {/* CENTER - NAVIGATION (Desktop Only) */}
         <nav className="hidden md:flex flex-1 justify-center items-center gap-2">
           {NAV_ITEMS.map((item) => {
             const active = location.pathname === item.path;
             const Icon = item.icon;
-
             return (
               <button
                 key={item.path}
@@ -101,10 +90,7 @@ Admin
             );
           })}
         </nav>
-
-        {/* RIGHT - ACTIONS */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* NOTIFICATIONS */}
          <div className="relative" ref={notifRef}>
             <button
               onClick={() => {
@@ -140,8 +126,6 @@ Admin
               </div>
             )}
           </div>
-
-          {/* PROFILE & MOBILE MENU */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen((prev) => !prev)}
@@ -164,8 +148,6 @@ Admin
                   <p className="text-sm font-bold text-white">{user?.name || "Admin User"}</p>
                   <p className="text-xs text-slate-500 truncate">{user?.email || "admin@learnx.com"}</p>
                 </div>
-
-                {/* MOBILE NAV ITEMS (Visible only on small screens) */}
                 <div className="p-2 md:hidden border-b border-slate-700/50">
                     <p className="text-[10px] font-bold text-slate-500 px-3 mb-1 uppercase tracking-wider">Navigation</p>
                   {NAV_ITEMS.map((item) => (

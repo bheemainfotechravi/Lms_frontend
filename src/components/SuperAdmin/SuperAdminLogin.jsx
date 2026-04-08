@@ -1,72 +1,66 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosinstance";
-import { Eye, EyeOff, AlertCircle, Lock, Loader2, ShieldCheck } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux"; 
+import { loginUser } from "../../features/auth/authSlice"; 
+import { Eye, EyeOff, AlertCircle, ShieldCheck, Loader2 } from "lucide-react";
 
 export default function SuperAdminLogin() {
   const navigate = useNavigate();
-  const { login, isAuthenticated, user } = useAuth();
+  const dispatch = useDispatch();
+
+
+  const { isLoading, error: serverError, token, user } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [localError, setLocalError] = useState("");
 
   
   useEffect(() => {
-    if (isAuthenticated && user?.role === "super admin") {
-      navigate("/superadmin/dashboard", { replace: true });
+    if (token && user) {
+      const role = user.role?.toLowerCase().replace(/\s+/g, "").trim();
+      if (role === "superadmin") {
+        navigate("/superadmin/dashboard", { replace: true });
+      }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [token, user, navigate]);
 
   const handleChange = (e) => {
-    setError("");
+    if (localError) setLocalError("");
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
-  setError("");
-  setIsLoading(true);
+  setTouched({
+    email: true,
+    password: true,
+  });
+  const emailError = validateField("email", formData.email);
+  const passwordError = validateField("password", formData.password);
+  if (emailError || passwordError) return;
+  const result = await dispatch(loginUser({ 
+    credentials: {
+      email: formData.email.trim(),
+      password: formData.password
+    }, 
+    role: 'super admin'
+  }));
 
-  try {
-    const res = await axiosInstance.post("/admin/login", formData);
-    
-    
-    console.log("Response Data:", res.data);
-
-    if (res.data.success) {
-      const userData = res.data.user; 
-      const token = res.data.token;
-
-      if (!userData || !token) {
-        setError("Invalid response format from server.");
-        setIsLoading(false);
-        return;
-      }
-      const userRole = userData.role.toLowerCase().trim();
-
-      if (userRole === "super admin" || userRole === "superadmin") {
-        login(userData, token);
-        
-        navigate("/superadmin/dashboard", { replace: true });
-      } else {
-        setError("Access Denied: Super Admin privileges required.");
-      }
-    }
-  } catch (err) {
-    console.error("Login Error:", err);
-    if (err.response) {
-      setError(err.response.data.message || "Invalid credentials.");
+  if (loginUser.fulfilled.match(result)) {
+    const role = result.payload.user?.role?.toLowerCase().replace(/\s+/g, "");
+    if (role === "student") {
+      navigate("/user/dashboard", { replace: true });
+    } else if (role === "superadmin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role === "teacher") {
+      navigate("/teacher/dashboard", { replace: true });
     } else {
-      setError("Server connection failed.");
+      navigate("/", { replace: true });
     }
-  } finally {
-    setIsLoading(false);
   }
 };
+  const displayError = localError || serverError;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6">
@@ -77,8 +71,12 @@ const handleSubmit = async (e) => {
           <div className="w-16 h-16 bg-slate-900 rounded-[22px] flex items-center justify-center text-white mx-auto mb-4 shadow-xl shadow-slate-200">
             <ShieldCheck size={32} className="text-indigo-400" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Learn<span className="text-indigo-600">X</span></h1>
-          <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em] mt-1">Super Admin Gateway</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            Learn<span className="text-indigo-600">X</span>
+          </h1>
+          <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em] mt-1">
+            Super Admin Gateway
+          </p>
         </div>
 
         {/* Card Layout */}
@@ -88,31 +86,34 @@ const handleSubmit = async (e) => {
             <p className="text-sm text-slate-400 font-medium">Authorized system access only.</p>
           </div>
 
-          {error && (
-            <div className="flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-600 text-xs font-black rounded-2xl px-5 py-4 mb-8 uppercase tracking-wide">
+          {displayError && (
+            <div className="flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-600 text-xs font-black rounded-2xl px-5 py-4 mb-8 uppercase tracking-wide animate-in fade-in slide-in-from-top-1">
               <AlertCircle size={18} className="shrink-0" />
-              <span>{error}</span>
+              <span>{displayError}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Admin Email</label>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                Admin Email
+              </label>
               <input
                 type="email"
                 name="email"
-                placeholder="superadmin@bheema.com"
+                placeholder="superadmin@learnx.com"
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="w-full bg-slate-50 border border-slate-100 text-slate-900 rounded-2xl px-5 py-4 
-                focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold"
+                className="w-full bg-slate-50 border border-slate-100 text-slate-900 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold placeholder:text-slate-300"
               />
             </div>
 
             <div>
               <div className="flex justify-between mb-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Master Password</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                  Master Password
+                </label>
               </div>
               <div className="relative">
                 <input
@@ -122,7 +123,7 @@ const handleSubmit = async (e) => {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={isLoading}
-                  className="w-full bg-slate-50 border border-slate-100 text-slate-900 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold"
+                  className="w-full bg-slate-50 border border-slate-100 text-slate-900 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold placeholder:text-slate-300"
                 />
                 <button
                   type="button"
@@ -144,7 +145,9 @@ const handleSubmit = async (e) => {
                   <Loader2 size={20} className="animate-spin" />
                   Verifying...
                 </>
-              ) : "Enter Control Center"}
+              ) : (
+                "Enter Control Center"
+              )}
             </button>
           </form>
         </div>

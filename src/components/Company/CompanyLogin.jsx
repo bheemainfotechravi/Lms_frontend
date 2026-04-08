@@ -1,18 +1,19 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosinstance";
+import { useDispatch, useSelector } from "react-redux"; 
+import { loginUser } from "../../features/auth/authSlice"; 
 import { Eye, EyeOff, AlertCircle, Lock, Loader2, Building2 } from "lucide-react";
 
 export default function CompanyLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
+
+  
+  const { isLoading, error: serverError } = useSelector((state) => state.auth);
   
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [touched, setTouched] = useState({ email: false, password: false });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
 
   
   const validations = useMemo(() => {
@@ -30,7 +31,6 @@ export default function CompanyLogin() {
   const isFormValid = validations.email && validations.password;
 
   const handleChange = (e) => {
-    setServerError("");
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -38,36 +38,34 @@ export default function CompanyLogin() {
     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
   };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
-  if (!isFormValid) return;
+  setTouched({
+    email: true,
+    password: true,
+  });
+  const emailError = validateField("email", formData.email);
+  const passwordError = validateField("password", formData.password);
+  if (emailError || passwordError) return;
+  const result = await dispatch(loginUser({ 
+    credentials: {
+      email: formData.email.trim(),
+      password: formData.password
+    }, 
+    role: 'company'
+  }));
 
-  setIsLoading(true);
-  setServerError("");
-
-  try {
-    const res = await axiosInstance.post("/user/admin_login", formData);
-    
-    // FIX: Backend structure ke hisaab se data nikalo
-    if (res.data.success && res.data.data) {
-      const userData = res.data.data.user;
-      const userToken = res.data.data.token;
-
-      // SAFETY FIX: Agar backend role nahi bhej raha, toh manually add karo
-      const finalUser = { 
-        ...userData, 
-        role: userData.role || "company" 
-      };
-
-      // FIX: Sirf 2 arguments bhejo (Context yahi accept karta hai)
-      login(finalUser, userToken);
-      
-      navigate("/company/dashboard");
+  if (loginUser.fulfilled.match(result)) {
+    const role = result.payload.user?.role?.toLowerCase().replace(/\s+/g, "");
+    if (role === "student") {
+      navigate("/user/dashboard", { replace: true });
+    } else if (role === "superadmin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role === "teacher") {
+      navigate("/teacher/dashboard", { replace: true });
+    } else {
+      navigate("/", { replace: true });
     }
-  } catch (err) {
-    setServerError(err.response?.data?.message || "Invalid Credentials");
-  } finally {
-    setIsLoading(false);
   }
 };
 
@@ -76,14 +74,14 @@ export default function CompanyLogin() {
       <div className="w-full max-w-[400px] space-y-8">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-100">
-            <Building2  size={28} className="text-white" />
+            <Building2 size={28} className="text-white" />
           </div>
           <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Company Portal</h1>
           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1 text-center">Company Administration</p>
         </div>
 
         <div className="bg-white rounded-[40px] p-10 shadow-2xl shadow-slate-200/60 border border-slate-100">
-          {/* Server Error Message */}
+          {/* Error Message pulled from Redux State */}
           {serverError && (
             <div className="flex items-center gap-3 bg-rose-50 text-rose-600 text-[11px] font-black p-4 rounded-2xl mb-6 uppercase animate-shake">
               <AlertCircle size={16} /> {serverError}
@@ -91,7 +89,6 @@ export default function CompanyLogin() {
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
-            {/* Email Field */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Official Gmail</label>
               <input 
@@ -100,19 +97,19 @@ export default function CompanyLogin() {
                 value={formData.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                disabled={isLoading}
                 className={`w-full bg-slate-50 border rounded-2xl py-4 px-6 text-sm font-bold outline-none transition-all ${
                   touched.email && !validations.email 
                   ? 'border-rose-500 ring-4 ring-rose-500/10' 
                   : 'border-slate-100 focus:ring-4 focus:ring-indigo-500/10'
                 }`} 
-                placeholder="name@gmail.com"
+                placeholder="company@gmail.com"
               />
               {touched.email && !validations.email && (
-                <p className="text-[9px] text-rose-500 font-black uppercase ml-1">Please enter a valid @gmail.com address</p>
+                <p className="text-[9px] text-rose-500 font-black uppercase ml-1">Invalid @gmail.com address</p>
               )}
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Password</label>
               <div className="relative">
@@ -122,6 +119,7 @@ export default function CompanyLogin() {
                   value={formData.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  disabled={isLoading}
                   className={`w-full bg-slate-50 border rounded-2xl py-4 px-6 pr-12 text-sm font-bold outline-none transition-all ${
                     touched.password && !validations.password 
                     ? 'border-rose-500 ring-4 ring-rose-500/10' 
@@ -129,18 +127,23 @@ export default function CompanyLogin() {
                   }`} 
                   placeholder="••••••••"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-600">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-600"
+                >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               {touched.password && !validations.password && (
                 <p className="text-[9px] text-rose-500 font-black uppercase ml-1 leading-tight">
-                  password must be at least 8 characters
+                  8+ chars, uppercase, number & special char required
                 </p>
               )}
             </div>
 
             <button 
+              type="submit"
               disabled={isLoading || !isFormValid} 
               className={`w-full py-5 rounded-[22px] font-black shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
                 isFormValid 

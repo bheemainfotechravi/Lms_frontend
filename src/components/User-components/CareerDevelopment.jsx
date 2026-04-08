@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance.js";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useSelector } from "react-redux";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx";
 import { 
   FaMapMarkerAlt, FaBookmark, FaTelegramPlane, 
@@ -12,7 +12,7 @@ import CareerHeader from "./CareerHeader.jsx";
 import Footer from "../LandingPage/Footer.jsx";
 
 export default function CareerDevelopment() {
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   
   const [allJobs, setAllJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -142,7 +142,6 @@ const navigation = useNavigate();
                       <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">{selectedJob.job_title}</h1>
                       <p className="text-[#E3A83C] font-black text-sm uppercase tracking-widest">{selectedJob.company || "Skills Sphere Partner"}</p>
                     </div>
-                   // CareerDevelopment.jsx mein button update karo
 <button 
   className="bg-[#E3A83C] text-white px-12 py-4 rounded-[20px] font-black text-xs uppercase tracking-widest shadow-xl shadow-[#E3A83C]/20 active:scale-95"
   onClick={() => navigation(`/user/apply/${selectedJob.slug}`)} // Yahan exact path dalo

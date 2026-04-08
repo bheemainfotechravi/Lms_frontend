@@ -2,10 +2,9 @@ import React, { useState, useMemo } from "react";
 import { X, Calendar, Briefcase, Loader2, Globe, IndianRupee, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext"; 
-
+import { useSelector } from "react-redux";
 export default function PostModal({ isOpen, onClose, onRefresh }) {
-    const { user } = useAuth(); 
+    const { user } = useSelector((state) => state.auth);
     const [isLoading, setIsLoading] = useState(false);
     const [touched, setTouched] = useState({});
     
@@ -18,8 +17,6 @@ export default function PostModal({ isOpen, onClose, onRefresh }) {
         duration: "", 
         last_date: "", 
     });
-
-    // Validation logic updated for new keys
     const errors = useMemo(() => {
         return {
             type: !formData.type,
@@ -35,30 +32,24 @@ export default function PostModal({ isOpen, onClose, onRefresh }) {
     const isFormValid = !Object.values(errors).some((error) => error === true);
 
     if (!isOpen) return null;
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
     const handleBlur = (e) => {
         setTouched((prev) => ({ ...prev, [e.target.name]: true }));
     };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
     const slug = user?.companySlug || user?.slug; 
-
     if (!slug) {
         console.error("Slug missing in User Context:", user);
         toast.error("Company session error. Please re-login.");
         return;
     }
-
     setIsLoading(true);
     const loadingToast = toast.loading("Posting Job...");
-
     try {
         const payload = {
             job_title: formData.job_title,
@@ -72,12 +63,8 @@ export default function PostModal({ isOpen, onClose, onRefresh }) {
         };
         const targetUrl = `/company/post_job/${slug}`;
         console.log(" Posting to:", targetUrl);
-
-        await axiosInstance.post(targetUrl, payload);
-        
+        await axiosInstance.post(targetUrl, payload);        
         toast.success("Job posted successfully!", { id: loadingToast });
-        
-        // Reset and Close
         onRefresh();
         onClose();
         setFormData({
@@ -94,14 +81,12 @@ export default function PostModal({ isOpen, onClose, onRefresh }) {
         setIsLoading(false);
     }
 };
-
     const getInputClass = (name) => {
         const hasError = touched[name] && errors[name];
         return `w-full bg-slate-50 border px-5 py-4 rounded-2xl text-sm font-bold outline-none transition-all ${
             hasError ? 'border-rose-500 ring-4 ring-rose-500/10' : 'border-slate-100 focus:ring-4 focus:ring-indigo-500/10'
         }`;
     };
-
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] border border-slate-100">

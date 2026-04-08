@@ -1,24 +1,23 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosinstance";
+import { useDispatch, useSelector } from "react-redux"; 
+import { loginUser } from "../../features/auth/authSlice"; 
 import { Eye, EyeOff, AlertCircle, Lock, Loader2, GraduationCap } from "lucide-react";
 
 export default function TeacherLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
+
   
+  const { isLoading, error: serverError } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [touched, setTouched] = useState({ email: false, password: false });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
 
-  // --- Professional Validation Logic ---
+  
   const validations = useMemo(() => {
-    // Sirf @gmail.com allow karega
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    // Min 8 char, 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Char
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     return {
@@ -30,7 +29,6 @@ export default function TeacherLogin() {
   const isFormValid = validations.email && validations.password;
 
   const handleChange = (e) => {
-    setServerError("");
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -38,35 +36,34 @@ export default function TeacherLogin() {
     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
   };
 
-const handleSubmit = async (e) => {
-  if (e) e.preventDefault(); 
-  if (!isFormValid || isLoading) return;
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setTouched({
+    email: true,
+    password: true,
+  });
+  const emailError = validateField("email", formData.email);
+  const passwordError = validateField("password", formData.password);
+  if (emailError || passwordError) return;
+  const result = await dispatch(loginUser({ 
+    credentials: {
+      email: formData.email.trim(),
+      password: formData.password
+    }, 
+    role: 'teacher'
+  }));
 
-  setIsLoading(true);
-  setServerError("");
-
-  try {
-    const res = await axiosInstance.post("/user/admin_login", formData);
-    
-    // Safety check for response data
-    const responseData = res.data?.data || res.data;
-
-    if (res.data.success && responseData?.user && responseData?.token) {
-      login(responseData.user, responseData.token);
-      navigate("/admin/dashboard");
+  if (loginUser.fulfilled.match(result)) {
+    const role = result.payload.user?.role?.toLowerCase().replace(/\s+/g, "");
+    if (role === "student") {
+      navigate("/user/dashboard", { replace: true });
+    } else if (role === "superadmin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role === "teacher") {
+      navigate("/teacher/dashboard", { replace: true });
     } else {
-      // Agar success true hai par data nahi aaya
-      setServerError("Unexpected response from server.");
+      navigate("/", { replace: true });
     }
-  } catch (err) {
-    // YAHAN STOP KARO REFRESH
-    console.error("Login Error Details:", err.response?.data);
-    
-    // Agar API error message bhej rahi hai toh wo dikhao, varna default
-    const errorMsg = err.response?.data?.message || "Invalid Email or Password";
-    setServerError(errorMsg);
-  } finally {
-    setIsLoading(false);
   }
 };
 
@@ -82,7 +79,7 @@ const handleSubmit = async (e) => {
         </div>
 
         <div className="bg-white rounded-[40px] p-10 shadow-2xl shadow-slate-200/60 border border-slate-100">
-          {/* Server Error Message */}
+          {/* Error Message from Redux Store */}
           {serverError && (
             <div className="flex items-center gap-3 bg-rose-50 text-rose-600 text-[11px] font-black p-4 rounded-2xl mb-6 uppercase animate-shake">
               <AlertCircle size={16} /> {serverError}
@@ -107,7 +104,7 @@ const handleSubmit = async (e) => {
                 placeholder="name@gmail.com"
               />
               {touched.email && !validations.email && (
-                <p className="text-[9px] text-rose-500 font-black uppercase ml-1">Please enter a valid @gmail.com address</p>
+                <p className="text-[9px] text-rose-500 font-black uppercase ml-1">Valid @gmail.com required</p>
               )}
             </div>
 
@@ -134,12 +131,13 @@ const handleSubmit = async (e) => {
               </div>
               {touched.password && !validations.password && (
                 <p className="text-[9px] text-rose-500 font-black uppercase ml-1 leading-tight">
-                  password must be at least 8 characters
+                  Must be 8+ chars with uppercase, number & symbol
                 </p>
               )}
             </div>
 
             <button 
+              type="submit"
               disabled={isLoading || !isFormValid} 
               className={`w-full py-5 rounded-[22px] font-black shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
                 isFormValid 

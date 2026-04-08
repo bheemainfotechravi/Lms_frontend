@@ -7,20 +7,13 @@ import {
   Settings, 
   Building2
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext"; 
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-
-
-
- 
-
 export default function CompanyNavbar() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useSelector((state) => state.auth);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
-
-
  const handleLogout = async () => {
     try {
       await logout(); 
@@ -30,8 +23,7 @@ export default function CompanyNavbar() {
       console.error("Logout failed:", error);
     }
   };
-
-  return (
+return (
     <nav className="sticky top-0 z-[100] bg-black border-b border-slate-800 px-4 py-3 md:px-8 shadow-2xl">
       <div className="max-w-[1600px] mx-auto flex justify-between items-center">
        
@@ -53,10 +45,7 @@ export default function CompanyNavbar() {
             <Bell size={18} className="md:scale-110" />
             <span className="absolute top-2 right-2 md:top-3 md:right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-slate-900" />
           </button>
-
           <div className="h-6 w-[1px] bg-slate-800 mx-1" />
-
-        
           <div className="relative">
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -65,8 +54,6 @@ export default function CompanyNavbar() {
               <div className="w-8 h-8 md:w-10 md:h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 font-black text-xs md:text-sm uppercase">
                 {user?.first_name?.charAt(0) || "C"}
               </div>
-              
-             
               <div className="hidden sm:block text-left">
                 <p className="text-[10px] md:text-[11px] font-black text-white uppercase leading-none">
                   {user?.first_name || "Manager"}
@@ -77,24 +64,19 @@ export default function CompanyNavbar() {
             {isProfileOpen && (
               <>
                 <div className="fixed inset-0 z-[-1]" onClick={() => setIsProfileOpen(false)}></div>
-                
                 <div className="absolute right-0 mt-3 w-52 md:w-60 bg-slate-800 border border-slate-700 rounded-[24px] shadow-2xl p-2 animate-in fade-in zoom-in-95 duration-200">
                   <div className="p-3 mb-1 border-b border-slate-700/50">
                      <p className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest">Account Settings</p>
                   </div>
-                  
                   <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 rounded-xl text-slate-300 transition-colors group">
                     <User size={16} className="group-hover:text-indigo-400" />
                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-tight">Profile</span>
                   </button>
-
                   <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 rounded-xl text-slate-300 transition-colors group">
                     <Settings size={16} className="group-hover:text-indigo-400" />
                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-tight">Settings</span>
                   </button>
-
                   <div className="h-[1px] bg-slate-700/50 my-1" />
-
                   <button 
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-rose-500/10 rounded-xl text-rose-400 transition-colors group"

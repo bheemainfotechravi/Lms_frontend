@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 import { ShieldCheck, Building2, LayoutDashboard } from "lucide-react";
 import HandleAdmin from "./HandleAdmin";
 import TopNavbar from "./Navbar";
@@ -7,7 +7,7 @@ import SCards from "./SCards";
 import HandleCategory from "./Handlecategories";
 
 export default function SuperAdminDashboard() {
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 

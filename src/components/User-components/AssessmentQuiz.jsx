@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosinstance";
-import { useAuth } from "../../context/AuthContext"; 
+import { useSelector } from "react-redux";
 import { 
   Timer, ShieldAlert, Award, ChevronRight, 
   Lock, AlertCircle, RefreshCw, XCircle, Loader2, Clock, Ban 
@@ -10,7 +10,7 @@ import {
 const QuizSystem = ({ id: propCourseId, onBack }) => {
   const { id: urlId } = useParams(); 
   const navigate = useNavigate();
-  const { user } = useAuth(); 
+  const { user } = useSelector((state) => state.auth);
   const courseId = propCourseId || urlId; 
   
   const [quizQuestions, setQuizQuestions] = useState([]);

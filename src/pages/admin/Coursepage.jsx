@@ -29,8 +29,8 @@ export default function CoursePage() {
     try {
       setIsLoading(true);
       const res = await axiosInstance.get("admin/course/get");
-      if (res.data?.success && Array.isArray(res.data.courses)) {
-        setCourse(res.data.courses);
+      if (res.data?.success && Array.isArray(res.data.message.courses)) {
+        setCourse(res.data.message.courses);
       }
     } catch (error) {
       console.error("Sync Error:", error);
