@@ -187,7 +187,6 @@ export default function AllCourses() {
                                             </p>
                                         </div>
                                         <button
-                                            // onClick={() => handleBuyCourse(c)}
                                             className="mt-10 h-10 bg-[#E3A83C] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#cf962c] transition"
                                         >
                                             Enroll Course

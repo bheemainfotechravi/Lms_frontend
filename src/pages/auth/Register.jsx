@@ -14,9 +14,7 @@ import signupImg from "../../assets/login-images/singup.svg";
 
 export default function Register() {
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Added
-
-  // Pulling state from Redux authSlice
+  const dispatch = useDispatch(); 
   const { isLoading, error: serverError } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +32,7 @@ export default function Register() {
   const [errors, setErrors] = useState({});
 
   const inputClass =
-    "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
+    "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-700 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   const errorInputClass = "border-red-400 focus:border-red-500 focus:ring-red-100";
 
@@ -126,8 +124,6 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Re-validate all fields
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
       const err = validateField(key, formData[key], formData);
@@ -136,8 +132,6 @@ export default function Register() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-
-    // Use Redux Action
     const result = await dispatch(registerUser({
       first_name: normalizeName(formData.first_name),
       last_name: normalizeName(formData.last_name),
@@ -146,7 +140,6 @@ export default function Register() {
       password: formData.password,
     }));
 
-    // If registration is successful, redirect to login
     if (registerUser.fulfilled.match(result)) {
       navigate("/login");
     }
@@ -210,27 +203,27 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.first_name ? errorInputClass : "border-gray-200"}`} />
+                  <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.first_name ? errorInputClass : "border-[#F0D5A1]"}`} />
                   {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
                 </div>
                 <div>
-                  <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.last_name ? errorInputClass : "border-gray-200"}`} />
+                  <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.last_name ? errorInputClass : "border-[#F0D5A1]"}`} />
                   {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
                 </div>
               </div>
 
               <div>
-                <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.email ? errorInputClass : "border-gray-200"}`} />
+                <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.email ? errorInputClass : "border-[#F0D5A1]"}`} />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
 
               <div>
-                <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.mobile ? errorInputClass : "border-gray-200"}`} />
+                <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} ${errors.mobile ? errorInputClass : "border-[#F0D5A1]"}`} />
                 {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
               </div>
 
               <div className="relative">
-                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.password ? errorInputClass : "border-gray-200"}`} />
+                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" value={formData.password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.password ? errorInputClass : "border-[#F0D5A1]"}`} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -238,7 +231,7 @@ export default function Register() {
               </div>
 
               <div className="relative">
-                <input type={showConfirmPassword ? "text" : "password"} name="confirm_password" placeholder="Confirm Password" value={formData.confirm_password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.confirm_password ? errorInputClass : "border-gray-200"}`} />
+                <input type={showConfirmPassword ? "text" : "password"} name="confirm_password" placeholder="Confirm Password" value={formData.confirm_password} onChange={handleChange} onBlur={handleBlur} className={`${inputClass} pr-12 ${errors.confirm_password ? errorInputClass : "border-[#F0D5A1]"}`} />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>

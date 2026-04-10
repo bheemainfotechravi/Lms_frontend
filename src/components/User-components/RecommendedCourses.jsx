@@ -28,12 +28,10 @@ export default function RecommendedCourses({ limit, onViewAll }) {
   const fetchCategories = async () => {
     try {
       const res = await axiosInstance.get("/category/get");
-
       const formatted = res.data.categories.map((c) => ({
         id: c.id,
         name: c.name
       }));
-
       setCategories([{ id: "all", name: "All" }, ...formatted]);
 
     } catch (error) {
@@ -71,7 +69,6 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 };
   const getOneCoursePerCategory = (courses) => {
     const map = new Map();
-
     courses.forEach((course) => {
       if (!map.has(course.category)) {
         map.set(course.category, course);
@@ -83,20 +80,20 @@ export default function RecommendedCourses({ limit, onViewAll }) {
 
   let displayCourses = courses;
 
-  // If viewing ALL categories
+  
   if (activeFilter === "All") {
 
-    // On dashboard (limit exists) → show one per category
+    
     if (limit) {
       displayCourses = getOneCoursePerCategory(courses);
     }
 
   } else {
-    // If a specific category is selected → show all
+    
     displayCourses = courses.filter((c) => c.category === activeFilter);
   }
 
-  // Only limit dashboard cards
+  
   if (limit) {
     displayCourses = displayCourses.slice(0, limit);
   }

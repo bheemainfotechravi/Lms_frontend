@@ -49,3 +49,8 @@ duration_second
 /api/admin/company/get_companyReqs - get
 /api/admin/company/update_req_status - patch
 /api/admin/company/approved_companies - get 
+
+
+
+api/admin/get_userReqs - get 
+/api/admin/update_req_status - patch

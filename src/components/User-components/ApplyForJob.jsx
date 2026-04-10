@@ -52,7 +52,6 @@ const handleSubmit = async (e) => {
     try {
       setSubmitting(true);
       
-      // FormData Object Create karo
       const formData = new FormData();
       formData.append("slug", slug);
       formData.append("user_id", user.id);

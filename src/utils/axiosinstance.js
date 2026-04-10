@@ -11,8 +11,6 @@ const axiosInstance = axios.create({
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // We use localStorage directly to avoid importing the Redux store
-    // This prevents circular dependency and initialization errors.
     const token = localStorage.getItem("authToken"); 
     
     if (token) {

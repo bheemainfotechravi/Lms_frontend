@@ -15,17 +15,43 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+
+
+ 
+export const registerAdmin = createAsyncThunk(
+  'auth/registerAdmin',
+  async (formData, thunkAPI) => {
+    try {
+      const res = await axiosInstance.post('/user/register_admin', formData);
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err?.response?.data?.message || "Registration failed"
+      );
+    }
+  }
+);
+
+
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ credentials, role }, thunkAPI) => {
     try {
+      const normalizedRole = role.toLowerCase().replace(/\s+/g, "");
+
       const endpointMap = {
         student: '/student/student_login',
         teacher: '/user/admin_login', 
         company: '/user/admin_login',
         superadmin: '/admin/login',
       };
-      const url = endpointMap[role] || '/auth/login';
+
+      const url = endpointMap[normalizedRole];
+      
+      if (!url) {
+        return thunkAPI.rejectWithValue("Invalid user role selected.");
+      }
+
       const res = await axiosInstance.post(url, credentials);
       const responseData = res.data.data || res.data;
       const { user, token } = responseData;
@@ -45,19 +71,21 @@ export const loginUser = createAsyncThunk(
 );
 
 
-
 const getUserFromStorage = () => {
   try {
     const savedUser = localStorage.getItem("userData");
-    return (savedUser && savedUser !== "undefined") ? JSON.parse(savedUser) : null;
+    if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
+      return JSON.parse(savedUser);
+    }
+    return null;
   } catch (error) {
-    console.error("Failed to parse user data from storage", error);
     return null;
   }
 };
 
+
 const initialState = {
-  token: localStorage.getItem("authToken") || null,
+  token: localStorage.getItem("userData") ? localStorage.getItem("authToken") : null,
   user: getUserFromStorage(),
   isLoading: false,
   error: null,
@@ -125,4 +153,4 @@ export const selectUserRole = (state) => {
 export const selectIsSuperAdmin = (state) => selectUserRole(state) === "superadmin";
 export const selectIsTeacher = (state) => selectUserRole(state) === "teacher";
 export const selectIsStudent = (state) => selectUserRole(state) === "student";
-export const selectIsCompany = (state) => selectUserRole(state) === "company";
+export const selectIsCompany = (state) => selectUserRole(state) === "corporate";
