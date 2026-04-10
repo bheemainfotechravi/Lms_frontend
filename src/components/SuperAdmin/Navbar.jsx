@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 import {
   FiBell,
   FiChevronDown,
-  FiChevronUp,
   FiLogOut,
   FiUser,
   FiSettings,
-  FiSearch
 } from "react-icons/fi";
 import { RiShieldFlashLine } from "react-icons/ri"; 
 import axiosInstance from "../../utils/axiosinstance";
@@ -22,8 +21,9 @@ const ACTIVITY = [
 
 export default function TopNavbar({ user = null }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
-  const { logout } = useSelector((state) => state.auth);
+ const { user: authUser } = useSelector((state) => state.auth);
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);
@@ -43,18 +43,18 @@ export default function TopNavbar({ user = null }) {
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/admin/logout");
-      logout();
-      navigate("/admin/login", { replace: true });
     } catch (error) {
-      console.error("Logout failed", error);
+      console.error("Logout backend failed, clearing local state anyway", error);
+    } finally {
+      dispatch(logout()); 
+      navigate("/login", { replace: true });
     }
   };
+  
 
   return (
     <header className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-[60] px-4 md:px-8">
       <div className="h-20 flex items-center justify-between max-w-[1600px] mx-auto">
-        
-        {/* LEFT - LOGO & SYSTEM TITLE */}
         <div 
           onClick={() => navigate("/superadmin/dashboard")}
           className="flex items-center gap-4 cursor-pointer group"

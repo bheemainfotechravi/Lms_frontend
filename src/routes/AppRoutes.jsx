@@ -20,12 +20,13 @@ import Admindashboard from "../pages/admin/AdminDashboard";
 import Coursepage from "../pages/admin/Coursepage";
 import ReviewCourses from "../pages/admin/ReviewCourses";
 import GetUser from "../components/Admin-components/getUsers";
-import SuperAdminLogin from "../components/SuperAdmin/SuperAdminLogin";
 import SuperAdminDashboard from "../components/SuperAdmin/SuperAdminDashboard";
-import CompanyLogin from "../components/Company/CompanyLogin";
 import CompanyDashboard from "../components/Company/CompanyDashboard";
 import CareerDevelopment from "../components/User-components/CareerDevelopment";
 import JobApply from "../components/User-components/ApplyForJob";
+import RoleSelection from "../components/LandingPage/RoleSelection";
+import AdminRegister from "../pages/auth/AdminRegistraion";
+import ForgotPassword from "../pages/auth/Forgotpassword";
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -45,6 +46,9 @@ export default function AppRoutes() {
         <Route path="/course/:slug" element={<CourseDetails />} />
         <Route path="/category/:slug" element={<CoursesbyCat />} />
         <Route path="/courses/all" element={<AllCourses />} />
+        <Route path="/selectrole" element={<RoleSelection />} />
+        <Route path="/admin/registration" element={<AdminRegister />} />
+        <Route path="/recoverpassword" element={<ForgotPassword />} />
         <Route path="/user/*"element={<ProtectedRoute allowedRoles={["student", "user"]}>
               <Routes>
                 <Route path="dashboard" element={<UserDashboard />} />
@@ -59,15 +63,12 @@ export default function AppRoutes() {
         <Route path="/learning/:id" element={<ProtectedRoute allowedRoles={["student", "user"]}><CoursePlayer /></ProtectedRoute>} />
         <Route path="/quiz/:id" element={<ProtectedRoute allowedRoles={["student", "user"]}><QuizSystem /></ProtectedRoute>} />
         <Route path="/certificate/:id" element={<ProtectedRoute allowedRoles={["student", "user"]}><CertificateView /></ProtectedRoute>} />
-        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><Admindashboard /></ProtectedRoute>}/>
         <Route path="/admin/courses"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><Coursepage /></ProtectedRoute>}/>
         <Route path="/admin/reviewcourses"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><ReviewCourses /> </ProtectedRoute>}/>
         <Route path="/admin/get-users"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><GetUser /></ProtectedRoute>}/>
-        <Route path="/company/login" element={<CompanyLogin />} />
         <Route path="/company/dashboard" element={ <ProtectedRoute allowedRoles={["company"]}><CompanyDashboard /></ProtectedRoute>}/>
-        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
-        <Route path="/superadmin/dashboard"element={<ProtectedRoute allowedRoles={["superadmin", "super admin"]}><SuperAdminDashboard /></ProtectedRoute>}/>
+        <Route path="/superadmin/dashboard"element={<ProtectedRoute allowedRoles={["superadmin"]}><SuperAdminDashboard /></ProtectedRoute>}/>
       </Routes>
     </>
   );
