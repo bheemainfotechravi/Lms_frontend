@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { UserPlus, Shield, Loader2, Trash2, Eye, Mail, Phone, BadgeCheck, AlertCircle } from "lucide-react";
+import { UserPlus, Eye, AlertCircle } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
 import toast from "react-hot-toast";
 import AdminRequestModal from "./AdminsRequest"; 
@@ -66,10 +66,8 @@ export default function HandleAdmin() {
                 </button>
             </div>
 
-            {/* Table Section */}
             <div className="overflow-x-auto bg-white rounded-[30px] border border-slate-100 p-4">
                 <table className="w-full">
-                    {/* ... Teri table ka existing code yahan aayega ... */}
                     <thead>
                         <tr className="text-left border-b border-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
                             <th className="pb-4 pl-4">Admin Name</th>
@@ -93,7 +91,6 @@ export default function HandleAdmin() {
                 </table>
             </div>
 
-            {/* ✅ CORRECT MODAL POSITION (Inside Return) */}
             {isRequestModalOpen && pendingRequests.length > 0 && (
                 <AdminRequestModal 
                     requests={pendingRequests} 

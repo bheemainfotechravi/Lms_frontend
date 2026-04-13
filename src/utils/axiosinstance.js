@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -40,8 +40,6 @@ axiosInstance.interceptors.response.use(
       if (path.startsWith("/admin")) loginPath = "/login";
       else if (path.startsWith("/teacher")) loginPath = "/teacher/login";
       else if (path.startsWith("/company")) loginPath = "/company/login";
-
-      // Hard redirect wipes Redux state and handles the logout safely
       window.location.href = loginPath;
     }
 

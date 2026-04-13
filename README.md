@@ -54,3 +54,12 @@ duration_second
 
 api/admin/get_userReqs - get 
 /api/admin/update_req_status - patch
+
+
+
+
+/api/auth/forget_password - common 
+/api/auth/verify_otp - common 
+/api/auth/reset_password - common 
+/api/auth/reset_password - common 
+ 
