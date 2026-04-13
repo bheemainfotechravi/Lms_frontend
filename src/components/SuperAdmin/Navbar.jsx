@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
-import { logout } from "../../features/auth/authSlice";
+import { logout, logoutUser } from "../../features/auth/authSlice";
 import {
   FiBell,
   FiChevronDown,
@@ -40,15 +40,9 @@ export default function TopNavbar({ user = null }) {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/admin/logout");
-    } catch (error) {
-      console.error("Logout backend failed, clearing local state anyway", error);
-    } finally {
-      dispatch(logout()); 
-      navigate("/login", { replace: true });
-    }
+ const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/login", { replace: true });
   };
   
 

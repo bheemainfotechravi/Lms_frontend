@@ -56,17 +56,9 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
     setProfileOpen(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/student/student_logout");
-    } catch (error) {
-      console.error("Logout failed", error);
-    } finally {
-      
-      dispatch(logout()); 
-      navigate("/login", { replace: true });
-      setProfileOpen(false);
-    }
+ const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/login", { replace: true });
   };
 
   return (

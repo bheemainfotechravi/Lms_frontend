@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { logout, logoutUser } from "../../features/auth/authSlice";
 import {
   FiBell,
   FiChevronDown,
@@ -29,16 +30,9 @@ export default function TopNavbar({ user = null }) {
   document.addEventListener("mousedown", handleOutsideClick);
   return () => document.removeEventListener("mousedown", handleOutsideClick);
 }, []);
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/admin/logout");
-      logout();
-      navigate("/admin/login", { replace: true });
-    } catch (error) {
-      console.error("Admin logout failed", error);
-    } finally {
-      setProfileOpen(false);
-    }
+ const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/login", { replace: true });
   };
 
   return (

@@ -7,21 +7,19 @@ import {
   Settings, 
   Building2
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { logout, logoutUser } from "../../features/auth/authSlice";
 
 export default function CompanyNavbar() {
   const { user, logout } = useSelector((state) => state.auth);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
- const handleLogout = async () => {
-    try {
-      await logout(); 
-      setIsProfileOpen(false); 
-      navigate("/company/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/login", { replace: true });
   };
 return (
     <nav className="sticky top-0 z-[100] bg-black border-b border-slate-800 px-4 py-3 md:px-8 shadow-2xl">

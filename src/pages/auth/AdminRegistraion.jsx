@@ -88,11 +88,8 @@ export default function AdminRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
     Object.keys(formData).forEach((key) => {
-      // Adjusted validation logic
       if (role === "teacher" && ["company_name", "industry", "location"].includes(key)) return;
-
       const err = validateField(key, formData[key]);
       if (err) newErrors[key] = err;
     });
@@ -109,7 +106,7 @@ export default function AdminRegister() {
     }));
 
     if (registerAdmin.fulfilled.match(result)) {
-      navigate("/login");
+      navigate("/wait");
     }
   };
 

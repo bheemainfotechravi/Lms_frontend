@@ -27,6 +27,8 @@ import JobApply from "../components/User-components/ApplyForJob";
 import RoleSelection from "../components/LandingPage/RoleSelection";
 import AdminRegister from "../pages/auth/AdminRegistraion";
 import ForgotPassword from "../pages/auth/Forgotpassword";
+import WaitforVerification from "../components/Admin-components/WaitforVerification";
+import NewPassword from "../pages/auth/NewPassword";
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -48,7 +50,9 @@ export default function AppRoutes() {
         <Route path="/courses/all" element={<AllCourses />} />
         <Route path="/selectrole" element={<RoleSelection />} />
         <Route path="/admin/registration" element={<AdminRegister />} />
+        <Route path="/wait" element={<WaitforVerification />} />
         <Route path="/recoverpassword" element={<ForgotPassword />} />
+        <Route path="/newpassword" element={<NewPassword />} />
         <Route path="/user/*"element={<ProtectedRoute allowedRoles={["student", "user"]}>
               <Routes>
                 <Route path="dashboard" element={<UserDashboard />} />
@@ -67,7 +71,7 @@ export default function AppRoutes() {
         <Route path="/admin/courses"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><Coursepage /></ProtectedRoute>}/>
         <Route path="/admin/reviewcourses"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><ReviewCourses /> </ProtectedRoute>}/>
         <Route path="/admin/get-users"element={<ProtectedRoute allowedRoles={["teacher", "admin"]}><GetUser /></ProtectedRoute>}/>
-        <Route path="/company/dashboard" element={ <ProtectedRoute allowedRoles={["company"]}><CompanyDashboard /></ProtectedRoute>}/>
+        <Route path="/company/dashboard" element={ <ProtectedRoute allowedRoles={["corporate"]}><CompanyDashboard /></ProtectedRoute>}/>
         <Route path="/superadmin/dashboard"element={<ProtectedRoute allowedRoles={["superadmin"]}><SuperAdminDashboard /></ProtectedRoute>}/>
       </Routes>
     </>

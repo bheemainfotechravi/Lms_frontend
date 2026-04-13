@@ -20,7 +20,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 const ROLES = [
   { id: "student", label: "Student", icon: <Sparkles size={14} /> },
   { id: "teacher", label: "Instructor", icon: <Presentation size={14} /> },
-  { id: "company", label: "Corporate", icon: <Briefcase size={14} /> },
+  { id: "corporate", label: "Corporate", icon: <Briefcase size={14} /> },
   { id: "superadmin", label: "Admin", icon: <ShieldCheck size={14} /> },
 ];
 
@@ -71,34 +71,42 @@ export default function Login() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched({ email: true, password: true });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setTouched({ email: true, password: true });
 
-    if (!isFormValid) return;
+  if (!isFormValid) return;
 
-    const result = await dispatch(loginUser({ 
-      credentials: {
-        email: formData.email.trim(),
-        password: formData.password
-      }, 
+  const result = await dispatch(loginUser({ 
+    credentials: {
+      email: formData.email.trim(),
+      password: formData.password,
       role: formData.role 
-    }));
+    }, 
+    role: formData.role 
+  }));
 
-    if (loginUser.fulfilled.match(result)) {
-      const userRole = result.payload.user?.role?.toLowerCase().replace(/\s+/g, "");
-      
-      const dashboardMap = {
-        student: "/user/dashboard",
-        superadmin: "/superadmin/dashboard",
-        teacher: "/teacher/dashboard",
-        company: "/company/dashboard"
-      };
+  if (loginUser.fulfilled.match(result)) {
+ 
 
-      navigate(dashboardMap[userRole] || "/", { replace: true });
+    const rawRole = result.payload.user?.role || result.payload.user?.role_name || "";
+    const userRole = rawRole.toLowerCase().replace(/\s+/g, "").trim();
+    const dashboardMap = {
+      student: "/user/dashboard",
+      superadmin: "/superadmin/dashboard",
+      teacher: "/admin/dashboard",
+      corporate: "/company/dashboard", 
+    };
+
+    const targetPath = dashboardMap[userRole];
+
+    if (targetPath) {
+      navigate(targetPath, { replace: true }); 
+    } else {
+      toast.error("Dashboard mapping failed. Check console.");
     }
-  };
-
+  }
+};
   const baseInputClass = "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:ring-2";
 
   return (
@@ -196,6 +204,7 @@ export default function Login() {
               {/* Password */}
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1.5">Password</label>
+                <Link to="/recoverpassword" className="text-left block text-[10px] font-black uppercase tracking-widest ml-1 mb-1.5">Forgot Password?</Link>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
