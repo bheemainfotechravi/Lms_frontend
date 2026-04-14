@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosinstance";
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCourses } from "../../features/courses/courseslice";
+
+
+
+
 function SectionHeader({ title, highlight }) {
   return (
     <div>
@@ -17,45 +22,38 @@ function SectionHeader({ title, highlight }) {
 }
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+const { courses, loading } = useSelector((state) => state.course);
   const navigate = useNavigate();
+useEffect(() => {
+  if (!courses.length) {
+    dispatch(fetchCourses());
+  }
+}, [dispatch, courses.length]);
 
-  useEffect(() => {
-    const fetchLatestCourses = async () => {
-      try {
-        const res = await axiosInstance.get("/course/get");
-        const latestFour = res.data?.message?.courses.slice(0, 4).map((c) => ({
-          id: c.id,
-          title: c.title,
-          short_description: c.short_description,
-          price: parseInt(c.price),
-          level: c.level,
-          duration: c.duration,
-          category: c.category_name || "Development",
-          instructor: "Expert Instructor",
-          rating: 4.8,
-          students: 120,
-          thumbnail: c.thumbnail,
-          slug: c.slug,
-        }));
-
-        setCourses(latestFour);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLatestCourses();
-  }, []);
+const formattedCourses = courses.slice(0, 4).map((c) => ({
+  id: c.id,
+  title: c.title,
+  short_description: c.short_description,
+  price: parseInt(c.price),
+  duration: c.duration,
+  category: c.category_name || "Development",
+  instructor: "Expert Instructor",
+  rating: 4.8,
+  students: 120,
+  thumbnail: c.thumbnail,
+  slug: c.slug,
+}));
+if (loading) {
+  return <div className="text-center py-20">Loading courses...</div>;
+}
 
   return (
     <section className="py-20 px-[5%] bg-gradient-to-b from-[#f3c97c] to-white/30">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-end justify-between mb-10">
           <SectionHeader title="Most Popular" />
+          
           <button 
             onClick={() => navigate("/courses/all")}
             className="group flex items-center gap-2 border border-black text-black font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-[#E3A83C] hover:border-[#E3A83C] hover:text-white transition-all shrink-0"
@@ -64,7 +62,7 @@ const Courses = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {courses.map((c) => (
+         {formattedCourses.map((c) => (
             <div 
               key={c.id} 
               onClick={() => navigate(`/course/${c.slug}`)} 

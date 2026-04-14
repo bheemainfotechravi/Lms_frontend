@@ -22,7 +22,7 @@ export default function AllCourses() {
         try {
             const res = await axiosInstance.get("/category/get");
 
-            const formatted = res.data.categories.map((c) => ({
+            const formatted = res.data.message.categories.map((c) => ({
                 id: c.id,
                 name: c.name
             }));
@@ -37,7 +37,7 @@ export default function AllCourses() {
         try {
             const res = await axiosInstance.get("/course/get");
 
-            const formatted = res.data.courses.map((c) => ({
+            const formatted = res.data.message.courses.map((c) => ({
                 id: c.id,
                 title: c.title,
                 short_description: c.short_description,
@@ -47,7 +47,8 @@ export default function AllCourses() {
                 rating: 4.8,
                 students: 120,
                 instructor: "Expert Instructor",
-                thumbnail: c.thumbnail
+                thumbnail: c.thumbnail,
+                slug: c.slug
             }));
 
             setCourses(formatted);
@@ -107,7 +108,7 @@ export default function AllCourses() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-3">
                         {displayCourses.map((c) => (
-                            <div key={c.id} onClick={() => navigate(`/course/${c.id}`)} className="group cursor-pointer [perspective:1000px]">
+                            <div key={c.id} onClick={() => navigate(`/course/${c.slug}`)} className="group cursor-pointer [perspective:1000px]">
 
                                 <div className="relative h-[320px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
 

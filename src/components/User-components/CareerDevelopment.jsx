@@ -13,7 +13,7 @@ import Footer from "../LandingPage/Footer.jsx";
 
 export default function CareerDevelopment() {
   const { user } = useSelector((state) => state.auth);
-  
+    const [activeTab, setActiveTab] = useState("career");
   const [allJobs, setAllJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -74,7 +74,7 @@ const navigation = useNavigate();
 
   return (
     <>
-      <DashboardNavbar />
+     <DashboardNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
       <CareerHeader onSearch={handleSearch} onFilterChange={handleFilter} />
       <div className="min-h-screen bg-white font-sans text-left overflow-hidden">
         <div className="max-w-[1440px] mx-auto flex h-[calc(100vh-145px)]">
