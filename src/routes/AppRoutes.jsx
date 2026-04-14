@@ -15,7 +15,6 @@ import CoursePlayer from "../components/User-components/CoursePlayer";
 import CertificateView from "../components/User-components/CertificateView";
 import MyCertificates from "../components/User-components/MyCertifications";
 import CoursesbyCat from "../components/LandingPage/CoursesbyCat";
-import AdminLogin from "../pages/admin/AdminLogin";
 import Admindashboard from "../pages/admin/AdminDashboard";
 import Coursepage from "../pages/admin/Coursepage";
 import ReviewCourses from "../pages/admin/ReviewCourses";

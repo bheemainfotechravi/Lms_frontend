@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axiosInstance from "../../utils/axiosinstance";
 import { useSelector } from "react-redux";
-import { FaBookOpen, FaClock, FaGlobe, FaSignal, FaCheckCircle } from "react-icons/fa";
+import { FaBookOpen, FaClock, FaSignal, FaCheckCircle } from "react-icons/fa";
+import { PiStudent} from "react-icons/pi";
 import DashboardNavbar from "./DashboardNavbar";
 import Footer from "../LandingPage/Footer";
 
-// Progress Ring Component
 function ProgressRing({ percent, size = 40, stroke = 3.5 }) {
   const safePercent = isNaN(Number(percent)) ? 0 : Math.min(Math.max(Number(percent), 0), 100);
   const color = safePercent === 100 ? "#16A34A" : "#E3A83C";
@@ -37,7 +37,6 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
   const [activeTab, setActiveTab] = useState("my-courses");
 
   useEffect(() => {
-    // Check if user is loaded and has a unique identifier (slug or id)
     const userSlug = user?.slug || user?.id; 
     if (!userSlug) return;
 
@@ -57,22 +56,15 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
           
           const responseData = progressRes.data;
           let rawProgress = 0;
-
-          // FIX: Mapping as per your shared JSON
-          // Backend sends: progress: { progress: "10.00", total_lectures: 10 }
           if (responseData.success && responseData.progress) {
-            // Hum "progress" key se value nikalenge
             rawProgress = parseFloat(responseData.progress.progress) || 0;
           }
-
-          // Calculate completed lectures based on percentage and total
-          // Agar backend completed count nahi bhej raha, toh hum math use karenge
           const total = c.total_lectures || 10;
           const doneCount = Math.round((rawProgress / 100) * total);
 
           return {
             ...c,
-            progress: Math.min(rawProgress, 100), // Pure number (e.g., 10)
+            progress: Math.min(rawProgress, 100), 
             doneLessons: doneCount,
             totalLessons: total,
             tag: rawProgress >= 100 ? "Completed" : "In Progress",
@@ -101,7 +93,7 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
 };
 
     fetchMyCourses();
-  }, [user?.slug, user?.id]); // Correct dependency tracking
+  }, [user?.slug, user?.id]); 
 
   const visibleCourses = courses.slice(0, limit || courses.length);
 
@@ -132,7 +124,10 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
             </div>
           ) : visibleCourses.length === 0 ? (
             <div className="py-24 text-center">
-              <p className="text-4xl mb-4">📭</p>
+              <div>
+                <PiStudent size={40} className=" mx-auto mb-4" />
+              </div>
+             
               <p className="text-gray-500 text-sm font-semibold mb-6">You haven't started any courses yet.</p>
               <button onClick={() => navigate("/courses")} className="bg-[#E3A83C] text-[#0F172A] px-6 py-2.5 rounded-xl font-bold text-sm">Find a Course</button>
             </div>

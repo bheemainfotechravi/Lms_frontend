@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux"; 
-import { logout } from "../../features/auth/authSlice"; 
-import axiosInstance from "../../utils/axiosinstance";
+import { logoutUser } from "../../features/auth/authSlice"; 
 
 import {
   FiBell,
@@ -154,8 +153,7 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
                         My Profile
                       </button>
                     </div>
-
-                    {/* MOBILE NAV (Visible on mobile within dropdown) */}
+                    
                     <div className="p-2 md:hidden border-b border-[#F0E3C7]">
                       <p className="text-[10px] font-bold text-gray-500 px-3 mb-1 uppercase tracking-wider">Navigation</p>
                       {NAV_TABS.map((tab) => (

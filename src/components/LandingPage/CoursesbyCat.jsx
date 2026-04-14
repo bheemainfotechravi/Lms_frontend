@@ -1,50 +1,44 @@
-import { useState, useEffect } from "react";
-import axiosInstance from "../../utils/axiosinstance.js";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaStar, FaClock, FaBookOpen, FaImage } from "react-icons/fa";
 import DashboardNavbar from "../User-components/DashboardNavbar.jsx";
 import Footer from "../LandingPage/Footer.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCoursesByCategory } from "../../features/courses/courseslice";
 export default function CoursesbyCat() {
     const { slug } = useParams();
-    const [courses, setCourses] = useState([]);
-    const [categoryName, setCategoryName] = useState("");
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch();
+const { categoryCourses, categoryLoading } = useSelector((state) => state.course);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (slug) {
-            fetchCoursesByCategoryslug();
-        }
-    }, [slug]);
-    const fetchCoursesByCategoryslug = async () => {
-        try {
-            setLoading(true);
-            const res = await axiosInstance.get(`/course/courses/${slug}`);
-            const rawCourses = res.data?.message?.courses || res.data?.courses || [];
-            const formatted = rawCourses.map((c) => ({
-                id: c.id,
-                title: c.title,
-                short_description: c.short_description,
-                price: parseInt(c.price),
-                duration: c.duration,
-                category: c.category_name || "Development",
-                rating: 4.8, 
-                students: 120, 
-                instructor: "Expert Instructor",
-                thumbnail: c.thumbnail,
-                slug: c.slug
-            }));
-            setCourses(formatted);
-            if (formatted.length > 0) {
-                setCategoryName(formatted[0].category);
-            }
-        } catch (error) {
-            console.error("Error fetching courses:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  if (slug) {
+    dispatch(fetchCoursesByCategory(slug));
+  }
+}, [slug, dispatch]);
+const formattedCourses = categoryCourses.map((c) => ({
+  id: c.id,
+  title: c.title,
+  short_description: c.short_description,
+  price: parseInt(c.price),
+  duration: c.duration,
+  category: c.category_name || "Development",
+  rating: 4.8,
+  students: 120,
+  instructor: "Expert Instructor",
+  thumbnail: c.thumbnail,
+  slug: c.slug
+}));
+const categoryName =
+  formattedCourses.length > 0 ? formattedCourses[0].category : "Category";
+  if (categoryLoading) {
+  return <div className="flex flex-col items-center justify-center py-20">
+                            <div className="w-12 h-12 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin mb-4" />
+                            <p className="text-gray-500 font-black animate-pulse">LOADING COURSES...</p>
+                        </div>;
+}
+  
     return (
         <>
          <DashboardNavbar />
@@ -65,20 +59,8 @@ export default function CoursesbyCat() {
                             &larr; BACK
                         </button>
                     </div>
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20">
-                            <div className="w-12 h-12 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin mb-4" />
-                            <p className="text-gray-500 font-black animate-pulse">LOADING COURSES...</p>
-                        </div>
-                    ) : courses.length === 0 ? (
-                        <div className="bg-white rounded-[40px] border-2 border-[#EAD7B1] py-20 text-center shadow-xl">
-                            <FaBookOpen className="text-5xl text-[#EAD7B1] mx-auto mb-4" />
-                            <p className="text-[#0F172A] text-xl font-black">No courses found</p>
-                            <p className="text-gray-400 text-sm mt-1">Check back later for new content in this category.</p>
-                        </div>
-                    ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {courses.map((c) => (
+                          {formattedCourses.map((c) => (
                                 <div 
                                     key={c.id} 
                                     onClick={() => navigate(`/course/${c.slug}`)} 
@@ -154,7 +136,6 @@ export default function CoursesbyCat() {
                </div>
             ))}
               </div>
-                    )}
                 </div>
             </div>
             <Footer />
