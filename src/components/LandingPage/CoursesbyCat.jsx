@@ -8,7 +8,7 @@ import { fetchCoursesByCategory } from "../../features/courses/courseslice";
 export default function CoursesbyCat() {
     const { slug } = useParams();
     const dispatch = useDispatch();
-const { categoryCourses, categoryLoading } = useSelector((state) => state.course);
+const { categoryCourses,  categoryCoursesLoading} = useSelector((state) => state.course);
 
     const navigate = useNavigate();
 
@@ -17,6 +17,7 @@ const { categoryCourses, categoryLoading } = useSelector((state) => state.course
     dispatch(fetchCoursesByCategory(slug));
   }
 }, [slug, dispatch]);
+
 const formattedCourses = categoryCourses.map((c) => ({
   id: c.id,
   title: c.title,
@@ -30,13 +31,16 @@ const formattedCourses = categoryCourses.map((c) => ({
   thumbnail: c.thumbnail,
   slug: c.slug
 }));
+
 const categoryName =
   formattedCourses.length > 0 ? formattedCourses[0].category : "Category";
-  if (categoryLoading) {
-  return <div className="flex flex-col items-center justify-center py-20">
-                            <div className="w-12 h-12 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin mb-4" />
-                            <p className="text-gray-500 font-black animate-pulse">LOADING COURSES...</p>
-                        </div>;
+ if (categoryCoursesLoading) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-12 h-12 border-4 border-[#EAD7B1] border-t-[#E3A83C] rounded-full animate-spin mb-4" />
+      <p className="text-gray-500 font-black animate-pulse">LOADING COURSES...</p>
+    </div>
+  );
 }
   
     return (

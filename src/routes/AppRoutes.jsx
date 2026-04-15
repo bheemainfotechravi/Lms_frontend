@@ -25,7 +25,7 @@ import CareerDevelopment from "../components/User-components/CareerDevelopment";
 import JobApply from "../components/User-components/ApplyForJob";
 import RoleSelection from "../components/LandingPage/RoleSelection";
 import AdminRegister from "../pages/auth/AdminRegistraion";
-import ForgotPassword from "../pages/auth/Forgotpassword";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 import WaitforVerification from "../components/Admin-components/WaitforVerification";
 import NewPassword from "../pages/auth/NewPassword";
 function ScrollToTop() {
@@ -59,7 +59,7 @@ export default function AppRoutes() {
                 <Route path="allcourse" element={<AllCourses />} />
                 <Route path="user-profile/:slug" element={<UserProfile />} />
                 <Route path="certificates" element={<MyCertificates />} />
-                <Route path="career" element={<CareerDevelopment />} />
+                <Route path="career/:slug" element={<CareerDevelopment />} />
                 <Route path="apply/:slug" element={<JobApply />} />
               </Routes>
             </ProtectedRoute>}/>

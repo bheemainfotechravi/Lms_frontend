@@ -17,31 +17,35 @@ export default function CompanyDashboard() {
     const companySlug = user?.companySlug
 
 
-    const fetchData = async () => {
-    if (!companySlug) return;
-    
-    try {
-        setLoading(true);
-        const res = await axiosInstance.get(`/company/get_jobs/${companySlug}`);
-        const allJobs = res.data?.message?.jobs || []; 
-        if (Array.isArray(allJobs)) {
-            if (activeTab === "jobs") {
-                setData(allJobs.filter(p => p.type?.toLowerCase() === "job"));
-            } else if (activeTab === "internships") {
-                setData(allJobs.filter(p => p.type?.toLowerCase() === "internship"));
-            } else {
-                setData(allJobs);
-            }
-        } else {
-            setData([]);
-        }
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        setData([]);
-        toast.error("Failed to load records");
-    } finally {
-        setLoading(false);
+  const fetchData = async () => {
+  if (!companySlug) return;
+
+  try {
+    setLoading(true);
+
+    const res = await axiosInstance.get(`/company/get_jobs/${companySlug}`);
+
+    const jobs = Array.isArray(res.data?.message?.jobs)
+      ? res.data.message.jobs
+      : [];
+
+    let filtered = jobs;
+
+    if (activeTab === "jobs") {
+      filtered = jobs.filter(j => j.type?.toLowerCase() === "job");
+    } else if (activeTab === "internships") {
+      filtered = jobs.filter(j => j.type?.toLowerCase() === "internship");
     }
+
+    setData(filtered);
+
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    setData([]);
+    toast.error("Failed to load records");
+  } finally {
+    setLoading(false);
+  }
 };
 
 const handleDelete = (jobSlug) => { 
@@ -148,7 +152,7 @@ const executeDelete = async (jobSlug) => {
                                         ) : data.length === 0 ? (
                                             <tr><td colSpan="5" className="py-20 text-center"><AlertCircle className="mx-auto text-slate-200 mb-2" /><p className="text-[10px] font-black text-slate-400 uppercase">No active posts found</p></td></tr>
                                         ) : data.map((item) => (
-                                            <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                           <tr key={item.slug}className="hover:bg-slate-50 transition-colors">
                                                 <td className="p-6">
                                                     <p className="text-sm font-black text-slate-800 uppercase leading-tight">{item.job_title}</p>
                                                     <p className="text-[9px] text-indigo-500 font-bold uppercase mt-1 tracking-tighter">{item.type}</p>

@@ -19,7 +19,7 @@ const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: FiHome, path: "/user/dashboard" },
   { key: "my-courses", label: "My Courses", icon: FiBook, path: "/user/mycourses" },
   { key: "certificates", label: "Certificates", icon: FiAward, path: "/user/certificates" },
-  { key: "career", label: "Career", icon: LuChartNoAxesColumnIncreasing, path: "/user/career" }
+  { key: "career", label: "Career", icon: LuChartNoAxesColumnIncreasing, path: "/user/career/:slug" }
 ];
 
 export default function DashboardNavbar({ activeTab, setActiveTab }) {
@@ -49,12 +49,18 @@ export default function DashboardNavbar({ activeTab, setActiveTab }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleTabClick = (tab) => {
-    if (setActiveTab) setActiveTab(tab.key);
-    navigate(tab.path);
-    setProfileOpen(false);
-  };
+ const handleTabClick = (tab) => {
+  if (setActiveTab) setActiveTab(tab.key);
 
+  if (tab.key === "career") {
+    const slug = user?.slug;
+    navigate(`/user/career/${slug}`);
+  } else {
+    navigate(tab.path);
+  }
+
+  setProfileOpen(false);
+};
  const handleLogout = async () => {
     await dispatch(logoutUser());
     navigate("/login", { replace: true });

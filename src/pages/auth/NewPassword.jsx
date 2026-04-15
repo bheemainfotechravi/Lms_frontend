@@ -1,15 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTempPassword } from "../../features/RecoverPassword/forgotPasswordSlice";
 import { AlertTriangle, ArrowLeft, ArrowRight, Loader2, Mail, Shield, Eye, EyeOff } from 'lucide-react';
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../../utils/axiosinstance';
 import toast from 'react-hot-toast';
 
 const NewPassword = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [serverError, setServerError] = useState("");
+  const dispatch = useDispatch();
+  const [isLoading, setIsloading] = useState(false);
+const { updatePasswordLoading, successMessage, error } = useSelector((state) => state.auth);
+const [showNewPassword, setShowNewPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,41 +46,48 @@ const NewPassword = () => {
     confirmPassword: validateField("confirmPassword", formData.confirmPassword),
   }), [formData]);
 
+   useEffect(() => {
+  if (successMessage) {
+    toast.success(successMessage);
+  } else if (error) {
+    toast.error(error);
+  }
+}, [successMessage, error]);
+    
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (serverError) setServerError("");
+   
   };
 
   const handleBlur = (e) => {
     setTouched(prev => ({ ...prev, [e.target.name]: true }));
   };
+ 
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setTouched({
+    email: true,
+    tempPassword: true,
+    newPassword: true,
+    confirmPassword: true
+  });
 
+  const hasErrors = Object.values(errors).some(err => err !== "");
+  if (hasErrors) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched({ email: true, tempPassword: true, newPassword: true, confirmPassword: true });
-    const hasErrors = Object.values(errors).some(err => err !== "");
-    if (hasErrors) return;
+  const res = await dispatch(
+    updateTempPassword({
+      email: formData.email,
+      password: formData.tempPassword,
+      newPassword: formData.newPassword
+    })
+  );
 
-    try {
-      setIsLoading(true);
-      const res = await axiosInstance.patch("/auth/generate_password", {
-        email: formData.email,
-        password: formData.tempPassword,
-        newPassword: formData.newPassword
-      });
-
-      if (res.data.success) {
-        toast.success("Password updated! Please login.");
-        navigate("/login");
-      }
-    } catch (err) {
-      setServerError(err.response?.data?.message || "Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (res.meta.requestStatus === "fulfilled") {
+    navigate("/login");
+  }
+};
 
   const inputClass = "w-full bg-white border rounded-2xl pl-12 pr-4 py-3.5 text-sm outline-none transition-all focus:ring-2 focus:ring-amber-500/20";
   const errorInputClass = "border-red-500 focus:ring-red-100";
@@ -109,13 +119,6 @@ const NewPassword = () => {
             <h1 className="text-xl font-black text-slate-800 mt-4 uppercase tracking-tight">Set New Password</h1>
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Reset your temporary credentials</p>
           </div>
-
-          {serverError && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl px-4 py-3 mb-6 animate-pulse">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>{serverError}</span>
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -153,7 +156,7 @@ const NewPassword = () => {
               <div className="relative">
                 <RiLockPasswordFill className="absolute left-4 top-4 w-4 h-4 text-amber-500" />
                 <input 
-                  type={showPassword ? "text" : "password"} 
+                 type={showNewPassword ? "text" : "password"}
                   name="newPassword" 
                   placeholder="New Password" 
                   value={formData.newPassword} 
@@ -163,10 +166,10 @@ const NewPassword = () => {
                 />
                 <button 
                   type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowNewPassword(!showNewPassword)}
                   className="absolute right-4 top-4 text-slate-300 hover:text-amber-500"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                 {showNewPassword ? <EyeOff /> : <Eye />}
                 </button>
                 {touched.newPassword && errors.newPassword && <p className="text-red-500 text-[9px] font-black uppercase mt-1.5 ml-1">{errors.newPassword}</p>}
               </div>
@@ -174,7 +177,7 @@ const NewPassword = () => {
               <div className="relative">
                 <RiLockPasswordFill className="absolute left-4 top-4 w-4 h-4 text-amber-500" />
                 <input 
-                  type="password" 
+                 type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword" 
                   placeholder="Confirm New Password" 
                   value={formData.confirmPassword} 
@@ -184,10 +187,10 @@ const NewPassword = () => {
                 />
                  <button 
                   type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
+                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 top-4 text-slate-300 hover:text-amber-500"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
                 {touched.confirmPassword && errors.confirmPassword && <p className="text-red-500 text-[9px] font-black uppercase mt-1.5 ml-1">{errors.confirmPassword}</p>}
               </div>

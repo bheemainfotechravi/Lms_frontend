@@ -36,7 +36,7 @@ const courseSlice = createSlice({
     categories: [],
     categoryCourses: [],
     categoryLoading: false,
-    loading: false,
+    courseLoading: false,
     error: null,
   },
   extraReducers: (builder) => {
@@ -44,14 +44,14 @@ const courseSlice = createSlice({
 
       
       .addCase(fetchCourses.pending, (state) => {
-        state.loading = true;
+        state.courseLoading = true;
       })
       .addCase(fetchCourses.fulfilled, (state, action) => {
-        state.loading = false;
+        state.courseLoading = false;
         state.courses = action.payload;
       })
       .addCase(fetchCourses.rejected, (state) => {
-        state.loading = false;
+        state.courseLoading = false;
         state.error = "Failed to fetch courses";
       })
 

@@ -107,7 +107,7 @@ const handleSubmit = async (e) => {
     }
   }
 };
-  const baseInputClass = "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 outline-none transition-all focus:ring-2";
+  const baseInputClass = "w-full bg-white border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-black-300 outline-none transition-all focus:ring-2";
 
   return (
     <>
@@ -169,7 +169,7 @@ const handleSubmit = async (e) => {
                       className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                         formData.role === r.id 
                         ? "border-amber-500 bg-amber-50 text-amber-700 font-bold" 
-                        : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0 hover:border-slate-200"
+                        : "border-slate-400 bg-amber-50 text-black-500 grayscale hover:grayscale-0 hover:border-amber-600"
                       }`}
                     >
                       <input 
@@ -202,24 +202,44 @@ const handleSubmit = async (e) => {
               </div>
 
               {/* Password */}
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1.5">Password</label>
-                <Link to="/recoverpassword" className="text-left block text-[10px] font-black uppercase tracking-widest ml-1 mb-1.5">Forgot Password?</Link>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={(e) => setTouched({...touched, password: true})}
-                    className={`${baseInputClass} border-black pr-12 ${touched.password && errors.password ? "border-red-400" : "border-slate-200"}`}
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
+            <div>
+  <div className="flex justify-between items-center mb-1.5 px-1">
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+      Password
+    </label>
+
+    <Link 
+      to="/recoverpassword" 
+      className="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:underline ml-1"
+    >
+      Forgot Password?
+    </Link>
+  </div>
+
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      placeholder="••••••••"
+      value={formData.password}
+      onChange={handleChange}
+      onBlur={(e) => setTouched({ ...touched, password: true })}
+      className={`${baseInputClass} pr-12 ${
+        touched.password && errors.password
+          ? "border-red-400"
+          : "border-black"
+      }`}
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-500"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  </div>
+</div>
 
               {/* Submit */}
               <button
@@ -236,7 +256,7 @@ const handleSubmit = async (e) => {
             </form>
 
             <p className="text-center text-gray-400 mt-8 text-[10px] font-bold uppercase tracking-widest">
-              Need an account? <Link to="/selectrole" className="text-amber-600 hover:underline ml-1">Register Now</Link>
+              Need an account? <Link to="/selectrole" className=" tracking-widest text-amber-600 hover:underline ml-1">Register Now</Link>
             </p>
           </div>
         </div>

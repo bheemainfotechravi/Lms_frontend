@@ -63,3 +63,6 @@ api/admin/get_userReqs - get
 /api/auth/reset_password - common 
 /api/auth/reset_password - common 
  
+
+
+ /auth/reset_pasword  - Patch

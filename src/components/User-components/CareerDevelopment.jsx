@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import DashboardNavbar from "../../components/User-components/DashboardNavbar.jsx";
 import { 
   FaMapMarkerAlt, FaBookmark, FaTelegramPlane, 
-  FaMoneyBillWave, FaBriefcase, FaCalendarAlt 
+  FaMoneyBillWave, FaCalendarAlt 
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import CareerHeader from "./CareerHeader.jsx";
@@ -13,31 +13,37 @@ import Footer from "../LandingPage/Footer.jsx";
 
 export default function CareerDevelopment() {
   const { user } = useSelector((state) => state.auth);
+  const slug = user?.slug;
     const [activeTab, setActiveTab] = useState("career");
   const [allJobs, setAllJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [loading, setLoading] = useState(true);
+
+
 const navigation = useNavigate();
-  useEffect(() => {
+useEffect(() => {
+  if (slug) {
     fetchAllJobs();
-  }, []);
+  }
+}, [slug]);
 
+ const fetchAllJobs = async () => {
+  try {
+    setLoading(true);
+    const res = await axiosInstance.get(`/student/get_hiring`);
+    const data = res.data?.message?.jobs || [];
 
-  const fetchAllJobs = async () => {
-    try {
-      setLoading(true);
-      const res = await axiosInstance.get(`/company/get_hiring`);
-      const data = res.data?.message?.jobs || []; 
-      setAllJobs(data);
-      setFilteredJobs(data);
-      if (data.length > 0) setSelectedJob(data[0]); 
-    } catch (error) {
-      toast.error("Failed to load jobs");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setAllJobs(data);
+    setFilteredJobs(data);
+
+    if (data.length > 0) setSelectedJob(data[0]);
+  } catch (error) {
+    toast.error("Failed to load jobs");
+  } finally {
+    setLoading(false);
+  }
+};
 
   
 

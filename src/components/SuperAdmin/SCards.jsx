@@ -12,13 +12,13 @@ function SCards({ onTabChange }) {
       try {
         setLoading(true);
         const [userRes, courseRes, adminRes, companyRes] = await Promise.all([
-          axiosInstance.get("/admin/user/all-users").catch(() => ({ data: { users: [] } })),
-          axiosInstance.get("/admin/course/active-courses").catch(() => ({ data: { activeCourses: [] } })),
-          axiosInstance.get("/superadmin/get-all-admins").catch(() => ({ data: { admins: [] } })),
+          axiosInstance.get("/admin/user/all_users").catch(() => ({ data: { users: [] } })),
+          axiosInstance.get("/admin/course/active_courses").catch(() => ({ data: { activeCourses: [] } })),
+          axiosInstance.get("/admin/get_all_admins").catch(() => ({ data: { admins: [] } })),
           axiosInstance.get("/superadmin/get-all-companies").catch(() => ({ data: { companies: [] } }))
         ]);
 
-        const userCount = userRes.data?.users?.length || 0;
+        const userCount = userRes.data?.message.users?.length || 0;
         const courseCount = courseRes.data?.activeCourses?.length || 0;
         const adminCount = adminRes.data?.admins?.length || 0;
         const companyCount = companyRes.data?.companies?.length || 0;

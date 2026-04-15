@@ -28,7 +28,7 @@ export default function HandleCategory() {
         try {
             setLoading(true);
             const res = await axiosInstance.get("/admin/category/get");
-            setCategories(res.data.categories || []);
+            setCategories(res.data.message.categories || []);
         } catch (error) {
             console.error("Fetch error:", error);
             toast.error("Could not sync categories", toastStyle('#E11D48'));

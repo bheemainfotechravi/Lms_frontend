@@ -23,7 +23,7 @@ function SectionHeader({ title, highlight }) {
 
 const Courses = () => {
   const dispatch = useDispatch();
-const { courses, loading } = useSelector((state) => state.course);
+const { courses, coursesLoading } = useSelector((state) => state.course);
   const navigate = useNavigate();
 useEffect(() => {
   if (!courses.length) {
@@ -44,7 +44,7 @@ const formattedCourses = courses.slice(0, 4).map((c) => ({
   thumbnail: c.thumbnail,
   slug: c.slug,
 }));
-if (loading) {
+if (coursesLoading) {
   return <div className="text-center py-20">Loading courses...</div>;
 }
 
