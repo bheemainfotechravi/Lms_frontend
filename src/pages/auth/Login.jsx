@@ -197,7 +197,7 @@ const handleSubmit = async (e) => {
                   value={formData.email}
                   onChange={handleChange}
                   onBlur={(e) => setTouched({...touched, email: true})}
-                  className={`${baseInputClass} border-black ${touched.email && errors.email ? "border-red-400" : "border-slate-200"}`}
+                  className={`${baseInputClass} border-black ${touched.email && errors.email ? "border-red-400" : "border-black"}`}
                 />
               </div>
 
