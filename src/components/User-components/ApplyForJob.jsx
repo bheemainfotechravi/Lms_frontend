@@ -27,7 +27,7 @@ export default function JobApply() {
     console.log("Current Slug:", slug);
     try {
       setLoading(true);
-      const res = await axiosInstance.get(`/company/get_hiring`);
+      const res = await axiosInstance.get(`/student/get_hiring`);
       const allJobs = res.data?.message?.jobs || [];
       const currentJob = allJobs.find((j) => j.slug === slug);
       

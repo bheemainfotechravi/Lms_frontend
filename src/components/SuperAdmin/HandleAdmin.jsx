@@ -3,6 +3,7 @@ import { UserPlus, Eye, AlertCircle } from "lucide-react";
 import axiosInstance from "../../utils/axiosinstance";
 import toast from "react-hot-toast";
 import AdminRequestModal from "./AdminsRequest"; 
+import { IoCloseSharp } from "react-icons/io5";
 
 export default function HandleAdmin() {
     const [admins, setAdmins] = useState([]);
@@ -43,8 +44,8 @@ export default function HandleAdmin() {
     const fetchAdmins = async () => {
         try {
             setLoading(true);
-            const res = await axiosInstance.get("/admin/user/all-users");
-            setAdmins(res.data.users || []);
+            const res = await axiosInstance.get("/admin/user/all_users");
+            setAdmins(res.data.message.users || []);
         } catch (error) {
             toast.error("Failed to sync administrator list", toastStyle('#E11D48'));
         } finally {
@@ -106,9 +107,12 @@ export default function HandleAdmin() {
             {selectedAdmin && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                    <div className="bg-white p-8 rounded-[40px] max-w-md w-full relative">
-                        <button onClick={() => setSelectedAdmin(null)} className="absolute top-6 right-6"><AlertCircle/></button>
+                        <button onClick={() => setSelectedAdmin(null)} className="absolute top-6 right-6"><IoCloseSharp size={25} /></button>
                         <h2 className="text-xl font-black mb-4">{selectedAdmin.first_name}'s Details</h2>
                         <p className="text-sm text-slate-500 mb-6">Email: {selectedAdmin.email}</p>
+                        <p className="text-sm text-slate-500 mb-6">Contact: {selectedAdmin.mobile}</p>
+                        <p className="text-sm text-slate-500 mb-6">Role: {selectedAdmin.role}</p>
+                        <p className="text-sm text-slate-500 mb-6">Access Allowed: {selectedAdmin.role_description}</p>
                         <button onClick={() => setSelectedAdmin(null)} className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold">Close</button>
                    </div>
                 </div>

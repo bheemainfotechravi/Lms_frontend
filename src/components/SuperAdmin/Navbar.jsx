@@ -27,9 +27,28 @@ export default function TopNavbar({ user = null }) {
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);
-  
+  const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const fetchNotifications = async () => {
+  try {
+    const res = await axiosInstance.get("/admin/get_userReqs");
+    const requests = res.data?.message?.requests || [];
+    setNotifications(requests);
+  } catch (err) {
+    console.error("Notification fetch error", err);
+  }
+};
+useEffect(() => {
+  fetchNotifications();
+
+  const interval = setInterval(() => {
+    fetchNotifications(); 
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, []);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -66,15 +85,7 @@ export default function TopNavbar({ user = null }) {
           </div>
         </div>
 
-        {/* CENTER - SEARCH (Optional feature for Super Admins) */}
-        {/* <div className="hidden lg:flex flex-1 max-w-md mx-10 relative group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-            <input 
-                type="text" 
-                placeholder="Quick search admins, companies..."
-                className="w-full bg-slate-100 border-none rounded-2xl py-3 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
-            />
-        </div> */}
+        
 
         {/* RIGHT - ACTIONS */}
         <div className="flex items-center gap-4">
@@ -88,7 +99,9 @@ export default function TopNavbar({ user = null }) {
               }`}
             >
               <FiBell size={20} />
-              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white" />
+            {notifications.length > 0 && (
+  <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white" />
+)}
             </button>
 
             {notifOpen && (
@@ -98,17 +111,25 @@ export default function TopNavbar({ user = null }) {
                   <button className="text-[10px] font-black text-indigo-600 uppercase hover:underline">Mark read</button>
                 </div>
                 <div className="space-y-1">
-                    {ACTIVITY.map((item, index) => (
-                    <div key={index} className="p-3 hover:bg-slate-50 rounded-2xl flex gap-4 cursor-pointer transition-colors">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-                            <item.icon size={18} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-slate-800 leading-tight">{item.text}</p>
-                            <p className="text-[10px] text-slate-400 mt-1 font-medium">{item.time}</p>
-                        </div>
-                    </div>
-                    ))}
+                   {notifications.length > 0 ? (
+  notifications.map((req, index) => (
+    <div key={index} className="p-3 hover:bg-slate-50 rounded-2xl flex gap-4 cursor-pointer">
+      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+        <FiUser size={18} />
+      </div>
+      <div>
+        <p className="text-xs font-bold text-slate-800">
+          New Admin Request: {req.first_name || "User"}
+        </p>
+        <p className="text-[10px] text-slate-400 mt-1">
+          Needs approval
+        </p>
+      </div>
+    </div>
+  ))
+) : (
+  <div className="p-3 text-gray-400 text-sm">No new notifications</div>
+)}
                 </div>
                 <button className="w-full mt-4 py-3 bg-slate-50 text-slate-500 rounded-xl text-xs font-black hover:bg-slate-100 transition-all uppercase tracking-widest">
                     View All Activity

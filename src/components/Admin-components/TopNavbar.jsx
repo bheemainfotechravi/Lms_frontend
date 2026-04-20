@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout, logoutUser } from "../../features/auth/authSlice";
 import {
   FiBell,
@@ -15,6 +15,7 @@ export default function TopNavbar({ user = null }) {
   const navigate = useNavigate();
   const { logout } = useSelector((state) => state.auth);
   const location = useLocation();
+   const dispatch = useDispatch();
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);

@@ -7,8 +7,6 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken"); 
@@ -42,7 +40,6 @@ axiosInstance.interceptors.response.use(
       else if (path.startsWith("/company")) loginPath = "/company/login";
       window.location.href = loginPath;
     }
-
     return Promise.reject(error);
   }
 );

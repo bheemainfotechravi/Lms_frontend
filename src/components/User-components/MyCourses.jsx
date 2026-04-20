@@ -129,7 +129,7 @@ export default function MyCourses({ limit, title = "My Courses", onViewAll }) {
               </div>
              
               <p className="text-gray-500 text-sm font-semibold mb-6">You haven't started any courses yet.</p>
-              <button onClick={() => navigate("/courses")} className="bg-[#E3A83C] text-[#0F172A] px-6 py-2.5 rounded-xl font-bold text-sm">Find a Course</button>
+              <button onClick={() => navigate("/user/dashboard")} className="bg-[#E3A83C] text-[#0F172A] px-6 py-2.5 rounded-xl font-bold text-sm">Find a Course</button>
             </div>
           ) : (
             <div className="divide-y divide-[#F3E8D5]">
